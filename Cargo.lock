@@ -1521,7 +1521,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rust_hello"
+name = "rust_roguelike"
 version = "0.1.0"
 dependencies = [
  "rltk",
