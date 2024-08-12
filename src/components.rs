@@ -3,20 +3,19 @@ use specs::prelude::*;
 use specs_derive::*;
 
 #[derive(Component)]
-struct Position {
-    x: i32,
-    y: i32,
+pub struct Position {
+    pub x: i32,
+    pub y: i32,
 }
 
 #[derive(Component)]
-struct Renderable {
-    glyph: rltk::FontCharType,
-    fg: RGB,
-    bg: RGB,
+pub struct Renderable {
+    pub glyph: rltk::FontCharType,
+    pub fg: RGB,
+    pub bg: RGB,
 }
-
-//#[derive(Component)]
-//struct RandomMover {}
+#[derive(Component)]
+pub struct RandomMover {}
 
 #[derive(Component, Debug)]
-struct Player {}
+pub struct Player {}

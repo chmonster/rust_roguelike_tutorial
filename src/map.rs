@@ -4,7 +4,7 @@ use rltk::{Rltk, RGB};
 //use std::cmp::{max, min};
 
 #[derive(PartialEq, Copy, Clone)]
-enum TileType {
+pub enum TileType {
     Wall,
     Floor,
 }
@@ -15,7 +15,7 @@ pub fn xy_idx(x: i32, y: i32) -> usize {
 
 /// Makes a map with solid boundaries and 400 randomly placed walls. No guarantees that it won't
 /// look awful.
-pub fn new_map_test() -> Vec<TileType> {
+pub fn new_map_randomwalls() -> Vec<TileType> {
     let mut map = vec![TileType::Floor; 80 * 50];
 
     // Make the boundaries walls
@@ -45,12 +45,12 @@ pub fn new_map_test() -> Vec<TileType> {
 }
 
 pub fn new_map_rooms_and_corridors() -> Vec<TileType> {
-    let mut map = vec![TileType::Wall; 80 * 50];
-
+    //let mut map = vec![TileType::Wall; 80 * 50];
+    let map = vec![TileType::Wall; 80 * 50];
     map
 }
 
-fn draw_map(map: &[TileType], ctx: &mut Rltk) {
+pub fn draw_map(map: &[TileType], ctx: &mut Rltk) {
     let mut y = 0;
     let mut x = 0;
     for tile in map.iter() {
