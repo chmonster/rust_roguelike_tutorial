@@ -36,22 +36,6 @@ impl<'a> System<'a> for RandomWalker {
             pos.x = (pos.x + delta_x).clamp(0, 79);
             pos.y = (pos.y + delta_y).clamp(0, 49);
             //}
-
-            /*pos.x += delta_x;
-                        if pos.x < 0 {
-                            pos.x = 79;
-                        }
-                        if pos.x > 79 {
-                            pos.x = 0;
-                        }
-            ///*********************RandomWalker */
-                        pos.y += delta_y;
-                        if pos.y < 0 {
-                            pos.y = 49;
-                        }
-                        if pos.y > 49 {
-                            pos.y = 0;
-                        } */
         }
     }
 }
