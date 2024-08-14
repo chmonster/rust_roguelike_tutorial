@@ -51,6 +51,22 @@ impl Map {
         }
     }
 
+    /*fn apply_walls_to_limits(&mut self) {
+        // Make the boundaries walls
+        for x in 0..80 {
+            let topidx = self.xy_idx(x, 0);
+            let botidx = self.xy_idx(x, 49);
+            self.tiles[topidx] = TileType::Wall;
+            self.tiles[botidx] = TileType::Wall;
+        }
+        for y in 0..50 {
+            let leftidx = self.xy_idx(0, y);
+            let rightidx = self.xy_idx(79, y);
+            self.tiles[leftidx] = TileType::Wall;
+            self.tiles[rightidx] = TileType::Wall;
+        }
+    }*/
+
     pub fn new_map_rooms_and_corridors() -> Map {
         let mut map = Map {
             tiles: vec![TileType::Wall; 80 * 50],
@@ -99,7 +115,44 @@ impl Map {
 
         map
     }
+
+    pub fn new_map_randomwalls() -> Map {
+        let mut map = Map {
+            tiles: vec![TileType::Wall; 80 * 50],
+            rooms: Vec::new(),
+            width: 80,
+            height: 50,
+            revealed_tiles: vec![false; 80 * 50],
+            visible_tiles: vec![false; 80 * 50],
+        };
+
+        let new_room = Rect::new(0, 0, 78, 48);
+        map.apply_room_to_map(&new_room);
+        map.rooms.push(new_room);
+        let (player_x, player_y) = map.rooms[0].center();
+
+        //map.apply_walls_to_limits();
+
+        // Now we'll randomly splat a bunch of walls. It won't be pretty, but it's a decent illustration.
+        // First, obtain the thread-local RNG:
+        let mut rng = rltk::RandomNumberGenerator::new();
+
+        for _i in 0..400 {
+            let x = rng.roll_dice(1, 79);
+            let y = rng.roll_dice(1, 49);
+            let idx = map.xy_idx(x, y);
+
+            if idx != map.xy_idx(player_x, player_y) {
+                map.tiles[idx] = TileType::Wall;
+            }
+        }
+
+        map
+    }
 }
+
+/// Makes a map with solid boundaries and 400 randomly placed walls. No guarantees that it won't
+/// look awful.
 
 impl Algorithm2D for Map {
     fn dimensions(&self) -> Point {
@@ -112,37 +165,6 @@ impl BaseMap for Map {
         self.tiles[idx] == TileType::Wall
     }
 }
-
-/// Makes a map with solid boundaries and 400 randomly placed walls. No guarantees that it won't
-/// look awful.
-/*pub fn new_map_randomwalls() -> Vec<TileType> {
-    let mut map = vec![TileType::Floor; 80 * 50];
-
-    // Make the boundaries walls
-    for x in 0..80 {
-        map[xy_idx(x, 0)] = TileType::Wall;
-        map[xy_idx(x, 49)] = TileType::Wall;
-    }
-    for y in 0..50 {
-        map[xy_idx(0, y)] = TileType::Wall;
-        map[xy_idx(79, y)] = TileType::Wall;
-    }
-
-    // Now we'll randomly splat a bunch of walls. It won't be pretty, but it's a decent illustration.
-    // First, obtain the thread-local RNG:
-    let mut rng = rltk::RandomNumberGenerator::new();
-
-    for _i in 0..400 {
-        let x = rng.roll_dice(1, 79);
-        let y = rng.roll_dice(1, 49);
-        let idx = xy_idx(x, y);
-        if idx != xy_idx(40, 25) {
-            map[idx] = TileType::Wall;
-        }
-    }
-
-    map
-}*/
 
 pub fn draw_map(ecs: &World, ctx: &mut Rltk) {
     let map = ecs.fetch::<Map>();
