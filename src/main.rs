@@ -9,6 +9,8 @@ mod player;
 use player::*;
 mod rect;
 pub use rect::Rect;
+mod visibility_system;
+use visibility_system::VisibilitySystem;
 //mod mobs;
 //pub use mobs::*;
 
@@ -19,6 +21,9 @@ impl State {
     fn run_systems(&mut self) {
         //let mut rw = RandomWalker {};
         //rw.run_now(&self.ecs);
+        let mut vis = VisibilitySystem {};
+        vis.run_now(&self.ecs);
+
         self.ecs.maintain();
     }
 }
@@ -53,6 +58,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Renderable>();
     //gs.ecs.register::<RandomMover>();
     gs.ecs.register::<Player>();
+    gs.ecs.register::<Viewshed>();
 
     //gs.ecs.insert(new_map_randomwalls());
     let map: Map = Map::new_map_rooms_and_corridors();
@@ -71,6 +77,11 @@ fn main() -> rltk::BError {
             bg: RGB::named(rltk::BLACK),
         })
         .with(Player {})
+        .with(Viewshed {
+            visible_tiles: Vec::new(),
+            range: 8,
+            dirty: true,
+        })
         .build();
 
     /*for i in 0..10 {
