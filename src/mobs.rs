@@ -1,6 +1,31 @@
-use super::{Position, RandomMover};
+use super::{/*Map,*/ Monster, Name, /*Position,*/ Viewshed};
+use rltk::{console, /*field_of_view,*/ Point};
 use specs::prelude::*;
 
+pub struct MonsterAI {}
+
+impl<'a> System<'a> for MonsterAI {
+    type SystemData = (
+        ReadExpect<'a, Point>,
+        ReadStorage<'a, Viewshed>,
+        ReadStorage<'a, Monster>,
+        ReadStorage<'a, Name>,
+    );
+
+    fn run(&mut self, data: Self::SystemData) {
+        let (player_pos, viewshed, monster, name) = data;
+
+        for (viewshed, _monster, name) in (&viewshed, &monster, &name).join() {
+            if viewshed.visible_tiles.contains(&*player_pos) {
+                console::log(&format!("{} shouts insults", name.name));
+            } else {
+                console::log(&format!("{} considers their own existence", name.name));
+            }
+        }
+    }
+}
+
+/*
 //use rltk::{RandomNumberGenerator, Rltk, RGB};
 
 pub struct RandomWalker {}
@@ -50,3 +75,4 @@ impl<'a> System<'a> for RandomWalker {
         }
     }
 }
+ */

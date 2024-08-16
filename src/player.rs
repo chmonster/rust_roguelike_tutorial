@@ -1,5 +1,5 @@
-use super::{Map, Player, Position, State, TileType, Viewshed};
-use rltk::{Rltk, VirtualKeyCode};
+use super::{Map, Player, Position, RunState, State, TileType, Viewshed};
+use rltk::{Point, Rltk, VirtualKeyCode};
 use specs::prelude::*;
 //use std::cmp::{max, min};
 
@@ -15,15 +15,20 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
         if map.tiles[destination_idx] != TileType::Wall {
             pos.x = (pos.x + delta_x).clamp(0, 79);
             pos.y = (pos.y + delta_y).clamp(0, 49);
+
+            let mut ppos = ecs.write_resource::<Point>();
+            ppos.x = pos.x;
+            ppos.y = pos.y;
+
             viewshed.dirty = true;
         }
     }
 }
 
-pub fn player_input(gs: &mut State, ctx: &mut Rltk) {
+pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
     // Player movement
     match ctx.key {
-        None => {} // Nothing happened
+        None => return RunState::Paused, // Nothing happened
         Some(key) => match key {
             VirtualKeyCode::Left | VirtualKeyCode::Numpad4 | VirtualKeyCode::A => {
                 try_move_player(-1, 0, &mut gs.ecs)
@@ -41,7 +46,8 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) {
                 try_move_player(0, 1, &mut gs.ecs)
             }
 
-            _ => {}
+            _ => return RunState::Paused,
         },
     }
+    RunState::Running
 }
