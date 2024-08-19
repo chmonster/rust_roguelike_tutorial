@@ -1,3 +1,4 @@
 /target
-wasm/rust_roguelike_bg.wasm
-wasm/rust_roguelike.js
+/wasm/rust_roguelike_bg.wasm
+/wasm/rust_roguelike.js
+

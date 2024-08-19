@@ -38,12 +38,12 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
 
         let log = ecs.fetch::<GameLog>();
 
-        let mut y = 44;
+        let mut y = 48;
         for s in log.entries.iter().rev() {
-            if y < 49 {
+            if y > 43 {
                 ctx.print(2, y, s);
             }
-            y += 1;
+            y -= 1;
         }
     }
     // Draw mouse cursor
