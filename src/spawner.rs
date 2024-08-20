@@ -1,8 +1,8 @@
 #![allow(unused)]
 
 use super::{
-    map::MAPWIDTH, BlocksTile, CombatStats, Item, Monster, Name, Player, Position, Potion, Rect,
-    Renderable, Viewshed,
+    map::MAPWIDTH, BlocksTile, CombatStats, Consumable, Item, Monster, Name, Player, Position,
+    ProvidesHealing, Rect, Renderable, Viewshed,
 };
 use rltk::{RandomNumberGenerator, RGB};
 use specs::prelude::*;
@@ -133,7 +133,7 @@ pub fn spawn_room(ecs: &mut World, room: &Rect) {
         random_monster(ecs, x as i32, y as i32);
     }
 
-    // Actually spawn the potions
+    // Actually spawn the items
     for idx in item_spawn_points.iter() {
         let x = *idx % MAPWIDTH;
         let y = *idx / MAPWIDTH;
@@ -154,6 +154,7 @@ fn health_potion(ecs: &mut World, x: i32, y: i32) {
             name: "Health Potion".to_string(),
         })
         .with(Item {})
-        .with(Potion { heal_amount: 8 })
+        .with(Consumable {})
+        .with(ProvidesHealing { heal_amount: 8 })
         .build();
 }
