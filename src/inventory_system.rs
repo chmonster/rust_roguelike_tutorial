@@ -1,8 +1,9 @@
 #![allow(unused)]
 
 use super::{
-    gamelog::GameLog, CombatStats, Consumable, InBackpack, InflictsDamage, Map, Name, Position,
-    ProvidesHealing, SufferDamage, WantsToDropItem, WantsToPickupItem, WantsToUseItem,
+    gamelog::GameLog, AreaOfEffect, CombatStats, Confusion, Consumable, InBackpack, InflictsDamage,
+    Map, Name, Position, ProvidesHealing, SufferDamage, WantsToDropItem, WantsToPickupItem,
+    WantsToUseItem,
 };
 use specs::prelude::*;
 
@@ -60,6 +61,8 @@ impl<'a> System<'a> for ItemUseSystem {
         ReadStorage<'a, Consumable>,
         ReadStorage<'a, ProvidesHealing>,
         ReadStorage<'a, InflictsDamage>,
+        ReadStorage<'a, AreaOfEffect>,
+        WriteStorage<'a, Confusion>,
         WriteStorage<'a, CombatStats>,
         WriteStorage<'a, SufferDamage>,
     );
@@ -75,6 +78,8 @@ impl<'a> System<'a> for ItemUseSystem {
             consumables,
             healing,
             inflict_damage,
+            aoe,
+            mut confused,
             mut combat_stats,
             mut suffer_damage,
         ) = data;
@@ -88,41 +93,40 @@ impl<'a> System<'a> for ItemUseSystem {
                     targets.push(*player_entity);
                 }
                 Some(target) => {
-                    // let area_effect = aoe.get(useitem.item);
-                    // match area_effect {
-                    //     None => {
-                    //         // Single target in tile
-                    //         let idx = map.xy_idx(target.x, target.y);
-                    //         for mob in map.tile_content[idx].iter() {
-                    //             targets.push(*mob);
-                    //         }
-                    //     }
-                    //     Some(area_effect) => {
-                    //         // AoE
-                    //         let mut blast_tiles =
-                    //             rltk::field_of_view(target, area_effect.radius, &*map);
-                    //         blast_tiles.retain(|p| {
-                    //             p.x > 0 && p.x < map.width - 1 && p.y > 0 && p.y < map.height - 1
-                    //         });
-                    //         for tile_idx in blast_tiles.iter() {
-                    //             let idx = map.xy_idx(tile_idx.x, tile_idx.y);
-                    //             for mob in map.tile_content[idx].iter() {
-                    //                 targets.push(*mob);
-                    //             }
-                    //         }
-                    //     }
-                    // }
+                    let area_effect = aoe.get(useitem.item);
+                    match area_effect {
+                        None => {
+                            // Single target in tile
+                            let idx = map.xy_idx(target.x, target.y);
+                            for mob in map.tile_content[idx].iter() {
+                                targets.push(*mob);
+                            }
+                        }
+                        Some(area_effect) => {
+                            // AoE
+                            let mut blast_tiles =
+                                rltk::field_of_view(target, area_effect.radius, &*map);
+                            blast_tiles.retain(|p| {
+                                p.x > 0 && p.x < map.width - 1 && p.y > 0 && p.y < map.height - 1
+                            });
+                            for tile_idx in blast_tiles.iter() {
+                                let idx = map.xy_idx(tile_idx.x, tile_idx.y);
+                                for mob in map.tile_content[idx].iter() {
+                                    targets.push(*mob);
+                                }
+                            }
+                        }
+                    }
                 }
             }
+
             // If it inflicts damage, apply it to the target cell
             let item_damages = inflict_damage.get(useitem.item);
             match item_damages {
                 None => {}
                 Some(damage) => {
-                    let target_point = useitem.target.unwrap();
-                    let idx = map.xy_idx(target_point.x, target_point.y);
                     used_item = false;
-                    for mob in map.tile_content[idx].iter() {
+                    for mob in targets.iter() {
                         SufferDamage::new_damage(&mut suffer_damage, *mob, damage.damage);
                         if entity == *player_entity {
                             let mob_name = names.get(*mob).unwrap();
@@ -143,7 +147,6 @@ impl<'a> System<'a> for ItemUseSystem {
             match item_heals {
                 None => {}
                 Some(healer) => {
-                    used_item = false;
                     for target in targets.iter() {
                         let stats = combat_stats.get_mut(*target);
                         if let Some(stats) = stats {
@@ -155,11 +158,39 @@ impl<'a> System<'a> for ItemUseSystem {
                                     healer.heal_amount
                                 ));
                             }
-                            used_item = true;
                         }
                     }
                 }
             }
+
+            // Can it pass along confusion? Note the use of scopes to escape from the borrow checker!
+            let mut add_confusion = Vec::new();
+            {
+                let causes_confusion = confused.get(useitem.item);
+                match causes_confusion {
+                    None => {}
+                    Some(confusion) => {
+                        used_item = false;
+                        for mob in targets.iter() {
+                            add_confusion.push((*mob, confusion.turns));
+                            if entity == *player_entity {
+                                let mob_name = names.get(*mob).unwrap();
+                                let item_name = names.get(useitem.item).unwrap();
+                                gamelog.entries.push(format!(
+                                    "You use {} on {}, confusing them.",
+                                    item_name.name, mob_name.name
+                                ));
+                            }
+                        }
+                    }
+                }
+            }
+            for mob in add_confusion.iter() {
+                confused
+                    .insert(mob.0, Confusion { turns: mob.1 })
+                    .expect("Unable to insert status");
+            }
+
             if used_item {
                 let consumable = consumables.get(useitem.item);
                 match consumable {

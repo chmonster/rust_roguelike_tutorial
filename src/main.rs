@@ -225,6 +225,8 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Consumable>();
     gs.ecs.register::<InflictsDamage>();
     gs.ecs.register::<Ranged>();
+    gs.ecs.register::<AreaOfEffect>();
+    gs.ecs.register::<Confusion>();
 
     let map: Map = Map::new_map_rooms_and_corridors();
     //let map: Map = Map::new_map_randomwalls();
