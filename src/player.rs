@@ -126,6 +126,8 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
             VirtualKeyCode::G | VirtualKeyCode::Comma => get_item(&mut gs.ecs),
             VirtualKeyCode::I => return RunState::ShowInventory,
             VirtualKeyCode::D => return RunState::ShowDropItem,
+            // Save and Quit
+            VirtualKeyCode::Escape => return RunState::SaveGame,
 
             _ => return RunState::AwaitingInput,
         },
