@@ -1,4 +1,6 @@
 #![allow(deprecated)]
+#![allow(unused_macros)]
+#![allow(unused_imports)]
 
 use super::components::*;
 use specs::error::NoError;

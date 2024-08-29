@@ -1,5 +1,6 @@
 /target
 /wasm
 
-
 savegame.json
+wasm/rust_roguelike_bg.wasm
+src/main
