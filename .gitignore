@@ -4,3 +4,4 @@
 savegame.json
 wasm/rust_roguelike_bg.wasm
 src/main
+wasm/rust_roguelike_bg.wasm
