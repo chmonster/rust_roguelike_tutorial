@@ -196,7 +196,7 @@ impl State {
         let worldmap;
         {
             let mut worldmap_resource = self.ecs.write_resource::<Map>();
-            *worldmap_resource = Map::new_map_rooms_and_corridors(1);
+            *worldmap_resource = Map::new_map_randomwalls(1);
             worldmap = worldmap_resource.clone();
         }
 
@@ -469,8 +469,8 @@ fn main() -> rltk::BError {
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
-    let map: Map = Map::new_map_rooms_and_corridors(1);
-    //let map: Map = Map::new_map_randomwalls();
+    //let map: Map = Map::new_map_rooms_and_corridors(1);
+    let map: Map = Map::new_map_randomwalls(1);
 
     //make player
     let (player_x, player_y) = map.rooms[0].center();

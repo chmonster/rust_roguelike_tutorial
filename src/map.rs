@@ -169,7 +169,7 @@ impl Map {
             depth: new_depth,
         };
 
-        let new_room = Rect::new(0, 0, 78, 48);
+        let new_room = Rect::new(0, 0, map.width - 2, map.height - 2);
         map.apply_room_to_map(&new_room);
         map.rooms.push(new_room);
         let (player_x, player_y) = map.rooms[0].center();
@@ -181,14 +181,16 @@ impl Map {
         let mut rng = rltk::RandomNumberGenerator::new();
 
         for i in 0..400 {
-            let x = rng.roll_dice(1, 79);
-            let y = rng.roll_dice(1, 49);
+            let x = rng.roll_dice(1, map.width - 1);
+            let y = rng.roll_dice(1, map.height - 1);
             let idx = map.xy_idx(x, y);
 
             if idx != map.xy_idx(player_x, player_y) {
-                map.tiles[idx] = TileType::Wall;
-            } else if i == 200 {
-                map.tiles[idx] = TileType::DownStairs;
+                if i > 398 {
+                    map.tiles[idx] = TileType::DownStairs;
+                } else {
+                    map.tiles[idx] = TileType::Wall;
+                }
             }
         }
 
@@ -271,7 +273,7 @@ pub fn draw_map(ecs: &World, ctx: &mut Rltk) {
                     fg = RGB::from_f32(0.0, 0.5, 0.5);
                 }
                 TileType::Wall => {
-                    glyph = rltk::to_cp437('#');
+                    glyph = wall_glyph(&map, x, y);
                     fg = RGB::from_f32(0., 1.0, 0.);
                 }
                 TileType::DownStairs => {
@@ -292,4 +294,49 @@ pub fn draw_map(ecs: &World, ctx: &mut Rltk) {
             y += 1;
         }
     }
+}
+
+fn wall_glyph(map: &Map, x: i32, y: i32) -> rltk::FontCharType {
+    if x < 1 || x > map.width - 2 || y < 1 || y > (map.height - 2) {
+        return 35;
+    }
+    let mut mask: u8 = 0;
+
+    if is_revealed_and_wall(map, x, y - 1) {
+        mask += 1;
+    }
+    if is_revealed_and_wall(map, x, y + 1) {
+        mask += 2;
+    }
+    if is_revealed_and_wall(map, x - 1, y) {
+        mask += 4;
+    }
+    if is_revealed_and_wall(map, x + 1, y) {
+        mask += 8;
+    }
+
+    match mask {
+        0 => 9,    // Pillar because we can't see neighbors
+        1 => 186,  // Wall only to the north
+        2 => 186,  // Wall only to the south
+        3 => 186,  // Wall to the north and south
+        4 => 205,  // Wall only to the west
+        5 => 188,  // Wall to the north and west
+        6 => 187,  // Wall to the south and west
+        7 => 185,  // Wall to the north, south and west
+        8 => 205,  // Wall only to the east
+        9 => 200,  // Wall to the north and east
+        10 => 201, // Wall to the south and east
+        11 => 204, // Wall to the north, south and east
+        12 => 205, // Wall to the east and west
+        13 => 202, // Wall to the east, west, and south
+        14 => 203, // Wall to the east, west, and north
+        15 => 206, // ╬ Wall on all sides
+        _ => 35,   // We missed one?
+    }
+}
+
+fn is_revealed_and_wall(map: &Map, x: i32, y: i32) -> bool {
+    let idx = map.xy_idx(x, y);
+    map.tiles[idx] == TileType::Wall && map.revealed_tiles[idx]
 }
