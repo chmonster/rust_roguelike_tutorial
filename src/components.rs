@@ -162,6 +162,11 @@ pub struct DefenseBonus {
     pub defense: i32,
 }
 
+#[derive(Component, Serialize, Deserialize, Clone)]
+pub struct ParticleLifetime {
+    pub lifetime_ms: f32,
+}
+
 pub struct SerializeMe;
 
 // Special component that exists to help serialize the game data

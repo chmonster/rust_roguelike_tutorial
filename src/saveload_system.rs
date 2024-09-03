@@ -90,7 +90,8 @@ pub fn save_game(ecs: &mut World) {
             Equippable,
             Equipped,
             MeleePowerBonus,
-            DefenseBonus
+            DefenseBonus,
+            ParticleLifetime
         );
     }
 
@@ -157,7 +158,8 @@ pub fn load_game(ecs: &mut World) {
             Equippable,
             Equipped,
             MeleePowerBonus,
-            DefenseBonus
+            DefenseBonus,
+            ParticleLifetime
         );
     }
 
