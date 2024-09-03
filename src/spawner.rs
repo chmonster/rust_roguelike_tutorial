@@ -1,7 +1,7 @@
 #![allow(unused)]
 use super::{
     map::MAPWIDTH, AreaOfEffect, BlocksTile, CombatStats, Confusion, Consumable, DefenseBonus,
-    EquipmentSlot, Equippable, InflictsDamage, Item, MeleePowerBonus, Monster, Name, Player,
+    EquipmentSlot, Equippable, InflictsDamage, Item, Map, MeleePowerBonus, Monster, Name, Player,
     Position, ProvidesHealing, RandomTable, Ranged, Rect, Renderable, SerializeMe, Viewshed,
 };
 use rltk::{RandomNumberGenerator, RGB};
@@ -58,14 +58,21 @@ fn room_table(map_depth: i32) -> RandomTable {
         .add("Tower Shield", map_depth - 1)
 }
 
-fn orc(ecs: &mut World, x: i32, y: i32) {
-    monster(ecs, x, y, rltk::to_cp437('o'), "Orc");
+fn orc(ecs: &mut World, x: i32, y: i32, map_depth: i32) {
+    monster(ecs, x, y, rltk::to_cp437('o'), "Orc", map_depth + 1);
 }
-fn goblin(ecs: &mut World, x: i32, y: i32) {
-    monster(ecs, x, y, rltk::to_cp437('g'), "Goblin");
+fn goblin(ecs: &mut World, x: i32, y: i32, map_depth: i32) {
+    monster(ecs, x, y, rltk::to_cp437('g'), "Goblin", map_depth - 1);
 }
 
-fn monster<S: ToString>(ecs: &mut World, x: i32, y: i32, glyph: rltk::FontCharType, name: S) {
+fn monster<S: ToString>(
+    ecs: &mut World,
+    x: i32,
+    y: i32,
+    glyph: rltk::FontCharType,
+    name: S,
+    level: i32,
+) {
     ecs.create_entity()
         .with(Position { x, y })
         .with(Renderable {
@@ -87,8 +94,8 @@ fn monster<S: ToString>(ecs: &mut World, x: i32, y: i32, glyph: rltk::FontCharTy
         .with(CombatStats {
             max_hp: 16,
             hp: 16,
-            defense: 1,
-            power: 4,
+            defense: 1 + level / 2,
+            power: 4 + level,
         })
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
@@ -127,8 +134,8 @@ pub fn spawn_room(ecs: &mut World, room: &Rect, map_depth: i32) {
         let y = (*spawn.0 / MAPWIDTH) as i32;
 
         match spawn.1.as_ref() {
-            "Goblin" => goblin(ecs, x, y),
-            "Orc" => orc(ecs, x, y),
+            "Goblin" => goblin(ecs, x, y, map_depth),
+            "Orc" => orc(ecs, x, y, map_depth),
             "Health Potion" => health_potion(ecs, x, y),
             "Fireball Scroll" => fireball_scroll(ecs, x, y),
             "Confusion Scroll" => confusion_scroll(ecs, x, y),

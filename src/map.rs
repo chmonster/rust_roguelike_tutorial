@@ -10,6 +10,8 @@ use std::collections::HashSet;
 pub const MAPWIDTH: usize = 80;
 pub const MAPHEIGHT: usize = 43;
 pub const MAPCOUNT: usize = MAPHEIGHT * MAPWIDTH;
+pub const RUBBLE: usize = MAPCOUNT / 3;
+pub const TOP_STAIRS: usize = 5;
 
 #[derive(PartialEq, Copy, Clone, Serialize, Deserialize)]
 pub enum TileType {
@@ -184,13 +186,13 @@ impl Map {
         // First, obtain the thread-local RNG:
         let mut rng = rltk::RandomNumberGenerator::new();
 
-        for i in 0..400 {
+        for i in 0..RUBBLE {
             let x = rng.roll_dice(1, map.width - 1);
             let y = rng.roll_dice(1, map.height - 1);
             let idx = map.xy_idx(x, y);
 
             if idx != map.xy_idx(player_x, player_y) {
-                if i > 398 {
+                if i > RUBBLE - TOP_STAIRS {
                     map.tiles[idx] = TileType::DownStairs;
                 } else {
                     map.tiles[idx] = TileType::Wall;
