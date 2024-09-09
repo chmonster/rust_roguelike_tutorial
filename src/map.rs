@@ -161,6 +161,8 @@ impl Map {
         map
     }
 
+    /// Makes a map with solid boundaries and 400 randomly placed walls. No guarantees that it won't
+    /// look magnificent.
     pub fn new_map_randomwalls(new_depth: i32) -> Map {
         let mut map = Map {
             tiles: vec![TileType::Wall; MAPCOUNT],
@@ -203,9 +205,6 @@ impl Map {
         map
     }
 }
-
-/// Makes a map with solid boundaries and 400 randomly placed walls. No guarantees that it won't
-/// look awful.
 
 impl Algorithm2D for Map {
     fn dimensions(&self) -> Point {
