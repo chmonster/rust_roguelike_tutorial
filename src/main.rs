@@ -29,15 +29,16 @@ mod gui;
 use gamelog::GameLog;
 mod inventory_system;
 use inventory_system::{ItemCollectionSystem, ItemDropSystem, ItemRemoveSystem, ItemUseSystem};
-mod random_table;
+pub mod random_table;
 use random_table::RandomTable;
-mod hunger_system;
-mod particle_system;
-mod rex_assets;
+pub mod hunger_system;
+pub mod particle_system;
+pub mod rex_assets;
 use rex_assets::RexAssets;
-mod saveload_system;
+pub mod map_builders;
+pub mod saveload_system;
 mod spawner;
-mod trigger_system;
+pub mod trigger_system;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
@@ -159,7 +160,7 @@ impl State {
         {
             let mut worldmap_resource = self.ecs.write_resource::<Map>();
             current_depth = worldmap_resource.depth;
-            *worldmap_resource = Map::new_map_rooms_and_corridors(current_depth + 1);
+            *worldmap_resource = map_builders::build_random_map(current_depth + 1);
             worldmap = worldmap_resource.clone();
         }
 
@@ -213,7 +214,8 @@ impl State {
         let worldmap;
         {
             let mut worldmap_resource = self.ecs.write_resource::<Map>();
-            *worldmap_resource = Map::new_map_randomwalls(1);
+            //*worldmap_resource = Map::new_map_randomwalls(1);
+            *worldmap_resource = map_builders::build_random_map(1);
             worldmap = worldmap_resource.clone();
         }
 
@@ -527,8 +529,8 @@ fn main() -> rltk::BError {
     gs.ecs.insert(particle_system::ParticleBuilder::new());
     gs.ecs.insert(rex_assets::RexAssets::new());
 
-    //let map: Map = Map::new_map_rooms_and_corridors(1);
-    let map: Map = Map::new_map_randomwalls(1);
+    let map: Map = map_builders::build_random_map(1);
+    //let map: Map = Map::new_map_randomwalls(1);
 
     //make player
     let (player_x, player_y) = map.rooms[0].center();
