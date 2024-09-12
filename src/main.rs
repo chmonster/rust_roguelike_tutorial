@@ -327,7 +327,6 @@ impl GameState for State {
 
                 for x in x_order {
                     let idx = map.xy_idx(x, row);
-                    // console::log(&format!("MM: x {} idx {}", x, idx));
                     map.revealed_tiles[idx] = true;
                 }
                 if row as usize == MAPHEIGHT - 1 {

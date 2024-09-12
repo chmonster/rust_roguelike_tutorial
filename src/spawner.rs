@@ -4,9 +4,9 @@ use super::{
     EntryTrigger, EquipmentSlot, Equippable, Hidden, HungerClock, HungerState, InflictsDamage,
     Item, MagicMapper, Map, MeleePowerBonus, Monster, Name, Player, Position, ProvidesFood,
     ProvidesHealing, RandomTable, Ranged, Rect, Renderable, SerializeMe, SingleActivation,
-    Viewshed,
+    TileType, Viewshed,
 };
-use rltk::{RandomNumberGenerator, RGB};
+use rltk::{console, RandomNumberGenerator, RGB};
 use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
 use std::collections::HashMap;
@@ -64,7 +64,7 @@ fn room_table(map_depth: i32) -> RandomTable {
         .add("Tower Shield", map_depth - 1)
         .add("Rations", 10)
         .add("Magic Mapping Scroll", 4)
-        .add("Bear Trap", 100)
+        .add("Bear Trap", 10)
 }
 
 fn orc(ecs: &mut World, x: i32, y: i32, map_depth: i32) {
@@ -111,27 +111,41 @@ fn monster<S: ToString>(
 }
 
 #[allow(clippy::map_entry)]
-pub fn spawn_room(ecs: &mut World, room: &Rect, map_depth: i32) {
+pub fn spawn_room(ecs: &mut World, map: &Map, room: &Rect, map_depth: i32) {
+    const AVG_ROOM_SIZE: i32 = 8 * 8;
+
+    //let map = ecs.fetch::<Map>();
+    // let tiles = &map.tiles;
+
     let spawn_table = room_table(map_depth);
     let mut spawn_points: HashMap<usize, String> = HashMap::new();
 
     // Scope to keep the borrow checker happy
     {
         let mut rng = ecs.write_resource::<RandomNumberGenerator>();
-        let num_spawns = rng.roll_dice(1, MAX_MONSTERS + 3) + (map_depth - 1) - 3;
 
-        for _i in 0..num_spawns {
+        let num_spawns = (rng.roll_dice(1, MAX_MONSTERS + 3) + (map_depth - 1) - 3) * room.size()
+            / AVG_ROOM_SIZE;
+
+        for i in 0..num_spawns {
+            console::log(&format!("spawn  {} ", i));
             let mut added = false;
             let mut tries = 0;
             while !added && tries < 20 {
                 let x = (room.x1 + rng.roll_dice(1, i32::abs(room.x2 - room.x1))) as usize;
                 let y = (room.y1 + rng.roll_dice(1, i32::abs(room.y2 - room.y1))) as usize;
                 let idx = (y * MAPWIDTH) + x;
-                if !spawn_points.contains_key(&idx) {
+                if !spawn_points.contains_key(&idx) && map.tiles[idx] == TileType::Floor {
                     spawn_points.insert(idx, spawn_table.roll(&mut rng));
                     added = true;
                 } else {
+                    if !spawn_points.contains_key(&idx) {
+                        console::log("already spawned");
+                    } else if map.tiles[idx] == TileType::Floor {
+                        console::log("terrain");
+                    }
                     tries += 1;
+                    console::log(&format!("tries  {} ", tries));
                 }
             }
         }

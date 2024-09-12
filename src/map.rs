@@ -10,8 +10,8 @@ use std::collections::HashSet;
 pub const MAPWIDTH: usize = 80;
 pub const MAPHEIGHT: usize = 43;
 pub const MAPCOUNT: usize = MAPHEIGHT * MAPWIDTH;
-pub const RUBBLE: usize = MAPCOUNT / 3;
-pub const TOP_STAIRS: usize = 25;
+// pub const RUBBLE: usize = MAPCOUNT / 3;
+// pub const TOP_STAIRS: usize = 25;
 
 #[derive(PartialEq, Copy, Clone, Serialize, Deserialize)]
 pub enum TileType {
@@ -93,50 +93,6 @@ impl Map {
             content.clear();
         }
     }
-    /*
-    /// Makes a map with solid boundaries and 400 randomly placed walls. No guarantees that it won't
-    /// look magnificent.
-    pub fn new_map_randomwalls(new_depth: i32) -> Map {
-        let mut map = Map {
-            tiles: vec![TileType::Wall; MAPCOUNT],
-            rooms: Vec::new(),
-            width: MAPWIDTH as i32,
-            height: MAPHEIGHT as i32,
-            revealed_tiles: vec![false; MAPCOUNT],
-            visible_tiles: vec![false; MAPCOUNT],
-            blocked: vec![false; MAPCOUNT],
-            tile_content: vec![Vec::new(); MAPCOUNT],
-            depth: new_depth,
-            bloodstains: HashSet::new(),
-        };
-
-        let new_room = Rect::new(0, 0, map.width - 2, map.height - 2);
-        map.apply_room_to_map(&new_room);
-        map.rooms.push(new_room);
-        let (player_x, player_y) = map.rooms[0].center();
-
-        //map.apply_walls_to_limits();
-
-        // Now we'll randomly splat a bunch of walls. It won't be pretty, but it's a decent illustration.
-        // First, obtain the thread-local RNG:
-        let mut rng = rltk::RandomNumberGenerator::new();
-
-        for i in 0..RUBBLE {
-            let x = rng.roll_dice(1, map.width - 1);
-            let y = rng.roll_dice(1, map.height - 1);
-            let idx = map.xy_idx(x, y);
-
-            if idx != map.xy_idx(player_x, player_y) {
-                if i > RUBBLE - TOP_STAIRS {
-                    map.tiles[idx] = TileType::DownStairs;
-                } else {
-                    map.tiles[idx] = TileType::Wall;
-                }
-            }
-        }
-
-        map
-    }*/
 }
 
 impl Algorithm2D for Map {
