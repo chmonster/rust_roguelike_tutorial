@@ -11,7 +11,7 @@ pub const MAPWIDTH: usize = 80;
 pub const MAPHEIGHT: usize = 43;
 pub const MAPCOUNT: usize = MAPHEIGHT * MAPWIDTH;
 pub const RUBBLE: usize = MAPCOUNT / 3;
-pub const TOP_STAIRS: usize = 5;
+pub const TOP_STAIRS: usize = 25;
 
 #[derive(PartialEq, Copy, Clone, Serialize, Deserialize)]
 pub enum TileType {

@@ -1,6 +1,8 @@
+extern crate itertools;
 extern crate serde;
 
-use rltk::{GameState, Point, Rltk};
+use itertools::Either;
+use rltk::{/*console,*/ GameState, Point, /*RandomNumberGenerator,*/ Rltk};
 use specs::prelude::*;
 use specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 
@@ -300,9 +302,18 @@ impl GameState for State {
                 newrunstate = RunState::AwaitingInput;
             }
             RunState::MagicMapReveal { row } => {
+                //console::log("MagicMapReveal");
                 let mut map = self.ecs.fetch_mut::<Map>();
-                for x in 0..MAPWIDTH {
-                    let idx = map.xy_idx(x as i32, row);
+
+                let x_order = if row % 2 == 0 {
+                    Either::Left((0..map.width).rev())
+                } else {
+                    Either::Right(0..map.width)
+                };
+
+                for x in x_order {
+                    let idx = map.xy_idx(x, row);
+                    // console::log(&format!("MM: x {} idx {}", x, idx));
                     map.revealed_tiles[idx] = true;
                 }
                 if row as usize == MAPHEIGHT - 1 {
