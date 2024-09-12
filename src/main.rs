@@ -33,6 +33,8 @@ mod random_table;
 use random_table::RandomTable;
 mod hunger_system;
 mod particle_system;
+mod rex_assets;
+use rex_assets::RexAssets;
 mod saveload_system;
 mod spawner;
 
@@ -512,6 +514,7 @@ fn main() -> rltk::BError {
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
     gs.ecs.insert(particle_system::ParticleBuilder::new());
+    gs.ecs.insert(rex_assets::RexAssets::new());
 
     //let map: Map = Map::new_map_rooms_and_corridors(1);
     let map: Map = Map::new_map_randomwalls(1);

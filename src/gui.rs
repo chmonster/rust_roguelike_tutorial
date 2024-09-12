@@ -2,7 +2,7 @@
 
 use super::{
     CombatStats, Equipped, GameLog, HungerClock, HungerState, InBackpack, Map, Name, Player,
-    Position, RunState, State, Viewshed,
+    Position, RexAssets, RunState, State, Viewshed,
 };
 use rltk::{console, Point, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
@@ -580,60 +580,89 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
     let save_exists = super::saveload_system::does_save_exist();
     let runstate = gs.ecs.fetch::<RunState>();
 
+    let assets = gs.ecs.fetch::<RexAssets>();
+    ctx.render_xp_sprite(&assets.menu, 0, 0);
+
+    let x_offset = 23;
+    let y_offset = 34;
+
+    ctx.draw_box_double(
+        x_offset,
+        y_offset,
+        32,
+        10,
+        RGB::named(rltk::WHEAT),
+        RGB::named(rltk::BLACK),
+    );
     ctx.print_color_centered(
-        15,
+        y_offset + 2,
         RGB::named(rltk::YELLOW),
         RGB::named(rltk::BLACK),
         "Rust Roguelike Tutorial",
     );
+    ctx.print_color_centered(
+        y_offset + 3,
+        RGB::named(rltk::CYAN),
+        RGB::named(rltk::BLACK),
+        "by chmonster",
+    );
+    ctx.print_color_centered(
+        y_offset + 4,
+        RGB::named(rltk::GRAY),
+        RGB::named(rltk::BLACK),
+        "Use Up/Down Arrows and Enter",
+    );
 
+    let mut y = y_offset + 6;
     if let RunState::MainMenu {
         menu_selection: selection,
     } = *runstate
     {
         if selection == MainMenuSelection::NewGame {
             ctx.print_color_centered(
-                24,
+                y,
                 RGB::named(rltk::MAGENTA),
                 RGB::named(rltk::BLACK),
                 "Begin New Game",
             );
         } else {
             ctx.print_color_centered(
-                24,
+                y,
                 RGB::named(rltk::WHITE),
                 RGB::named(rltk::BLACK),
                 "Begin New Game",
             );
         }
+        y += 1;
 
         if save_exists {
             if selection == MainMenuSelection::LoadGame {
                 ctx.print_color_centered(
-                    25,
+                    y,
                     RGB::named(rltk::MAGENTA),
                     RGB::named(rltk::BLACK),
                     "Load Game",
                 );
             } else {
                 ctx.print_color_centered(
-                    25,
+                    y,
                     RGB::named(rltk::WHITE),
                     RGB::named(rltk::BLACK),
                     "Load Game",
                 );
             }
+            y += 1;
         }
 
         if selection == MainMenuSelection::Quit {
             ctx.print_color_centered(
-                26,
+                y,
                 RGB::named(rltk::MAGENTA),
                 RGB::named(rltk::BLACK),
                 "Quit",
             );
         } else {
-            ctx.print_color_centered(26, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), "Quit");
+            ctx.print_color_centered(y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), "Quit");
         }
 
         match ctx.key {
