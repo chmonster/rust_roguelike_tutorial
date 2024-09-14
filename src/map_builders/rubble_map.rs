@@ -1,4 +1,6 @@
-use super::{apply_room_to_map, spawner, Map, MapBuilder, Position, Rect, TileType};
+use super::{
+    apply_room_to_map, spawner, Map, MapBuilder, Position, Rect, TileType, SHOW_MAPGEN_VISUALIZER,
+};
 use rltk::{console, RandomNumberGenerator};
 use specs::prelude::*;
 
@@ -10,6 +12,7 @@ pub struct RubbleMapBuilder {
     starting_position: Position,
     depth: i32,
     room: Rect,
+    history: Vec<Map>,
 }
 
 impl MapBuilder for RubbleMapBuilder {
@@ -29,6 +32,20 @@ impl MapBuilder for RubbleMapBuilder {
         console::log("spawn_entities");
         spawner::spawn_room(ecs, &self.map, &self.room, self.depth);
     }
+
+    fn get_snapshot_history(&self) -> Vec<Map> {
+        self.history.clone()
+    }
+
+    fn take_snapshot(&mut self) {
+        if SHOW_MAPGEN_VISUALIZER {
+            let mut snapshot = self.map.clone();
+            for v in snapshot.revealed_tiles.iter_mut() {
+                *v = true;
+            }
+            self.history.push(snapshot);
+        }
+    }
 }
 
 impl RubbleMapBuilder {
@@ -37,7 +54,8 @@ impl RubbleMapBuilder {
             map: Map::new(new_depth),
             starting_position: Position { x: 0, y: 0 },
             depth: new_depth,
-            room: Rect::new(0, 0, 78, 41),
+            room: Rect::new(0, 0, 0, 0),
+            history: Vec::new(),
         }
     }
 
@@ -51,6 +69,7 @@ impl RubbleMapBuilder {
         let (player_x, player_y) = self.room.center();
 
         apply_room_to_map(&mut self.map, &self.room);
+        self.take_snapshot();
 
         // Now we'll randomly splat a bunch of walls. It won't be pretty, but it's a decent illustration.
         // First, obtain the thread-local RNG:
@@ -66,6 +85,7 @@ impl RubbleMapBuilder {
                 } else {
                     self.map.tiles[idx] = TileType::Wall;
                 }
+                self.take_snapshot();
             }
         }
 

@@ -114,9 +114,6 @@ fn monster<S: ToString>(
 pub fn spawn_room(ecs: &mut World, map: &Map, room: &Rect, map_depth: i32) {
     const AVG_ROOM_SIZE: i32 = 8 * 8;
 
-    //let map = ecs.fetch::<Map>();
-    // let tiles = &map.tiles;
-
     let spawn_table = room_table(map_depth);
     let mut spawn_points: HashMap<usize, String> = HashMap::new();
 
