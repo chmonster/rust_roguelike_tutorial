@@ -20,7 +20,7 @@ pub trait MapBuilder {
 pub fn random_builder(new_depth: i32) -> Box<dyn MapBuilder> {
     // Note that until we have a second map type, this isn't even slightly random
     let mut rng = rltk::RandomNumberGenerator::new();
-    let type_roll = rng.roll_dice(1, 1);
+    let type_roll = rng.roll_dice(1, 2);
     match type_roll {
         1 => Box::new(RubbleMapBuilder::new(new_depth)),
         _ => Box::new(SimpleMapBuilder::new(new_depth)),

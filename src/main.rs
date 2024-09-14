@@ -7,7 +7,7 @@ use specs::prelude::*;
 use specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 
 const SHOW_MAPGEN_VISUALIZER: bool = true;
-const MAX_FRAME_TIME: f32 = 30.0;
+const MAX_HISTORY_TIME: f32 = 5000.0;
 
 mod components;
 pub use components::*;
@@ -288,7 +288,7 @@ impl GameState for State {
                 draw_map(&self.mapgen_history[self.mapgen_index], ctx);
 
                 self.mapgen_timer += ctx.frame_time_ms;
-                if self.mapgen_timer > MAX_FRAME_TIME {
+                if self.mapgen_timer > (MAX_HISTORY_TIME / (self.mapgen_history.len() as f32)) {
                     self.mapgen_timer = 0.0;
                     self.mapgen_index += 1;
                     if self.mapgen_index >= self.mapgen_history.len() {
