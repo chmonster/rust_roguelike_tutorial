@@ -85,9 +85,12 @@ impl RubbleMapBuilder {
                 } else {
                     self.map.tiles[idx] = TileType::Wall;
                 }
-                self.take_snapshot();
+                if i % 25 == 0 {
+                    self.take_snapshot();
+                }
             }
         }
+        self.take_snapshot();
 
         self.starting_position = Position {
             x: player_x,
