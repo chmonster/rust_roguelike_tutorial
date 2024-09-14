@@ -4,6 +4,8 @@ mod simple_map;
 use simple_map::SimpleMapBuilder;
 mod rubble_map;
 use rubble_map::RubbleMapBuilder;
+mod bsp_dungeon;
+use bsp_dungeon::BspDungeonBuilder;
 mod common;
 use common::*;
 use specs::prelude::*;
@@ -20,9 +22,10 @@ pub trait MapBuilder {
 pub fn random_builder(new_depth: i32) -> Box<dyn MapBuilder> {
     // Note that until we have a second map type, this isn't even slightly random
     let mut rng = rltk::RandomNumberGenerator::new();
-    let type_roll = rng.roll_dice(1, 2);
+    let type_roll = rng.roll_dice(1, 1);
     match type_roll {
-        1 => Box::new(RubbleMapBuilder::new(new_depth)),
+        1 => Box::new(BspDungeonBuilder::new(new_depth)),
+        2 => Box::new(RubbleMapBuilder::new(new_depth)),
         _ => Box::new(SimpleMapBuilder::new(new_depth)),
     }
 
