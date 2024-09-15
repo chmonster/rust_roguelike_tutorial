@@ -1,7 +1,7 @@
 use super::{
     apply_room_to_map, spawner, Map, MapBuilder, Position, Rect, TileType, SHOW_MAPGEN_VISUALIZER,
 };
-use rltk::{console, RandomNumberGenerator};
+use rltk::{/*console,*/ RandomNumberGenerator};
 use specs::prelude::*;
 
 pub const RUBBLE: usize = 80 * 43 / 3;
@@ -29,7 +29,7 @@ impl MapBuilder for RubbleMapBuilder {
     }
 
     fn spawn_entities(&mut self, ecs: &mut World) {
-        console::log("spawn_entities");
+        //console::log("spawn_entities");
         spawner::spawn_room(ecs, &self.room, self.depth);
     }
 
@@ -66,35 +66,75 @@ impl RubbleMapBuilder {
 
         let mut rng = RandomNumberGenerator::new();
 
-        let (player_x, player_y) = self.room.center();
+        //let (player_x, player_y) = self.room.center();
 
         apply_room_to_map(&mut self.map, &self.room);
         self.take_snapshot();
 
-        // Now we'll randomly splat a bunch of walls. It won't be pretty, but it's a decent illustration.
-        // First, obtain the thread-local RNG:
-
+        // Now we'll randomly splat a bunch of walls.
         for i in 0..RUBBLE {
             let x = rng.roll_dice(1, self.map.width - 1);
             let y = rng.roll_dice(1, self.map.height - 1);
             let idx = self.map.xy_idx(x, y);
 
-            if idx != self.map.xy_idx(player_x, player_y) {
-                if i > RUBBLE - TOP_STAIRS {
-                    self.map.tiles[idx] = TileType::DownStairs;
+            //if idx != self.map.xy_idx(player_x, player_y) {
+            if i > RUBBLE - TOP_STAIRS {
+                self.map.tiles[idx] = TileType::DownStairs;
+            } else {
+                self.map.tiles[idx] = TileType::Wall;
+            }
+            if i % 25 == 0 {
+                self.take_snapshot();
+            }
+            //}
+        }
+        self.take_snapshot();
+
+        //routines taken from cellular_automata
+
+        // Find a starting point; start at the middle and walk left until we find an open tile
+        self.starting_position = Position {
+            x: self.map.width / 2,
+            y: self.map.height / 2,
+        };
+        let mut start_idx = self
+            .map
+            .xy_idx(self.starting_position.x, self.starting_position.y);
+        while self.map.tiles[start_idx] != TileType::Floor {
+            self.starting_position.x -= 1;
+            start_idx = self
+                .map
+                .xy_idx(self.starting_position.x, self.starting_position.y);
+        }
+
+        // Find all tiles we can reach from the starting point
+        let map_starts: Vec<usize> = vec![start_idx];
+        let dijkstra_map = rltk::DijkstraMap::new(
+            self.map.width,
+            self.map.height,
+            &map_starts,
+            &self.map,
+            200.0,
+        );
+        let mut exit_tile = (0, 0.0f32);
+        for (i, tile) in self.map.tiles.iter_mut().enumerate() {
+            if *tile == TileType::Floor {
+                let distance_to_start = dijkstra_map.map[i];
+                // We can't get to this tile - so we'll make it a wall
+                if distance_to_start == f32::MAX {
+                    *tile = TileType::Wall;
                 } else {
-                    self.map.tiles[idx] = TileType::Wall;
-                }
-                if i % 25 == 0 {
-                    self.take_snapshot();
+                    // If it is further away than our current exit candidate, move the exit
+                    if distance_to_start > exit_tile.1 {
+                        exit_tile.0 = i;
+                        exit_tile.1 = distance_to_start;
+                    }
                 }
             }
         }
         self.take_snapshot();
 
-        self.starting_position = Position {
-            x: player_x,
-            y: player_y,
-        }
+        self.map.tiles[exit_tile.0] = TileType::DownStairs;
+        self.take_snapshot();
     }
 }

@@ -13,6 +13,7 @@ use std::collections::HashMap;
 
 const MAX_MONSTERS: i32 = 4;
 const MAX_ITEMS: i32 = 4;
+const AVG_ROOM_SIZE: i32 = 8 * 8;
 
 /// Spawns the player and returns his/her entity object.
 pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
@@ -139,13 +140,14 @@ pub fn spawn_region(ecs: &mut World, area: &[usize], map_depth: i32) {
         let mut rng = ecs.write_resource::<RandomNumberGenerator>();
         let num_spawns = i32::min(
             areas.len() as i32,
-            rng.roll_dice(1, MAX_MONSTERS + 3) + (map_depth - 1) - 3,
+            (rng.roll_dice(1, MAX_MONSTERS + 3) + (map_depth - 1) - 3) * (areas.len() as i32)
+                / AVG_ROOM_SIZE,
         );
         if num_spawns == 0 {
             return;
         }
 
-        for _i in 0..num_spawns {
+        for i in 0..num_spawns {
             let array_index = if areas.len() == 1 {
                 0usize
             } else {
@@ -154,6 +156,7 @@ pub fn spawn_region(ecs: &mut World, area: &[usize], map_depth: i32) {
             let map_idx = areas[array_index];
             spawn_points.insert(map_idx, spawn_table.roll(&mut rng));
             areas.remove(array_index);
+            console::log(&format!("spawn {} {}", i, array_index));
         }
     }
 
