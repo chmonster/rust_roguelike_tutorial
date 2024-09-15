@@ -28,7 +28,7 @@ impl MapBuilder for SimpleMapBuilder {
 
     fn spawn_entities(&mut self, ecs: &mut World) {
         for room in self.rooms.iter().skip(1) {
-            spawner::spawn_room(ecs, &self.map, room, self.depth);
+            spawner::spawn_room(ecs, room, self.depth);
         }
     }
     fn get_snapshot_history(&self) -> Vec<Map> {

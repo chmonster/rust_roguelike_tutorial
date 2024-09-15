@@ -30,7 +30,7 @@ impl MapBuilder for RubbleMapBuilder {
 
     fn spawn_entities(&mut self, ecs: &mut World) {
         console::log("spawn_entities");
-        spawner::spawn_room(ecs, &self.map, &self.room, self.depth);
+        spawner::spawn_room(ecs, &self.room, self.depth);
     }
 
     fn get_snapshot_history(&self) -> Vec<Map> {
