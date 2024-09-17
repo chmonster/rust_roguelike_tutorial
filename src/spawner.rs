@@ -134,6 +134,8 @@ pub fn spawn_region(ecs: &mut World, area: &[usize], map_depth: i32) {
     let spawn_table = room_table(map_depth);
     let mut spawn_points: HashMap<usize, String> = HashMap::new();
     let mut areas: Vec<usize> = Vec::from(area);
+    console::log("spawn_region");
+    console::log(format!("areas: {}", areas.len()));
 
     // Scope to keep the borrow checker happy
     {

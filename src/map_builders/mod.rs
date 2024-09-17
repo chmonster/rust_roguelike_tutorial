@@ -10,6 +10,8 @@ mod bsp_interior;
 use bsp_interior::BspInteriorBuilder;
 mod cellular_automata;
 use cellular_automata::CellularAutomataBuilder;
+mod random_walk;
+use random_walk::DrunkardsWalkBuilder;
 
 mod common;
 use common::*;
@@ -24,15 +26,19 @@ pub trait MapBuilder {
     fn take_snapshot(&mut self);
 }
 
+#[allow(clippy::identity_op)]
 pub fn random_builder(new_depth: i32) -> Box<dyn MapBuilder> {
     // Note that until we have a second map type, this isn't even slightly random
     let mut rng = rltk::RandomNumberGenerator::new();
-    let type_roll = rng.roll_dice(1, 1) + 3;
+    let type_roll = rng.roll_dice(1, 1) + 0;
     match type_roll {
-        1 => Box::new(CellularAutomataBuilder::new(new_depth)),
-        2 => Box::new(BspInteriorBuilder::new(new_depth)),
-        3 => Box::new(BspDungeonBuilder::new(new_depth)),
-        4 => Box::new(RubbleMapBuilder::new(new_depth)),
+        1 => Box::new(DrunkardsWalkBuilder::winding_passages(new_depth)),
+        2 => Box::new(DrunkardsWalkBuilder::open_halls(new_depth)),
+        3 => Box::new(DrunkardsWalkBuilder::open_area(new_depth)),
+        4 => Box::new(CellularAutomataBuilder::new(new_depth)),
+        5 => Box::new(BspInteriorBuilder::new(new_depth)),
+        6 => Box::new(BspDungeonBuilder::new(new_depth)),
+        7 => Box::new(RubbleMapBuilder::new(new_depth)),
         _ => Box::new(SimpleMapBuilder::new(new_depth)),
     }
 
