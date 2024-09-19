@@ -1,0 +1,33 @@
+
+name: CI 
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  push:
+     branches: [ "master" ]
+  #pull_request:
+  #  branches: [ "master" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install SSH key
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        # name: github-actions # optional
+        known_hosts: 'placeholder'
+        # config: ${{ secrets.CONFIG }} # ssh_config; optional
+        if_key_exists: fail # replace / ignore / fail; optional (defaults to fail)
+    - name: Add Known Hosts
+      run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+    - name: copy files over ssh
+      run: rsync -avz $GITHUB_WORKSPACE/ perry@${{ secrets.SSH_HOST }}:mooresie.net/rust-rogue/
