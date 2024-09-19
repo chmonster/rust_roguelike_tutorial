@@ -13,7 +13,7 @@ pub const MAPCOUNT: usize = MAPHEIGHT * MAPWIDTH;
 // pub const RUBBLE: usize = MAPCOUNT / 3;
 // pub const TOP_STAIRS: usize = 25;
 
-#[derive(PartialEq, Copy, Clone, Serialize, Deserialize)]
+#[derive(PartialEq, Eq, Hash, Copy, Clone, Serialize, Deserialize)]
 pub enum TileType {
     Wall,
     Floor,

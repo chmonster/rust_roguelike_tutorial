@@ -1,6 +1,7 @@
 use super::{Map, TileType};
 use rltk::rex::XpFile;
-
+#[allow(dead_code)]
+#[allow(unused_imports)]
 /// Loads a RexPaint file, and converts it into our map format
 pub fn load_rex_map(new_depth: i32, xp_file: &XpFile) -> Map {
     let mut map: Map = Map::new(new_depth);
