@@ -18,12 +18,13 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      name: deploy WASM etc
+    - name: deploy WASM etc
       uses: appleboy/ssh-action@v0.1.2
       with:
         host: ${{ sectsv.SSH_HOST }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         username: ${{ secrets.SSH_USERNAME }}
+        
       script: |
         cd ~/mooresie.net
         git clone -n --depth=1 --filter=tree:0 \
