@@ -18,6 +18,8 @@ mod dla;
 use dla::DLABuilder;
 mod voronoi;
 use voronoi::VoronoiCellBuilder;
+mod waveform_collapse;
+use waveform_collapse::WaveformCollapseBuilder;
 mod common;
 use common::*;
 use specs::prelude::*;
@@ -33,9 +35,9 @@ pub trait MapBuilder {
 
 #[allow(clippy::identity_op)]
 pub fn random_builder(new_depth: i32) -> Box<dyn MapBuilder> {
-    // Note that until we have a second map type, this isn't even slightly random
     let mut rng = rltk::RandomNumberGenerator::new();
-    let builder = rng.roll_dice(1, 1) + 14;
+
+    let builder = rng.roll_dice(1, 1) + 17;
     match builder {
         1 => Box::new(BspDungeonBuilder::new(new_depth)),
         2 => Box::new(BspInteriorBuilder::new(new_depth)),
@@ -54,6 +56,7 @@ pub fn random_builder(new_depth: i32) -> Box<dyn MapBuilder> {
         15 => Box::new(VoronoiCellBuilder::new(new_depth)),
         16 => Box::new(VoronoiCellBuilder::manhattan(new_depth)),
         17 => Box::new(VoronoiCellBuilder::pythagoras(new_depth)),
+        18 => Box::new(WaveformCollapseBuilder::new(new_depth)),
         _ => Box::new(SimpleMapBuilder::new(new_depth)),
     }
 }
