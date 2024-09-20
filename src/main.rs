@@ -6,6 +6,7 @@ use rltk::{/*console,*/ GameState, Point, /*RandomNumberGenerator,*/ Rltk};
 use specs::prelude::*;
 use specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 
+//const SHOW_MAPGEN_VISUALIZER: bool = false;
 const SHOW_MAPGEN_VISUALIZER: bool = true;
 const MAX_HISTORY_TIME: f32 = 2000.0;
 
