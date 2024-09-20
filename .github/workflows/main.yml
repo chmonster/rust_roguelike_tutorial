@@ -1,4 +1,3 @@
-
 name: CI 
 
 # Controls when the workflow will run
@@ -18,22 +17,16 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: deploy WASM etc
-      uses: appleboy/ssh-action@v0.1.2
+    - uses: actions/checkout@v2
+    - name: Install SSH key
+      uses: shimataro/ssh-key-action@v2
       with:
-        host: ${{ secrets.SSH_HOST }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        username: ${{ secrets.SSH_USERNAME }}
-        
-        script: |
-          cd ~/mooresie.net
-          git clone -n --depth=1 --filter=tree:0 \
-          https://github.com/chmonster/rust_roguelike_tutorial
-          cd rust_roguelike_tutorial
-          git sparse-checkout set --no-cone wasm
-          git checkout
-          echo 'deployment to digitalocean successful'
-        
-        
-      
-    
+        # name: github-actions # optional
+        known_hosts: 'placeholder'
+        # config: ${{ secrets.CONFIG }} # ssh_config; optional
+        if_key_exists: fail # replace / ignore / fail; optional (defaults to fail)
+    - name: Add Known Hosts
+      run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+    - name: copy files over ssh
+      run: rsync -avz $GITHUB_WORKSPACE/ perry@${{ secrets.SSH_HOST }}:mooresie.net/rust-rogue/
