@@ -37,7 +37,7 @@ pub trait MapBuilder {
 pub fn random_builder(new_depth: i32) -> Box<dyn MapBuilder> {
     let mut rng = rltk::RandomNumberGenerator::new();
     let mut result: Box<dyn MapBuilder>;
-    let builder = rng.roll_dice(1, 1) + 17;
+    let builder = rng.roll_dice(1, 19);
 
     match builder {
         1 => result = Box::new(BspDungeonBuilder::new(new_depth)),
