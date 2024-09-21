@@ -48,7 +48,7 @@ pub trait MapBuilder {
 pub fn random_builder(new_depth: i32) -> Box<dyn MapBuilder> {
     let mut rng = rltk::RandomNumberGenerator::new();
     let mut result: Box<dyn MapBuilder>;
-    let builder = rng.roll_dice(1, 18);
+    let builder = rng.roll_dice(1, 17);
 
     match builder {
         1 => result = Box::new(BspDungeonBuilder::new(new_depth)),
@@ -68,16 +68,13 @@ pub fn random_builder(new_depth: i32) -> Box<dyn MapBuilder> {
         15 => result = Box::new(VoronoiCellBuilder::new(new_depth)),
         16 => result = Box::new(VoronoiCellBuilder::manhattan(new_depth)),
         17 => result = Box::new(VoronoiCellBuilder::pythagoras(new_depth)),
-        18 => {
-            result = Box::new(PrefabBuilder::new(
-                new_depth,
-                Some(Box::new(CellularAutomataBuilder::new(new_depth))),
-            ))
-        }
         _ => result = Box::new(SimpleMapBuilder::new(new_depth)),
     }
-    if rng.roll_dice(1, 3) == 1 {
+    let mutator = rng.roll_dice(1, 4);
+    if mutator == 1 {
         result = Box::new(WaveformCollapseBuilder::derived_map(new_depth, result));
+    } else if mutator == 4 {
+        result = Box::new(PrefabBuilder::new(new_depth, Some(result)))
     }
     result
 
