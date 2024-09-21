@@ -11,6 +11,7 @@ pub struct BspDungeonBuilder {
     rooms: Vec<Rect>,
     history: Vec<Map>,
     rects: Vec<Rect>,
+    spawn_list: Vec<(usize, String)>,
 }
 
 impl BspDungeonBuilder {
@@ -22,6 +23,7 @@ impl BspDungeonBuilder {
             rooms: Vec::new(),
             history: Vec::new(),
             rects: Vec::new(),
+            spawn_list: Vec::new(),
         }
     }
 
@@ -78,6 +80,10 @@ impl BspDungeonBuilder {
             x: start.0,
             y: start.1,
         };
+
+        for room in self.rooms.iter().skip(1) {
+            spawner::spawn_room(&self.map, &mut rng, room, self.depth, &mut self.spawn_list);
+        }
     }
 
     fn add_subrects(&mut self, rect: Rect) {
@@ -205,11 +211,15 @@ impl MapBuilder for BspDungeonBuilder {
         self.build();
     }
 
-    fn spawn_entities(&mut self, ecs: &mut World) {
-        for room in self.rooms.iter().skip(1) {
-            spawner::spawn_room(ecs, room, self.depth);
-        }
+    fn get_spawn_list(&self) -> &Vec<(usize, String)> {
+        &self.spawn_list
     }
+
+    // fn spawn_entities(&mut self, ecs: &mut World) {
+    //     for room in self.rooms.iter().skip(1) {
+    //         spawner::spawn_room(ecs, room, self.depth);
+    //     }
+    // }
 
     fn take_snapshot(&mut self) {
         if SHOW_MAPGEN_VISUALIZER {

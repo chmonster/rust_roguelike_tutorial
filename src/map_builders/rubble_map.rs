@@ -13,6 +13,7 @@ pub struct RubbleMapBuilder {
     depth: i32,
     room: Rect,
     history: Vec<Map>,
+    spawn_list: Vec<(usize, String)>,
 }
 
 impl MapBuilder for RubbleMapBuilder {
@@ -28,9 +29,12 @@ impl MapBuilder for RubbleMapBuilder {
         self.rubble_map();
     }
 
-    fn spawn_entities(&mut self, ecs: &mut World) {
-        //console::log("spawn_entities");
-        spawner::spawn_room(ecs, &self.room, self.depth);
+    // fn spawn_entities(&mut self, ecs: &mut World) {
+    //     //console::log("spawn_entities");
+    //     spawner::spawn_room(ecs, &self.room, self.depth);
+    // }
+    fn get_spawn_list(&self) -> &Vec<(usize, String)> {
+        &self.spawn_list
     }
 
     fn get_snapshot_history(&self) -> Vec<Map> {
@@ -56,6 +60,7 @@ impl RubbleMapBuilder {
             depth: new_depth,
             room: Rect::new(0, 0, 0, 0),
             history: Vec::new(),
+            spawn_list: Vec::new(),
         }
     }
 
@@ -136,5 +141,13 @@ impl RubbleMapBuilder {
 
         self.map.tiles[exit_tile.0] = TileType::DownStairs;
         self.take_snapshot();
+
+        spawner::spawn_room(
+            &self.map,
+            &mut rng,
+            &self.room,
+            self.depth,
+            &mut self.spawn_list,
+        );
     }
 }

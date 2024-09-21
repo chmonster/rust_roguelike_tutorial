@@ -6,9 +6,8 @@ use super::{
 use rltk::RandomNumberGenerator;
 use specs::prelude::*;
 use std::collections::HashMap;
-mod image_loader;
-#[allow(unused_imports)]
-use image_loader::load_rex_map;
+//mod image_loader;
+//use image_loader::load_rex_map;
 mod constraints;
 use constraints::{build_patterns, patterns_to_constraints, render_pattern_to_map};
 mod solver;
@@ -16,11 +15,11 @@ use solver::Solver;
 mod common;
 use common::*;
 
-#[derive(PartialEq, Copy, Clone)]
-pub enum WaveformMode {
-    TestMap,
-    Derived,
-}
+// #[derive(PartialEq, Copy, Clone)]
+// pub enum WaveformMode {
+//     TestMap,
+//     Derived,
+// }
 
 pub struct WaveformCollapseBuilder {
     map: Map,
@@ -28,8 +27,9 @@ pub struct WaveformCollapseBuilder {
     depth: i32,
     history: Vec<Map>,
     noise_areas: HashMap<i32, Vec<usize>>,
-    mode: WaveformMode,
+    //mode: WaveformMode,
     derive_from: Option<Box<dyn MapBuilder>>,
+    spawn_list: Vec<(usize, String)>,
 }
 
 impl MapBuilder for WaveformCollapseBuilder {
@@ -49,10 +49,14 @@ impl MapBuilder for WaveformCollapseBuilder {
         self.build();
     }
 
-    fn spawn_entities(&mut self, ecs: &mut World) {
-        for area in self.noise_areas.iter() {
-            spawner::spawn_region(ecs, area.1, self.depth);
-        }
+    // fn spawn_entities(&mut self, ecs: &mut World) {
+    //     for area in self.noise_areas.iter() {
+    //         spawner::spawn_region(ecs, area.1, self.depth);
+    //     }
+    //
+
+    fn get_spawn_list(&self) -> &Vec<(usize, String)> {
+        &self.spawn_list
     }
 
     fn take_snapshot(&mut self) {
@@ -69,7 +73,7 @@ impl MapBuilder for WaveformCollapseBuilder {
 impl WaveformCollapseBuilder {
     pub fn new(
         new_depth: i32,
-        mode: WaveformMode,
+        //mode: WaveformMode,
         derive_from: Option<Box<dyn MapBuilder>>,
     ) -> WaveformCollapseBuilder {
         WaveformCollapseBuilder {
@@ -78,29 +82,25 @@ impl WaveformCollapseBuilder {
             depth: new_depth,
             history: Vec::new(),
             noise_areas: HashMap::new(),
-            mode,
+            //mode,
             derive_from,
+            spawn_list: Vec::new(),
         }
     }
 
     pub fn test_map(new_depth: i32) -> WaveformCollapseBuilder {
-        WaveformCollapseBuilder::new(new_depth, WaveformMode::TestMap, None)
+        WaveformCollapseBuilder::new(new_depth, None)
     }
 
+    /// Derives a map from a pre-existing map builder.
+    /// # Arguments
+    /// * new_depth - the new map depth
+    /// * derive_from - either None, or a boxed MapBuilder, as output by `random_builder`
     pub fn derived_map(new_depth: i32, builder: Box<dyn MapBuilder>) -> WaveformCollapseBuilder {
-        WaveformCollapseBuilder::new(new_depth, WaveformMode::Derived, Some(builder))
+        WaveformCollapseBuilder::new(new_depth, Some(builder))
     }
 
     fn build(&mut self) {
-        if self.mode == WaveformMode::TestMap {
-            self.map = load_rex_map(
-                self.depth,
-                &rltk::rex::XpFile::from_resource("../resources/wfc-demo1.xp").unwrap(),
-            );
-            self.take_snapshot();
-            return;
-        }
-
         let mut rng = RandomNumberGenerator::new();
 
         const CHUNK_SIZE: i32 = 8;
@@ -160,6 +160,16 @@ impl WaveformCollapseBuilder {
 
         // Now we build a noise map for use in spawning entities later
         self.noise_areas = generate_voronoi_spawn_regions(&self.map, &mut rng);
+
+        for area in self.noise_areas.iter() {
+            spawner::spawn_region(
+                &self.map,
+                &mut rng,
+                area.1,
+                self.depth,
+                &mut self.spawn_list,
+            );
+        }
     }
 
     #[allow(clippy::ptr_arg)]

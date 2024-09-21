@@ -14,6 +14,7 @@ pub struct BspInteriorBuilder {
     rooms: Vec<Rect>,
     history: Vec<Map>,
     rects: Vec<Rect>,
+    spawn_list: Vec<(usize, String)>,
 }
 
 impl BspInteriorBuilder {
@@ -25,6 +26,7 @@ impl BspInteriorBuilder {
             rooms: Vec::new(),
             history: Vec::new(),
             rects: Vec::new(),
+            spawn_list: Vec::new(),
         }
     }
 
@@ -78,6 +80,10 @@ impl BspInteriorBuilder {
             x: start.0,
             y: start.1,
         };
+
+        for room in self.rooms.iter().skip(1) {
+            spawner::spawn_room(&self.map, &mut rng, room, self.depth, &mut self.spawn_list);
+        }
     }
 
     fn add_subrects(&mut self, rect: Rect, rng: &mut RandomNumberGenerator) {
@@ -121,65 +127,6 @@ impl BspInteriorBuilder {
         }
     }
 
-    /*fn get_random_rect(&mut self, rng: &mut RandomNumberGenerator) -> Rect {
-        if self.rects.len() == 1 {
-            return self.rects[0];
-        }
-        let idx = (rng.roll_dice(1, self.rects.len() as i32) - 1) as usize;
-        self.rects[idx]
-    }
-
-    fn get_random_sub_rect(&self, rect: Rect, rng: &mut RandomNumberGenerator) -> Rect {
-        let mut result = rect;
-        let rect_width = i32::abs(rect.x1 - rect.x2);
-        let rect_height = i32::abs(rect.y1 - rect.y2);
-
-        let w = i32::max(3, rng.roll_dice(1, i32::min(rect_width, 10)) - 1) + 1;
-        let h = i32::max(3, rng.roll_dice(1, i32::min(rect_height, 10)) - 1) + 1;
-
-        result.x1 += rng.roll_dice(1, 6) - 1;
-        result.y1 += rng.roll_dice(1, 6) - 1;
-        result.x2 = result.x1 + w;
-        result.y2 = result.y1 + h;
-
-        result
-    }
-
-    fn is_possible(&self, rect: Rect) -> bool {
-        let mut expanded = rect;
-        expanded.x1 -= 2;
-        expanded.x2 += 2;
-        expanded.y1 -= 2;
-        expanded.y2 += 2;
-
-        let mut can_build = true;
-
-        for y in expanded.y1..=expanded.y2 {
-            for x in expanded.x1..=expanded.x2 {
-                if x > self.map.width - 2 {
-                    can_build = false;
-                }
-                if y > self.map.height - 2 {
-                    can_build = false;
-                }
-                if x < 1 {
-                    can_build = false;
-                }
-                if y < 1 {
-                    can_build = false;
-                }
-                if can_build {
-                    let idx = self.map.xy_idx(x, y);
-                    if self.map.tiles[idx] != TileType::Wall {
-                        can_build = false;
-                    }
-                }
-            }
-        }
-
-        can_build
-    }*/
-
     fn draw_corridor(&mut self, x1: i32, y1: i32, x2: i32, y2: i32) {
         let mut x = x1;
         let mut y = y1;
@@ -210,6 +157,10 @@ impl MapBuilder for BspInteriorBuilder {
         self.starting_position.clone()
     }
 
+    fn get_spawn_list(&self) -> &Vec<(usize, String)> {
+        &self.spawn_list
+    }
+
     fn get_snapshot_history(&self) -> Vec<Map> {
         self.history.clone()
     }
@@ -218,11 +169,11 @@ impl MapBuilder for BspInteriorBuilder {
         self.build();
     }
 
-    fn spawn_entities(&mut self, ecs: &mut World) {
+    /*fn spawn_entities(&mut self, ecs: &mut World) {
         for room in self.rooms.iter().skip(1) {
             spawner::spawn_room(ecs, room, self.depth);
         }
-    }
+    }*/
 
     fn take_snapshot(&mut self) {
         if SHOW_MAPGEN_VISUALIZER {

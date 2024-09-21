@@ -1,6 +1,9 @@
+#![allow(unused_imports)]
+
 use super::{spawner, Map, Position, Rect, TileType, SHOW_MAPGEN_VISUALIZER};
-//use rltk::RandomNumberGenerator;
+
 mod simple_map;
+
 use simple_map::SimpleMapBuilder;
 mod rubble_map;
 use rubble_map::RubbleMapBuilder;
@@ -20,24 +23,32 @@ mod voronoi;
 use voronoi::VoronoiCellBuilder;
 mod waveform_collapse;
 use waveform_collapse::WaveformCollapseBuilder;
+mod prefab_builder;
+use prefab_builder::{PrefabBuilder, PrefabMode};
 mod common;
 use common::*;
 use specs::prelude::*;
 
 pub trait MapBuilder {
     fn build_map(&mut self);
-    fn spawn_entities(&mut self, ecs: &mut World);
     fn get_map(&self) -> Map;
     fn get_starting_position(&self) -> Position;
     fn get_snapshot_history(&self) -> Vec<Map>;
     fn take_snapshot(&mut self);
+    fn get_spawn_list(&self) -> &Vec<(usize, String)>;
+
+    fn spawn_entities(&mut self, ecs: &mut World) {
+        for entity in self.get_spawn_list().iter() {
+            spawner::spawn_entity(ecs, &(&entity.0, &entity.1));
+        }
+    }
 }
 
 #[allow(clippy::identity_op)]
 pub fn random_builder(new_depth: i32) -> Box<dyn MapBuilder> {
     let mut rng = rltk::RandomNumberGenerator::new();
     let mut result: Box<dyn MapBuilder>;
-    let builder = rng.roll_dice(1, 19);
+    let builder = rng.roll_dice(1, 18);
 
     match builder {
         1 => result = Box::new(BspDungeonBuilder::new(new_depth)),
@@ -57,14 +68,23 @@ pub fn random_builder(new_depth: i32) -> Box<dyn MapBuilder> {
         15 => result = Box::new(VoronoiCellBuilder::new(new_depth)),
         16 => result = Box::new(VoronoiCellBuilder::manhattan(new_depth)),
         17 => result = Box::new(VoronoiCellBuilder::pythagoras(new_depth)),
-        18 => result = Box::new(WaveformCollapseBuilder::test_map(new_depth)),
+        18 => {
+            result = Box::new(PrefabBuilder::new(
+                new_depth,
+                Some(Box::new(CellularAutomataBuilder::new(new_depth))),
+            ))
+        }
         _ => result = Box::new(SimpleMapBuilder::new(new_depth)),
     }
     if rng.roll_dice(1, 3) == 1 {
         result = Box::new(WaveformCollapseBuilder::derived_map(new_depth, result));
     }
-
     result
+
+    // Box::new(PrefabBuilder::new(
+    //     new_depth,
+    //     Some(Box::new(CellularAutomataBuilder::new(new_depth))),
+    // ))
 }
 
 //Box::new(SimpleMapBuilder::new(new_depth))
