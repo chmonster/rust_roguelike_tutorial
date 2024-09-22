@@ -201,7 +201,7 @@ fn monster<S: ToString>(
             max_hp: 16,
             hp: 16,
             defense: 1 + level / 2,
-            power: 4 + level,
+            power: 4 + level / 2,
         })
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
