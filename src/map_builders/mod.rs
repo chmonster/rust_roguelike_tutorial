@@ -46,8 +46,8 @@ pub trait MapBuilder {
 
 pub fn random_builder(new_depth: i32) -> Box<dyn MapBuilder> {
     let mut rng = rltk::RandomNumberGenerator::new();
-    //let builder = rng.roll_dice(1, 18) - 1;
-    let builder = 16;
+    let builder = rng.roll_dice(1, 18) - 1;
+    //let builder = 16;
     let mut result: Box<dyn MapBuilder>;
     match builder {
         0 => result = Box::new(RubbleMapBuilder::new(new_depth)),
@@ -111,8 +111,8 @@ pub fn random_builder(new_depth: i32) -> Box<dyn MapBuilder> {
         result = Box::new(WaveformCollapseBuilder::derived_map(new_depth, result));
     }
 
-    //if rng.roll_dice(1, 20) == 1 {
-    if true {
+    if rng.roll_dice(1, 10) == 1 {
+        //if true {
         result = Box::new(PrefabBuilder::sectional(
             new_depth,
             prefab_builder::prefab_sections::UNDERGROUND_FORT,
