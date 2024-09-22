@@ -1,6 +1,6 @@
 #![allow(unused_imports)]
 
-use super::{spawner, Map, Position, Rect, TileType, SHOW_MAPGEN_VISUALIZER};
+use super::{spawner, Map, Position, Rect, TileType, MAPHEIGHT, MAPWIDTH, SHOW_MAPGEN_VISUALIZER};
 
 mod simple_map;
 
@@ -44,43 +44,10 @@ pub trait MapBuilder {
     }
 }
 
-/*
-let mut rng = rltk::RandomNumberGenerator::new();
-let mut result: Box<dyn MapBuilder>;
-let builder = rng.roll_dice(1, 17);
-
-match builder {
-    1 => result = Box::new(BspDungeonBuilder::new(new_depth)),
-    2 => result = Box::new(BspInteriorBuilder::new(new_depth)),
-    3 => result = Box::new(CellularAutomataBuilder::new(new_depth)),
-    4 => result = Box::new(DrunkardsWalkBuilder::open_area(new_depth)),
-    5 => result = Box::new(DrunkardsWalkBuilder::open_halls(new_depth)),
-    6 => result = Box::new(DrunkardsWalkBuilder::winding_passages(new_depth)),
-    7 => result = Box::new(DrunkardsWalkBuilder::fat_passages(new_depth)),
-    8 => result = Box::new(DrunkardsWalkBuilder::fearful_symmetry(new_depth)),
-    9 => result = Box::new(MazeBuilder::new(new_depth)),
-    10 => result = Box::new(DLABuilder::walk_inwards(new_depth)),
-    11 => result = Box::new(DLABuilder::walk_outwards(new_depth)),
-    12 => result = Box::new(DLABuilder::central_attractor(new_depth)),
-    13 => result = Box::new(DLABuilder::insectoid(new_depth)),
-    14 => result = Box::new(RubbleMapBuilder::new(new_depth)),
-    15 => result = Box::new(VoronoiCellBuilder::new(new_depth)),
-    16 => result = Box::new(VoronoiCellBuilder::manhattan(new_depth)),
-    17 => result = Box::new(VoronoiCellBuilder::pythagoras(new_depth)),
-    _ => result = Box::new(SimpleMapBuilder::new(new_depth)),
-}
-let mutator = rng.roll_dice(1, 4);
-if mutator == 1 {
-    result = Box::new(WaveformCollapseBuilder::derived_map(new_depth, result));
-} else if mutator == 4 {
-    result = Box::new(PrefabBuilder::new(new_depth, Some(result)))
-}
-result
-*/
-
 pub fn random_builder(new_depth: i32) -> Box<dyn MapBuilder> {
     let mut rng = rltk::RandomNumberGenerator::new();
-    let builder = rng.roll_dice(1, 18) - 1;
+    //let builder = rng.roll_dice(1, 18) - 1;
+    let builder = 16;
     let mut result: Box<dyn MapBuilder>;
     match builder {
         0 => result = Box::new(RubbleMapBuilder::new(new_depth)),

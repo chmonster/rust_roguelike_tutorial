@@ -44,6 +44,9 @@ pub mod saveload_system;
 mod spawner;
 pub mod trigger_system;
 
+pub const SCREENWIDTH: u32 = 80;
+pub const SCREENHEIGHT: u32 = 60;
+
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
     AwaitingInput,
@@ -235,6 +238,11 @@ impl State {
             let player_entity = spawner::player(&mut self.ecs, 0, 0);
             let mut player_entity_writer = self.ecs.write_resource::<Entity>();
             *player_entity_writer = player_entity;
+            let mut gamelog = self.ecs.fetch_mut::<gamelog::GameLog>();
+            gamelog.entries.clear();
+            gamelog
+                .entries
+                .push("Welcome back to Rusty Roguelike".to_string());
         }
 
         // Build a new map and place the player
@@ -492,7 +500,8 @@ impl GameState for State {
 
 fn main() -> rltk::BError {
     use rltk::RltkBuilder;
-    let mut context = RltkBuilder::simple80x50()
+    let mut context = RltkBuilder::simple(SCREENWIDTH, SCREENHEIGHT)
+        .unwrap()
         .with_title("Roguelike Tutorial")
         .build()?;
     context.with_post_scanlines(true);

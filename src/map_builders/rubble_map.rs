@@ -1,10 +1,11 @@
 use super::{
-    apply_room_to_map, spawner, Map, MapBuilder, Position, Rect, TileType, SHOW_MAPGEN_VISUALIZER,
+    apply_room_to_map, spawner, Map, MapBuilder, Position, Rect, TileType, MAPHEIGHT, MAPWIDTH,
+    SHOW_MAPGEN_VISUALIZER,
 };
 use rltk::{/*console,*/ RandomNumberGenerator};
 use specs::prelude::*;
 
-pub const RUBBLE: usize = 80 * 43 / 3;
+pub const RUBBLE: usize = MAPHEIGHT * MAPWIDTH / 3;
 pub const TOP_STAIRS: usize = 25;
 
 pub struct RubbleMapBuilder {

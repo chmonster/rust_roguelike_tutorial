@@ -1,17 +1,15 @@
 #![allow(unused)]
 
-use super::Rect;
+use super::{gui::LOGHEIGHT, Rect, SCREENHEIGHT, SCREENWIDTH};
 use rltk::{console, Algorithm2D, BaseMap, Point, RandomNumberGenerator, Rltk, RGB};
 use serde::{Deserialize, Serialize};
 use specs::prelude::*;
 use std::cmp::{max, min};
 use std::collections::HashSet;
 
-pub const MAPWIDTH: usize = 80;
-pub const MAPHEIGHT: usize = 43;
+pub const MAPWIDTH: usize = SCREENWIDTH as usize;
+pub const MAPHEIGHT: usize = SCREENHEIGHT as usize - LOGHEIGHT - 1;
 pub const MAPCOUNT: usize = MAPHEIGHT * MAPWIDTH;
-// pub const RUBBLE: usize = MAPCOUNT / 3;
-// pub const TOP_STAIRS: usize = 25;
 
 #[derive(PartialEq, Eq, Hash, Copy, Clone, Serialize, Deserialize)]
 pub enum TileType {

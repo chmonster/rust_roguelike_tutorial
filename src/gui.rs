@@ -2,10 +2,14 @@
 
 use super::{
     CombatStats, Equipped, GameLog, Hidden, HungerClock, HungerState, InBackpack, Map, Name,
-    Player, Position, RexAssets, RunState, State, Viewshed,
+    Player, Position, RexAssets, RunState, State, Viewshed, MAPHEIGHT, MAPWIDTH, SCREENHEIGHT,
+    SCREENWIDTH,
 };
 use rltk::{console, Point, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
+use std::cmp::max;
+
+pub const LOGHEIGHT: usize = 7;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum MainMenuSelection {
@@ -23,9 +27,9 @@ pub enum MainMenuResult {
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     ctx.draw_box(
         0,
-        43,
-        79,
-        6,
+        MAPHEIGHT,
+        MAPWIDTH - 1,
+        LOGHEIGHT,
         RGB::named(rltk::WHITE),
         RGB::named(rltk::BLACK),
     );
@@ -38,7 +42,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         let health = format!(" HP: {} / {} ", stats.hp, stats.max_hp);
         ctx.print_color(
             12,
-            43,
+            MAPWIDTH,
             RGB::named(rltk::YELLOW),
             RGB::named(rltk::BLACK),
             &health,
@@ -46,8 +50,8 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
 
         ctx.draw_bar_horizontal(
             28,
-            43,
-            51,
+            MAPHEIGHT,
+            MAPWIDTH - 29,
             stats.hp,
             stats.max_hp,
             RGB::named(rltk::RED),
@@ -55,23 +59,23 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         );
         match hc.state {
             HungerState::WellFed => ctx.print_color(
-                71,
-                42,
+                MAPWIDTH - 9,
+                MAPHEIGHT - 1,
                 RGB::named(rltk::GREEN),
                 RGB::named(rltk::BLACK),
                 "Well Fed",
             ),
             HungerState::Normal => {}
             HungerState::Hungry => ctx.print_color(
-                71,
-                42,
+                MAPWIDTH - 9,
+                MAPHEIGHT - 1,
                 RGB::named(rltk::ORANGE),
                 RGB::named(rltk::BLACK),
                 "Hungry",
             ),
             HungerState::Starving => ctx.print_color(
-                71,
-                42,
+                MAPWIDTH - 9,
+                MAPHEIGHT - 1,
                 RGB::named(rltk::RED),
                 RGB::named(rltk::BLACK),
                 "Starving",
@@ -80,9 +84,9 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
 
         let log = ecs.fetch::<GameLog>();
 
-        let mut y = 48;
+        let mut y: i32 = SCREENHEIGHT as i32 - 2;
         for s in log.entries.iter().rev() {
-            if y > 43 {
+            if y > MAPHEIGHT as i32 {
                 ctx.print(2, y, s);
             }
             y -= 1;
@@ -94,7 +98,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let depth = format!("Depth: {}", map.depth);
     ctx.print_color(
         2,
-        43,
+        MAPHEIGHT,
         RGB::named(rltk::YELLOW),
         RGB::named(rltk::BLACK),
         &depth,
@@ -545,30 +549,48 @@ pub enum GameOverResult {
 }
 
 pub fn game_over(ctx: &mut Rltk) -> GameOverResult {
+    let line1 = "Your journey has ended!";
+    let line2 = "One day, we'll tell you all about how you did.";
+    let line3 = "That day, sadly, is not in this chapter...";
+    let line4 = "Press any key to return to the menu.";
+
+    let menu_width = 4 + max(line1.len(), max(line2.len(), max(line3.len(), line4.len())));
+    let menu_height = 10;
+    let x_offset = (SCREENWIDTH as usize - menu_width) / 2;
+    let y_offset = (SCREENHEIGHT as usize - menu_height) / 2;
+
+    ctx.draw_box_double(
+        x_offset,
+        y_offset,
+        menu_width,
+        10,
+        RGB::named(rltk::WHEAT),
+        RGB::named(rltk::BLACK),
+    );
     ctx.print_color_centered(
-        15,
+        y_offset + 2,
         RGB::named(rltk::YELLOW),
         RGB::named(rltk::BLACK),
-        "Your journey has ended!",
+        line1,
     );
     ctx.print_color_centered(
-        17,
+        y_offset + 4,
         RGB::named(rltk::WHITE),
         RGB::named(rltk::BLACK),
-        "One day, we'll tell you all about how you did.",
+        line2,
     );
     ctx.print_color_centered(
-        18,
+        y_offset + 5,
         RGB::named(rltk::WHITE),
         RGB::named(rltk::BLACK),
-        "That day, sadly, is not in this chapter..",
+        line3,
     );
 
     ctx.print_color_centered(
-        20,
+        y_offset + 7,
         RGB::named(rltk::MAGENTA),
         RGB::named(rltk::BLACK),
-        "Press any key to return to the menu.",
+        line4,
     );
 
     match ctx.key {

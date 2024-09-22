@@ -2,7 +2,7 @@
 #![allow(unused_variables)]
 use super::{
     remove_unreachable_areas_returning_most_distant, spawner, Map, MapBuilder, Position, TileType,
-    SHOW_MAPGEN_VISUALIZER,
+    MAPHEIGHT, MAPWIDTH, SHOW_MAPGEN_VISUALIZER,
 };
 use rltk::{console, RandomNumberGenerator};
 use specs::prelude::*;
@@ -137,6 +137,10 @@ impl PrefabBuilder {
         }
     }
 
+    fn local_xy_idx(&self, x: i32, y: i32, width: i32) -> usize {
+        (y as usize * width as usize) + x as usize
+    }
+
     fn char_to_map(&mut self, ch: char, idx: usize) {
         match ch {
             ' ' => self.map.tiles[idx] = TileType::Floor,
@@ -198,7 +202,7 @@ impl PrefabBuilder {
             for y in 0..layer.height {
                 for x in 0..layer.width {
                     let cell = layer.get(x, y).unwrap();
-                    if x < self.map.width as usize && y < self.map.height as usize {
+                    if x < layer.width && y < layer.height {
                         let idx = self.map.xy_idx(x as i32, y as i32);
                         // We're doing some nasty casting to make it easier to type things like '#' in the match
                         self.char_to_map(cell.ch as u8 as char, idx);
@@ -215,7 +219,7 @@ impl PrefabBuilder {
         let mut i = 0;
         for ty in 0..level.height {
             for tx in 0..level.width {
-                if tx < self.map.width as usize && ty < self.map.height as usize {
+                if tx < level.width && ty < level.height {
                     let idx = self.map.xy_idx(tx as i32, ty as i32);
                     self.char_to_map(string_vec[i], idx);
                 }
