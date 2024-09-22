@@ -29,10 +29,6 @@ impl MapBuilder for RubbleMapBuilder {
         self.rubble_map();
     }
 
-    // fn spawn_entities(&mut self, ecs: &mut World) {
-    //     //console::log("spawn_entities");
-    //     spawner::spawn_room(ecs, &self.room, self.depth);
-    // }
     fn get_spawn_list(&self) -> &Vec<(usize, String)> {
         &self.spawn_list
     }

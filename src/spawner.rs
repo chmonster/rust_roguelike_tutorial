@@ -68,49 +68,6 @@ fn room_table(map_depth: i32) -> RandomTable {
         .add("Bear Trap", 10)
 }
 
-fn orc(ecs: &mut World, x: i32, y: i32, map_depth: i32) {
-    monster(ecs, x, y, rltk::to_cp437('o'), "Orc", map_depth + 1);
-}
-fn goblin(ecs: &mut World, x: i32, y: i32, map_depth: i32) {
-    monster(ecs, x, y, rltk::to_cp437('g'), "Goblin", map_depth - 1);
-}
-
-fn monster<S: ToString>(
-    ecs: &mut World,
-    x: i32,
-    y: i32,
-    glyph: rltk::FontCharType,
-    name: S,
-    level: i32,
-) {
-    ecs.create_entity()
-        .with(Position { x, y })
-        .with(Renderable {
-            glyph,
-            fg: RGB::named(rltk::RED),
-            bg: RGB::named(rltk::BLACK),
-            render_order: 1,
-        })
-        .with(Viewshed {
-            visible_tiles: Vec::new(),
-            range: 8,
-            dirty: true,
-        })
-        .with(Monster {})
-        .with(Name {
-            name: name.to_string(),
-        })
-        .with(BlocksTile {})
-        .with(CombatStats {
-            max_hp: 16,
-            hp: 16,
-            defense: 1 + level / 2,
-            power: 4 + level,
-        })
-        .marked::<SimpleMarker<SerializeMe>>()
-        .build();
-}
-
 #[allow(clippy::map_entry)]
 pub fn spawn_room(
     map: &Map,
@@ -181,7 +138,7 @@ pub fn spawn_region(
 }
 
 /// Spawns a named entity (name in tuple.1) at the location in (tuple.0)
-pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String)) {
+pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String), map_depth: i32) {
     let x = (*spawn.0 % MAPWIDTH) as i32;
     let y = (*spawn.0 / MAPWIDTH) as i32;
 
@@ -189,8 +146,8 @@ pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String)) {
     //let map_depth = map.depth;
 
     match spawn.1.as_ref() {
-        "Goblin" => goblin(ecs, x, y, 1),
-        "Orc" => orc(ecs, x, y, 1),
+        "Goblin" => goblin(ecs, x, y, map_depth),
+        "Orc" => orc(ecs, x, y, map_depth),
         "Health Potion" => health_potion(ecs, x, y),
         "Fireball Scroll" => fireball_scroll(ecs, x, y),
         "Confusion Scroll" => confusion_scroll(ecs, x, y),
@@ -206,6 +163,51 @@ pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String)) {
     }
 }
 
+//////////////////////monsters////////////////////////
+fn orc(ecs: &mut World, x: i32, y: i32, map_depth: i32) {
+    monster(ecs, x, y, rltk::to_cp437('o'), "Orc", map_depth + 1);
+}
+fn goblin(ecs: &mut World, x: i32, y: i32, map_depth: i32) {
+    monster(ecs, x, y, rltk::to_cp437('g'), "Goblin", map_depth - 1);
+}
+
+fn monster<S: ToString>(
+    ecs: &mut World,
+    x: i32,
+    y: i32,
+    glyph: rltk::FontCharType,
+    name: S,
+    level: i32,
+) {
+    ecs.create_entity()
+        .with(Position { x, y })
+        .with(Renderable {
+            glyph,
+            fg: RGB::named(rltk::RED),
+            bg: RGB::named(rltk::BLACK),
+            render_order: 1,
+        })
+        .with(Viewshed {
+            visible_tiles: Vec::new(),
+            range: 8,
+            dirty: true,
+        })
+        .with(Monster {})
+        .with(Name {
+            name: name.to_string(),
+        })
+        .with(BlocksTile {})
+        .with(CombatStats {
+            max_hp: 16,
+            hp: 16,
+            defense: 1 + level / 2,
+            power: 4 + level,
+        })
+        .marked::<SimpleMarker<SerializeMe>>()
+        .build();
+}
+
+/////////////////////////items/////////////////////////////////
 fn health_potion(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Position { x, y })
@@ -408,6 +410,7 @@ fn magic_mapping_scroll(ecs: &mut World, x: i32, y: i32) {
         .build();
 }
 
+////////////////////features//////////////////
 fn bear_trap(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Position { x, y })
@@ -427,3 +430,4 @@ fn bear_trap(ecs: &mut World, x: i32, y: i32) {
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }
+////////////////////////////////////////////////////////////////////////

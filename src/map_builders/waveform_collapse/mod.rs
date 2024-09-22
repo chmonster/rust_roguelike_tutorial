@@ -49,12 +49,6 @@ impl MapBuilder for WaveformCollapseBuilder {
         self.build();
     }
 
-    // fn spawn_entities(&mut self, ecs: &mut World) {
-    //     for area in self.noise_areas.iter() {
-    //         spawner::spawn_region(ecs, area.1, self.depth);
-    //     }
-    //
-
     fn get_spawn_list(&self) -> &Vec<(usize, String)> {
         &self.spawn_list
     }

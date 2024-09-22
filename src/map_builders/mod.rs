@@ -37,15 +37,16 @@ pub trait MapBuilder {
     fn take_snapshot(&mut self);
     fn get_spawn_list(&self) -> &Vec<(usize, String)>;
 
-    fn spawn_entities(&mut self, ecs: &mut World) {
+    fn spawn_entities(&mut self, ecs: &mut World, depth: i32) {
         for entity in self.get_spawn_list().iter() {
-            spawner::spawn_entity(ecs, &(&entity.0, &entity.1));
+            spawner::spawn_entity(ecs, &(&entity.0, &entity.1), depth);
         }
     }
 }
 
 #[allow(clippy::identity_op)]
 pub fn random_builder(new_depth: i32) -> Box<dyn MapBuilder> {
+    /*
     let mut rng = rltk::RandomNumberGenerator::new();
     let mut result: Box<dyn MapBuilder>;
     let builder = rng.roll_dice(1, 17);
@@ -77,11 +78,11 @@ pub fn random_builder(new_depth: i32) -> Box<dyn MapBuilder> {
         result = Box::new(PrefabBuilder::new(new_depth, Some(result)))
     }
     result
-
-    // Box::new(PrefabBuilder::new(
-    //     new_depth,
-    //     Some(Box::new(CellularAutomataBuilder::new(new_depth))),
-    // ))
+    */
+    Box::new(PrefabBuilder::new(
+        new_depth,
+        Some(Box::new(SimpleMapBuilder::new(new_depth))),
+    ))
 }
 
 //Box::new(SimpleMapBuilder::new(new_depth))

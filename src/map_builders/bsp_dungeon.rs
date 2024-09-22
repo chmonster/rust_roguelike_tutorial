@@ -215,12 +215,6 @@ impl MapBuilder for BspDungeonBuilder {
         &self.spawn_list
     }
 
-    // fn spawn_entities(&mut self, ecs: &mut World) {
-    //     for room in self.rooms.iter().skip(1) {
-    //         spawner::spawn_room(ecs, room, self.depth);
-    //     }
-    // }
-
     fn take_snapshot(&mut self) {
         if SHOW_MAPGEN_VISUALIZER {
             let mut snapshot = self.map.clone();

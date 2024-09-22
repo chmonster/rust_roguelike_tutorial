@@ -217,11 +217,6 @@ impl MapBuilder for MazeBuilder {
     fn get_spawn_list(&self) -> &Vec<(usize, String)> {
         &self.spawn_list
     }
-    /*fn spawn_entities(&mut self, ecs: &mut World) {
-        for area in self.noise_areas.iter() {
-            spawner::spawn_region(ecs, area.1, self.depth);
-        }
-    }*/
 
     fn take_snapshot(&mut self) {
         if SHOW_MAPGEN_VISUALIZER {

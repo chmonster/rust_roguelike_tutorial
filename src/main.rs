@@ -126,7 +126,7 @@ impl State {
         }
 
         // Spawn bad guys
-        builder.spawn_entities(&mut self.ecs);
+        builder.spawn_entities(&mut self.ecs, new_depth);
 
         // Place the player and update resources
         let (player_x, player_y) = (player_start.x, player_start.y);
