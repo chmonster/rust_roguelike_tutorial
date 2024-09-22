@@ -133,15 +133,15 @@ impl WaveformCollapseBuilder {
             x: self.map.width / 2,
             y: self.map.height / 2,
         };
-        let /*mut*/ start_idx = self
+        let mut start_idx = self
             .map
             .xy_idx(self.starting_position.x, self.starting_position.y);
-        /*while self.map.tiles[start_idx] != TileType::Floor {
+        while self.map.tiles[start_idx] != TileType::Floor {
             self.starting_position.x -= 1;
             start_idx = self
                 .map
                 .xy_idx(self.starting_position.x, self.starting_position.y);
-        }*/
+        }
         self.take_snapshot();
 
         // Find all tiles we can reach from the starting point
