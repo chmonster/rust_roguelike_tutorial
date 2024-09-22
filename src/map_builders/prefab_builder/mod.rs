@@ -199,6 +199,7 @@ impl PrefabBuilder {
         let xp_file = rltk::rex::XpFile::from_resource(path).unwrap();
 
         for layer in &xp_file.layers {
+            assert_eq!(layer.width * layer.height, layer.cells.len());
             for y in 0..layer.height {
                 for x in 0..layer.width {
                     let cell = layer.get(x, y).unwrap();
@@ -215,7 +216,7 @@ impl PrefabBuilder {
     #[allow(dead_code)]
     fn load_ascii_map(&mut self, level: &prefab_levels::PrefabLevel) {
         let string_vec = PrefabBuilder::read_ascii_to_vec(level.template);
-
+        assert_eq!(level.width * level.height, string_vec.len());
         let mut i = 0;
         for ty in 0..level.height {
             for tx in 0..level.width {
@@ -252,6 +253,7 @@ impl PrefabBuilder {
         use prefab_sections::*;
 
         let string_vec = PrefabBuilder::read_ascii_to_vec(section.template);
+        assert_eq!(section.width * section.height, string_vec.len());
 
         // Place the new section
         let chunk_x = match section.placement.0 {
@@ -391,6 +393,7 @@ impl PrefabBuilder {
                 });
 
                 let string_vec = PrefabBuilder::read_ascii_to_vec(vault.template);
+                assert_eq!(vault.width * vault.height, string_vec.len());
                 let mut i = 0;
                 for ty in 0..vault.height {
                     for tx in 0..vault.width {

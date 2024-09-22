@@ -32,24 +32,9 @@ pub const UNDERGROUND_FORT: PrefabSection = PrefabSection {
 };
 
 #[allow(dead_code)]
-/*
-const RIGHT_FORT: &str = "
-######
-## ###
-^
-^
-## ###
-## ###
-^
-^
-## ###
-######
-";
- */
 
 // The padding needs to be here!
 
-/* */
 const RIGHT_FORT: &str = "
      #         
   #######      
@@ -95,5 +80,3 @@ const RIGHT_FORT: &str = "
   #######      
      #         
 ";
-
-/* */

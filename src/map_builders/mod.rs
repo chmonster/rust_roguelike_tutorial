@@ -111,7 +111,8 @@ pub fn random_builder(new_depth: i32) -> Box<dyn MapBuilder> {
         result = Box::new(WaveformCollapseBuilder::derived_map(new_depth, result));
     }
 
-    if rng.roll_dice(1, 20) == 1 {
+    //if rng.roll_dice(1, 20) == 1 {
+    if true {
         result = Box::new(PrefabBuilder::sectional(
             new_depth,
             prefab_builder::prefab_sections::UNDERGROUND_FORT,

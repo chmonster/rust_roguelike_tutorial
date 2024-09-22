@@ -25,6 +25,7 @@ const TOTALLY_NOT_A_TRAP_MAP: &str = "
  ^^^ 
      
 ";
+//assert!(TOTALLY_NOT_A_TRAP_MAP.len() == TOTALLY_NOT_A_TRAP.width * TOTALLY_NOT_A_TRAP.height);
 
 #[allow(dead_code)]
 pub const SILLY_SMILE: PrefabRoom = PrefabRoom {
@@ -44,6 +45,7 @@ const SILLY_SMILE_MAP: &str = "
  ###  
       
 ";
+//assert!(SILLY_SMILE_MAP_MAP.len() == SILLY_SMILE.width * SILLY_SMILE.height);
 
 #[allow(dead_code)]
 pub const CHECKERBOARD: PrefabRoom = PrefabRoom {
@@ -62,3 +64,4 @@ const CHECKERBOARD_MAP: &str = "
  ^# # 
       
 ";
+//assert!(CHECKERBOARD_MAP.len() == CHECKERBOARD.width * CHECKERBOARD.height);
