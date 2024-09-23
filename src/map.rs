@@ -215,7 +215,7 @@ fn wall_glyph(map: &Map, x: i32, y: i32) -> rltk::FontCharType {
     }
 
     match mask {
-        0 => 9,    // Pillar because we can't see neighbors
+        0 => 35,   // Pillar because we can't see neighbors
         1 => 186,  // Wall only to the north
         2 => 186,  // Wall only to the south
         3 => 186,  // Wall to the north and south

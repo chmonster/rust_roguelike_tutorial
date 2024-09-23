@@ -42,7 +42,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         let health = format!(" HP: {} / {} ", stats.hp, stats.max_hp);
         ctx.print_color(
             12,
-            MAPWIDTH,
+            MAPHEIGHT,
             RGB::named(rltk::YELLOW),
             RGB::named(rltk::BLACK),
             &health,
@@ -554,16 +554,17 @@ pub fn game_over(ctx: &mut Rltk) -> GameOverResult {
     let line3 = "That day, sadly, is not in this chapter...";
     let line4 = "Press any key to return to the menu.";
 
-    let menu_width = 4 + max(line1.len(), max(line2.len(), max(line3.len(), line4.len())));
+    let text_width = max(line1.len(), max(line2.len(), max(line3.len(), line4.len())));
+    let menu_width = 4 + text_width + text_width % 2;
     let menu_height = 10;
     let x_offset = (SCREENWIDTH as usize - menu_width) / 2;
     let y_offset = (SCREENHEIGHT as usize - menu_height) / 2;
 
     ctx.draw_box_double(
-        x_offset,
+        x_offset - 1,
         y_offset,
         menu_width,
-        10,
+        menu_height,
         RGB::named(rltk::WHEAT),
         RGB::named(rltk::BLACK),
     );
@@ -606,14 +607,30 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
     let assets = gs.ecs.fetch::<RexAssets>();
     ctx.render_xp_sprite(&assets.menu, 0, 0);
 
-    let x_offset = 23;
-    let y_offset = 34;
+    let line1 = "Rust Roguelike Tutorial";
+    let line2 = "by chmonster";
+    let line3 = "Use Up/Down Arrows and Enter";
+    let line4 = "Begin New Game";
+    let line5 = "Load Game";
+    let line6 = "Quit";
+
+    let menu_height = 10;
+    let line_width = max(
+        line1.len(),
+        max(
+            line2.len(),
+            max(line3.len(), max(line4.len(), max(line5.len(), line6.len()))),
+        ),
+    );
+    let menu_width = 4 + line_width + line_width % 2;
+    let x_offset = (SCREENWIDTH as usize - menu_width) / 2;
+    let y_offset = SCREENHEIGHT - menu_height - 2;
 
     ctx.draw_box_double(
-        x_offset,
+        x_offset - 1,
         y_offset,
-        32,
-        10,
+        menu_width,
+        menu_height,
         RGB::named(rltk::WHEAT),
         RGB::named(rltk::BLACK),
     );
@@ -621,19 +638,19 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
         y_offset + 2,
         RGB::named(rltk::YELLOW),
         RGB::named(rltk::BLACK),
-        "Rust Roguelike Tutorial",
+        line1,
     );
     ctx.print_color_centered(
         y_offset + 3,
         RGB::named(rltk::CYAN),
         RGB::named(rltk::BLACK),
-        "by chmonster",
+        line2,
     );
     ctx.print_color_centered(
         y_offset + 4,
         RGB::named(rltk::GRAY),
         RGB::named(rltk::BLACK),
-        "Use Up/Down Arrows and Enter",
+        line3,
     );
 
     let mut y = y_offset + 6;
@@ -642,19 +659,9 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
     } = *runstate
     {
         if selection == MainMenuSelection::NewGame {
-            ctx.print_color_centered(
-                y,
-                RGB::named(rltk::MAGENTA),
-                RGB::named(rltk::BLACK),
-                "Begin New Game",
-            );
+            ctx.print_color_centered(y, RGB::named(rltk::MAGENTA), RGB::named(rltk::BLACK), line4);
         } else {
-            ctx.print_color_centered(
-                y,
-                RGB::named(rltk::WHITE),
-                RGB::named(rltk::BLACK),
-                "Begin New Game",
-            );
+            ctx.print_color_centered(y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), line4);
         }
         y += 1;
 
@@ -664,28 +671,23 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
                     y,
                     RGB::named(rltk::MAGENTA),
                     RGB::named(rltk::BLACK),
-                    "Load Game",
+                    line5,
                 );
             } else {
                 ctx.print_color_centered(
                     y,
                     RGB::named(rltk::WHITE),
                     RGB::named(rltk::BLACK),
-                    "Load Game",
+                    line5,
                 );
             }
             y += 1;
         }
 
         if selection == MainMenuSelection::Quit {
-            ctx.print_color_centered(
-                y,
-                RGB::named(rltk::MAGENTA),
-                RGB::named(rltk::BLACK),
-                "Quit",
-            );
+            ctx.print_color_centered(y, RGB::named(rltk::MAGENTA), RGB::named(rltk::BLACK), line6);
         } else {
-            ctx.print_color_centered(y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), "Quit");
+            ctx.print_color_centered(y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), line6);
         }
 
         match ctx.key {
