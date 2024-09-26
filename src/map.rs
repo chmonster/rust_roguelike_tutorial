@@ -11,7 +11,7 @@ pub const MAPWIDTH: usize = SCREENWIDTH as usize;
 pub const MAPHEIGHT: usize = SCREENHEIGHT as usize - LOGHEIGHT - 1;
 pub const MAPCOUNT: usize = MAPHEIGHT * MAPWIDTH;
 
-#[derive(PartialEq, Eq, Hash, Copy, Clone, Serialize, Deserialize)]
+#[derive(PartialEq, Eq, Hash, Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum TileType {
     Wall,
     Floor,
@@ -38,6 +38,10 @@ pub struct Map {
 impl Map {
     pub fn xy_idx(&self, x: i32, y: i32) -> usize {
         (y as usize * self.width as usize) + x as usize
+    }
+
+    pub fn idx_xy(&self, idx: usize) -> (i32, i32) {
+        (idx as i32 % self.width, idx as i32 / self.width)
     }
 
     fn is_exit_valid(&self, x: i32, y: i32) -> bool {

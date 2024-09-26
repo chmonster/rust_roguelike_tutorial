@@ -126,6 +126,8 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
         let idx = map.xy_idx(position.x, position.y);
         if position.x == mouse_pos.0 && position.y == mouse_pos.1 && map.visible_tiles[idx] {
             tooltip.push(name.name.to_string());
+            //debug
+            tooltip.push(format!(" {} {}", position.x, position.y));
         }
     }
 

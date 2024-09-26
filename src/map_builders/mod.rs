@@ -129,8 +129,8 @@ impl BuilderChain {
 fn random_initial_builder(
     rng: &mut rltk::RandomNumberGenerator,
 ) -> (Box<dyn InitialMapBuilder>, bool) {
-    let builder = rng.roll_dice(1, 18) - 1;
-    //let builder = 17; //test
+    //let builder = rng.roll_dice(1, 18) - 1;
+    let builder = 15; //test
     let result: (Box<dyn InitialMapBuilder>, bool) = match builder {
         0 => (RubbleMapBuilder::new(), true),
         1 => (BspDungeonBuilder::new(), true),
@@ -161,6 +161,15 @@ pub fn random_builder(new_depth: i32, rng: &mut rltk::RandomNumberGenerator) -> 
     let mut builder = BuilderChain::new(new_depth);
     let (random_starter, has_rooms) = random_initial_builder(rng);
     builder.start_with(random_starter);
+
+    if rng.roll_dice(1, 1) == 1 {
+        builder.with(CellularAutomataBuilder::new());
+    }
+
+    if rng.roll_dice(1, 5) == 1 {
+        builder.with(WaveformCollapseBuilder::new());
+    }
+
     if has_rooms {
         builder.with(RoomBasedSpawner::new());
         builder.with(RoomBasedStairs::new());
@@ -170,10 +179,6 @@ pub fn random_builder(new_depth: i32, rng: &mut rltk::RandomNumberGenerator) -> 
         builder.with(CullUnreachable::new());
         builder.with(VoronoiSpawning::new());
         builder.with(DistantExit::new());
-    }
-
-    if rng.roll_dice(1, 3) == 1 {
-        builder.with(WaveformCollapseBuilder::new());
     }
 
     if rng.roll_dice(1, 20) == 1 {

@@ -11,45 +11,9 @@ use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
 use std::collections::HashMap;
 
-const MAX_MONSTERS: i32 = 4;
+const BASE_SPAWN_NUMBER: i32 = 4;
 const MAX_ITEMS: i32 = 4;
 const AVG_ROOM_SIZE: i32 = 8 * 8;
-
-/// Spawns the player and returns his/her entity object.
-pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
-    ecs.create_entity()
-        .with(Position {
-            x: player_x,
-            y: player_y,
-        })
-        .with(Renderable {
-            glyph: rltk::to_cp437('@'),
-            fg: RGB::named(rltk::YELLOW),
-            bg: RGB::named(rltk::BLACK),
-            render_order: 0,
-        })
-        .with(Player {})
-        .with(Viewshed {
-            visible_tiles: Vec::new(),
-            range: 8,
-            dirty: true,
-        })
-        .with(Name {
-            name: "Player".to_string(),
-        })
-        .with(CombatStats {
-            max_hp: 30,
-            hp: 30,
-            defense: 2,
-            power: 5,
-        })
-        .with(HungerClock {
-            state: HungerState::WellFed,
-            duration: 20,
-        })
-        .marked::<SimpleMarker<SerializeMe>>()
-        .build()
-}
 
 fn room_table(map_depth: i32) -> RandomTable {
     RandomTable::new()
@@ -103,31 +67,36 @@ pub fn spawn_region(
     let spawn_table = room_table(map_depth);
     let mut spawn_points: HashMap<usize, String> = HashMap::new();
     let mut areas: Vec<usize> = Vec::from(area);
-    //console::log("spawn_region");
-    //console::log(format!("areas: {}", areas.len()));
 
     // Scope to keep the borrow checker happy
     {
         ///let mut rng = ecs.write_resource::<RandomNumberGenerator>();
         let num_spawns = i32::min(
             areas.len() as i32,
-            (rng.roll_dice(1, MAX_MONSTERS + 3) + (map_depth - 1) - 3) * (areas.len() as i32)
+            (rng.roll_dice(1, BASE_SPAWN_NUMBER + 3) + (map_depth - 1) - 3) * (areas.len() as i32)
                 / AVG_ROOM_SIZE,
         );
         if num_spawns == 0 {
             return;
         }
 
-        for i in 0..num_spawns {
+        for _i in 0..num_spawns {
             let array_index = if areas.len() == 1 {
                 0usize
             } else {
-                (rng.roll_dice(1, areas.len() as i32) - 1) as usize
+                rng.roll_dice(1, areas.len() as i32 - 1) as usize
             };
+
             let map_idx = areas[array_index];
             spawn_points.insert(map_idx, spawn_table.roll(rng));
             areas.remove(array_index);
-            //console::log(&format!("spawn {} {}", i, array_index));
+            // console::log(&format!(
+            //     "spawn_region {} {} {:?} {:?}",
+            //     array_index,
+            //     map_idx,
+            //     map.idx_xy(map_idx),
+            //     map.tiles[map_idx]
+            // ));
         }
     }
 
@@ -141,9 +110,7 @@ pub fn spawn_region(
 pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String), map_depth: i32) {
     let x = (*spawn.0 % MAPWIDTH) as i32;
     let y = (*spawn.0 / MAPWIDTH) as i32;
-
-    //let mut map = ecs.fetch_mut::<Map>();
-    //let map_depth = map.depth;
+    // console::log(format!("spawn_entity {} {} {}", x, y, spawn.1));
 
     match spawn.1.as_ref() {
         "Goblin" => goblin(ecs, x, y, map_depth),
@@ -161,6 +128,42 @@ pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String), map_depth: i32) 
         "Bear Trap" => bear_trap(ecs, x, y),
         _ => {}
     }
+}
+
+/// Spawns the player and returns his/her entity object.
+pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
+    ecs.create_entity()
+        .with(Position {
+            x: player_x,
+            y: player_y,
+        })
+        .with(Renderable {
+            glyph: rltk::to_cp437('@'),
+            fg: RGB::named(rltk::YELLOW),
+            bg: RGB::named(rltk::BLACK),
+            render_order: 0,
+        })
+        .with(Player {})
+        .with(Viewshed {
+            visible_tiles: Vec::new(),
+            range: 8,
+            dirty: true,
+        })
+        .with(Name {
+            name: "Player".to_string(),
+        })
+        .with(CombatStats {
+            max_hp: 30,
+            hp: 30,
+            defense: 2,
+            power: 5,
+        })
+        .with(HungerClock {
+            state: HungerState::WellFed,
+            duration: 20,
+        })
+        .marked::<SimpleMarker<SerializeMe>>()
+        .build()
 }
 
 //////////////////////monsters////////////////////////
