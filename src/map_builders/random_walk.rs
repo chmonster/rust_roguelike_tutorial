@@ -1,4 +1,4 @@
-use super::{paint, BuilderMap, InitialMapBuilder, Position, Symmetry, TileType};
+use super::{paint, BuilderMap, InitialMapBuilder, MetaMapBuilder, Position, Symmetry, TileType};
 use rltk::{console, RandomNumberGenerator};
 
 #[derive(PartialEq, Copy, Clone)]
@@ -24,6 +24,14 @@ impl InitialMapBuilder for DrunkardsWalkBuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
         console::log("RandomWalk");
+        self.build(rng, build_data);
+    }
+}
+
+impl MetaMapBuilder for DrunkardsWalkBuilder {
+    #[allow(dead_code)]
+    fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
+        console::log("RandomWalk meta");
         self.build(rng, build_data);
     }
 }

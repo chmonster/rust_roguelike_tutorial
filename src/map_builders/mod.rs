@@ -42,6 +42,8 @@ mod area_starting_point;
 use area_starting_point::{AreaStartingPosition, XStart, YStart};
 mod distant_exit;
 use distant_exit::DistantExit;
+mod room_exploder;
+use room_exploder::RoomExploder;
 
 pub trait InitialMapBuilder {
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap);
@@ -130,7 +132,7 @@ fn random_initial_builder(
     rng: &mut rltk::RandomNumberGenerator,
 ) -> (Box<dyn InitialMapBuilder>, bool) {
     //let builder = rng.roll_dice(1, 18) - 1;
-    let builder = 15; //test
+    let builder = 0; //test
     let result: (Box<dyn InitialMapBuilder>, bool) = match builder {
         0 => (RubbleMapBuilder::new(), true),
         1 => (BspDungeonBuilder::new(), true),
@@ -162,12 +164,24 @@ pub fn random_builder(new_depth: i32, rng: &mut rltk::RandomNumberGenerator) -> 
     let (random_starter, has_rooms) = random_initial_builder(rng);
     builder.start_with(random_starter);
 
-    if rng.roll_dice(1, 1) == 1 {
+    if rng.roll_dice(1, 1) == 0 {
         builder.with(CellularAutomataBuilder::new());
     }
 
-    if rng.roll_dice(1, 5) == 1 {
+    if rng.roll_dice(1, 1) == 0 {
         builder.with(WaveformCollapseBuilder::new());
+    }
+
+    if rng.roll_dice(1, 1) == 0 {
+        builder.with(DrunkardsWalkBuilder::winding_passages());
+    }
+
+    if rng.roll_dice(1, 1) == 1 {
+        builder.with(RoomExploder::new());
+    }
+
+    if rng.roll_dice(1, 1) == 0 {
+        builder.with(DLABuilder::heavy_erosion());
     }
 
     if has_rooms {
