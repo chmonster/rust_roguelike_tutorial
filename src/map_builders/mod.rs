@@ -125,10 +125,12 @@ impl BuilderChain {
     }
 }
 
+#[allow(unused_variables)]
 fn random_initial_builder(
     rng: &mut rltk::RandomNumberGenerator,
 ) -> (Box<dyn InitialMapBuilder>, bool) {
     let builder = rng.roll_dice(1, 18) - 1;
+    //let builder = 17; //test
     let result: (Box<dyn InitialMapBuilder>, bool) = match builder {
         0 => (RubbleMapBuilder::new(), true),
         1 => (BspDungeonBuilder::new(), true),

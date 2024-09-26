@@ -37,6 +37,7 @@ impl DLABuilder {
 
     #[allow(dead_code)]
     pub fn walk_inwards() -> Box<DLABuilder> {
+        console::log("walk_inwards");
         Box::new(DLABuilder {
             algorithm: DLAAlgorithm::WalkInwards,
             brush_size: 1,
@@ -47,6 +48,7 @@ impl DLABuilder {
 
     #[allow(dead_code)]
     pub fn walk_outwards() -> Box<DLABuilder> {
+        console::log("walk_outwards");
         Box::new(DLABuilder {
             algorithm: DLAAlgorithm::WalkOutwards,
             brush_size: 2,
@@ -57,6 +59,8 @@ impl DLABuilder {
 
     #[allow(dead_code)]
     pub fn central_attractor() -> Box<DLABuilder> {
+        console::log("central_attractor");
+
         Box::new(DLABuilder {
             algorithm: DLAAlgorithm::CentralAttractor,
             brush_size: 2,
@@ -67,6 +71,7 @@ impl DLABuilder {
 
     #[allow(dead_code)]
     pub fn insectoid() -> Box<DLABuilder> {
+        console::log("insectoid");
         Box::new(DLABuilder {
             algorithm: DLAAlgorithm::CentralAttractor,
             brush_size: 2,

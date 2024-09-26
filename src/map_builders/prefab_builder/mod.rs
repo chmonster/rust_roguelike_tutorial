@@ -50,6 +50,7 @@ impl PrefabBuilder {
 
     #[allow(dead_code)]
     pub fn rex_level(template: &'static str) -> Box<PrefabBuilder> {
+        console::log(format!("rex_level {}", template.len()));
         Box::new(PrefabBuilder {
             mode: PrefabMode::RexLevel { template },
         })
@@ -57,6 +58,7 @@ impl PrefabBuilder {
 
     #[allow(dead_code)]
     pub fn constant(level: prefab_levels::PrefabLevel) -> Box<PrefabBuilder> {
+        console::log(format!("constant  {}", level.template.len()));
         Box::new(PrefabBuilder {
             mode: PrefabMode::Constant { level },
         })
@@ -64,6 +66,7 @@ impl PrefabBuilder {
 
     #[allow(dead_code)]
     pub fn sectional(section: prefab_sections::PrefabSection) -> Box<PrefabBuilder> {
+        console::log(format!("section {}", section.template.len()));
         Box::new(PrefabBuilder {
             mode: PrefabMode::Sectional { section },
         })
@@ -71,6 +74,7 @@ impl PrefabBuilder {
 
     #[allow(dead_code)]
     pub fn vaults() -> Box<PrefabBuilder> {
+        console::log("vaults");
         Box::new(PrefabBuilder {
             mode: PrefabMode::RoomVaults,
         })

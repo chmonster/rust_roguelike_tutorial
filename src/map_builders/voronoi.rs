@@ -33,6 +33,7 @@ impl VoronoiCellBuilder {
 
     #[allow(dead_code)]
     pub fn pythagoras() -> Box<VoronoiCellBuilder> {
+        console::log("pythagoras");
         Box::new(VoronoiCellBuilder {
             n_seeds: 64,
             distance_algorithm: DistanceAlgorithm::Pythagoras,
@@ -41,6 +42,7 @@ impl VoronoiCellBuilder {
 
     #[allow(dead_code)]
     pub fn manhattan() -> Box<VoronoiCellBuilder> {
+        console::log("manhattan");
         Box::new(VoronoiCellBuilder {
             n_seeds: 64,
             distance_algorithm: DistanceAlgorithm::Manhattan,

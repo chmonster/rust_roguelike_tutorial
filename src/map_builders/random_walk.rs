@@ -36,6 +36,7 @@ impl DrunkardsWalkBuilder {
 
     #[allow(dead_code)]
     pub fn open_area() -> Box<DrunkardsWalkBuilder> {
+        console::log("open_area");
         Box::new(DrunkardsWalkBuilder {
             settings: DrunkardSettings {
                 spawn_mode: DrunkSpawnMode::StartingPoint,
@@ -49,6 +50,7 @@ impl DrunkardsWalkBuilder {
 
     #[allow(dead_code)]
     pub fn open_halls() -> Box<DrunkardsWalkBuilder> {
+        console::log("open_halls");
         Box::new(DrunkardsWalkBuilder {
             settings: DrunkardSettings {
                 spawn_mode: DrunkSpawnMode::Random,
@@ -62,6 +64,7 @@ impl DrunkardsWalkBuilder {
 
     #[allow(dead_code)]
     pub fn winding_passages() -> Box<DrunkardsWalkBuilder> {
+        console::log("winding_passages");
         Box::new(DrunkardsWalkBuilder {
             settings: DrunkardSettings {
                 spawn_mode: DrunkSpawnMode::Random,
@@ -75,6 +78,7 @@ impl DrunkardsWalkBuilder {
 
     #[allow(dead_code)]
     pub fn fat_passages() -> Box<DrunkardsWalkBuilder> {
+        console::log("fat_passages");
         Box::new(DrunkardsWalkBuilder {
             settings: DrunkardSettings {
                 spawn_mode: DrunkSpawnMode::Random,
@@ -88,6 +92,7 @@ impl DrunkardsWalkBuilder {
 
     #[allow(dead_code)]
     pub fn fearful_symmetry() -> Box<DrunkardsWalkBuilder> {
+        console::log("fearful_symmetry");
         Box::new(DrunkardsWalkBuilder {
             settings: DrunkardSettings {
                 spawn_mode: DrunkSpawnMode::Random,
