@@ -1,10 +1,11 @@
 use super::{BuilderMap, MetaMapBuilder, Rect, TileType};
-use rltk::RandomNumberGenerator;
+use rltk::{console, RandomNumberGenerator};
 
 pub struct RoomDrawer {}
 
 impl MetaMapBuilder for RoomDrawer {
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
+        console::log("RoomDrawer");
         self.build(rng, build_data);
     }
 }

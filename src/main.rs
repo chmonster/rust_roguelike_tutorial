@@ -8,7 +8,7 @@ use specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 
 //const SHOW_MAPGEN_VISUALIZER: bool = false;
 const SHOW_MAPGEN_VISUALIZER: bool = true;
-const MAX_HISTORY_TIME: f32 = 2000.0;
+const MAX_HISTORY_TIME: f32 = 10000.0;
 
 mod components;
 pub use components::*;

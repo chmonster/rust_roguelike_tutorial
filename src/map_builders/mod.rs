@@ -56,8 +56,8 @@ mod room_draw;
 use room_draw::RoomDrawer;
 
 //must match positions in build_roll block
-const RUBBLE_ID: i32 = 2;
-const BSP_INTERIOR_ID: i32 = 3;
+const RUBBLE_ID: i32 = 3;
+const BSP_INTERIOR_ID: i32 = 2;
 
 pub trait InitialMapBuilder {
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap);
@@ -164,8 +164,8 @@ fn random_room_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut Buil
     let build_roll = RUBBLE_ID;
     match build_roll {
         1 => builder.start_with(BspDungeonBuilder::new()),
-        BSP_INTERIOR_ID => builder.start_with(RubbleMapBuilder::new()),
-        RUBBLE_ID => builder.start_with(BspInteriorBuilder::new()),
+        BSP_INTERIOR_ID => builder.start_with(BspInteriorBuilder::new()),
+        RUBBLE_ID => builder.start_with(RubbleMapBuilder::new()),
         _ => builder.start_with(SimpleMapBuilder::new()),
     }
     if build_roll != RUBBLE_ID
@@ -174,7 +174,7 @@ fn random_room_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut Buil
         builder.with(RoomDrawer::new());
     }
 
-    // BSP Interior still makes holes in the walls
+    // BSP Interior still makes holes in the walls insterad of corridors; rubble has only one room
     if build_roll != BSP_INTERIOR_ID && build_roll != RUBBLE_ID {
         // Sort by one of the 5 available algorithms
         let sort_roll = rng.roll_dice(1, 5);
@@ -265,14 +265,28 @@ fn random_shape_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut Bui
 
 pub fn random_builder(new_depth: i32, rng: &mut rltk::RandomNumberGenerator) -> BuilderChain {
     let mut builder = BuilderChain::new(new_depth);
-    let type_roll = rng.roll_dice(1, 2);
+    let type_roll = rng.roll_dice(1, 1);
     match type_roll {
         1 => random_room_builder(rng, &mut builder),
         _ => random_shape_builder(rng, &mut builder),
     }
 
-    if rng.roll_dice(1, 3) == 1 {
+    if rng.roll_dice(1, 1) == 1 {
         builder.with(WaveformCollapseBuilder::new());
+        //keeps loot, player and exit positions as is.
+        //quick solution: redo steps, as random shape room
+
+        // Set the start to the center and cull
+        builder.with(AreaStartingPosition::new(XStart::Center, YStart::Center));
+        builder.with(CullUnreachable::new());
+
+        // Now set the start to a random starting area
+        let (start_x, start_y) = random_start_position(rng);
+        builder.with(AreaStartingPosition::new(start_x, start_y));
+
+        // Setup an exit and spawn mobs
+        builder.with(VoronoiSpawning::new());
+        builder.with(DistantExit::new());
     }
 
     if rng.roll_dice(1, 20) == 1 {
