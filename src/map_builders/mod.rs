@@ -52,6 +52,12 @@ mod bsp_corridors;
 use bsp_corridors::BspCorridors;
 mod room_sorter;
 use room_sorter::{RoomSort, RoomSorter};
+mod room_draw;
+use room_draw::RoomDrawer;
+
+//must match positions in build_roll block
+const RUBBLE_ID: i32 = 2;
+const BSP_INTERIOR_ID: i32 = 3;
 
 pub trait InitialMapBuilder {
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap);
@@ -136,14 +142,14 @@ impl BuilderChain {
 }
 
 fn random_start_position(rng: &mut rltk::RandomNumberGenerator) -> (XStart, YStart) {
-    let xroll = rng.roll_dice(1, 3);
+    let xroll = rng.roll_dice(1, RUBBLE_ID);
     let x = match xroll {
         1 => XStart::Left,
         2 => XStart::Center,
         _ => XStart::Right,
     };
 
-    let yroll = rng.roll_dice(1, 3);
+    let yroll = rng.roll_dice(1, RUBBLE_ID);
     let y = match yroll {
         1 => YStart::Bottom,
         2 => YStart::Center,
@@ -154,16 +160,22 @@ fn random_start_position(rng: &mut rltk::RandomNumberGenerator) -> (XStart, YSta
 }
 
 fn random_room_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut BuilderChain) {
-    let build_roll = rng.roll_dice(1, 4);
+    //let build_roll = rng.roll_dice(1, 4);
+    let build_roll = RUBBLE_ID;
     match build_roll {
-        1 => builder.start_with(SimpleMapBuilder::new()),
-        2 => builder.start_with(BspDungeonBuilder::new()),
-        3 => builder.start_with(RubbleMapBuilder::new()),
-        _ => builder.start_with(BspInteriorBuilder::new()),
+        1 => builder.start_with(BspDungeonBuilder::new()),
+        BSP_INTERIOR_ID => builder.start_with(RubbleMapBuilder::new()),
+        RUBBLE_ID => builder.start_with(BspInteriorBuilder::new()),
+        _ => builder.start_with(SimpleMapBuilder::new()),
+    }
+    if build_roll != RUBBLE_ID
+    //rubble is already populated
+    {
+        builder.with(RoomDrawer::new());
     }
 
     // BSP Interior still makes holes in the walls
-    if build_roll != 3 {
+    if build_roll != BSP_INTERIOR_ID && build_roll != RUBBLE_ID {
         // Sort by one of the 5 available algorithms
         let sort_roll = rng.roll_dice(1, 5);
         match sort_roll {
@@ -197,10 +209,17 @@ fn random_room_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut Buil
         }
     }
 
-    let exit_roll = rng.roll_dice(1, 2);
-    match exit_roll {
-        1 => builder.with(RoomBasedStairs::new()),
-        _ => builder.with(DistantExit::new()),
+    if build_roll == RUBBLE_ID {
+        //single big room
+        for _i in 1..rng.range(5, 8) {
+            builder.with(RoomBasedStairs::new());
+        }
+    } else {
+        let exit_roll = rng.roll_dice(1, 2);
+        match exit_roll {
+            1 => builder.with(RoomBasedStairs::new()),
+            _ => builder.with(DistantExit::new()),
+        }
     }
 
     let spawn_roll = rng.roll_dice(1, 2);
