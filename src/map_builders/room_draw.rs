@@ -27,6 +27,7 @@ impl RoomDrawer {
         }
     }
 
+    //TOFIX: roundoff errors leave uncleared pillars in the room
     fn rhombus(
         &mut self,
         build_data: &mut BuilderMap,

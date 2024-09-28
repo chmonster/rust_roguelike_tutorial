@@ -46,15 +46,22 @@ mod room_exploder;
 use room_exploder::RoomExploder;
 mod round_corners;
 use round_corners::RoomCornerRounder;
-mod dogleg_corridors;
-use dogleg_corridors::DoglegCorridors;
-mod bsp_corridors;
-use bsp_corridors::BspCorridors;
+mod room_corridors_dogleg;
+use room_corridors_dogleg::DoglegCorridors;
+mod room_corridors_bsp;
+use room_corridors_bsp::BspCorridors;
 mod room_sorter;
 use room_sorter::{RoomSort, RoomSorter};
 mod room_draw;
 use room_draw::RoomDrawer;
+mod room_corridors_nearest;
+use room_corridors_nearest::NearestCorridors;
+mod room_corridors_lines;
+use room_corridors_lines::StraightLineCorridors;
+mod room_corridor_spawner;
+use room_corridor_spawner::CorridorSpawner;
 
+//marked for special builder restrictions
 //must match positions in build_roll block
 const RUBBLE_ID: i32 = 3;
 const BSP_INTERIOR_ID: i32 = 2;
@@ -73,6 +80,7 @@ pub struct BuilderMap {
     pub starting_position: Option<Position>,
     pub rooms: Option<Vec<Rect>>,
     pub history: Vec<Map>,
+    pub corridors: Option<Vec<Vec<usize>>>,
 }
 
 impl BuilderMap {
@@ -103,6 +111,7 @@ impl BuilderChain {
                 map: Map::new(new_depth),
                 starting_position: None,
                 rooms: None,
+                corridors: None,
                 history: Vec::new(),
             },
         }
@@ -170,12 +179,12 @@ fn random_room_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut Buil
         _ => builder.start_with(SimpleMapBuilder::new()),
     }
     if build_roll != RUBBLE_ID
-    //rubble is already populated
+    //rubble is one big room and already populated
     {
         builder.with(RoomDrawer::new());
     }
 
-    // BSP Interior still makes holes in the walls insterad of corridors; rubble has only one room
+    // BSP Interior still makes holes in the walls insterad of corridors; Rubble has only one room
     if build_roll != BSP_INTERIOR_ID && build_roll != RUBBLE_ID {
         // Sort by one of the 5 available algorithms
         let sort_roll = rng.roll_dice(1, 5);
@@ -187,10 +196,17 @@ fn random_room_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut Buil
             _ => builder.with(RoomSorter::new(RoomSort::Central)),
         }
 
-        let corridor_roll = rng.roll_dice(1, 2);
+        let corridor_roll = rng.roll_dice(1, 4);
         match corridor_roll {
             1 => builder.with(DoglegCorridors::new()),
+            2 => builder.with(NearestCorridors::new()),
+            3 => builder.with(StraightLineCorridors::new()),
             _ => builder.with(BspCorridors::new()),
+        }
+
+        let cspawn_roll = rng.roll_dice(1, 2);
+        if cspawn_roll == 1 {
+            builder.with(CorridorSpawner::new());
         }
 
         let modifier_roll = rng.roll_dice(1, 6);
