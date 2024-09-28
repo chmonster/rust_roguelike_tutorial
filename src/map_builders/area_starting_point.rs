@@ -49,15 +49,11 @@ impl AreaStartingPosition {
         let mut available_floors: Vec<(usize, f32)> = Vec::new();
         for (idx, tiletype) in build_data.map.tiles.iter().enumerate() {
             if *tiletype == TileType::Floor {
+                let (x, y) = build_data.map.idx_xy(idx);
                 available_floors.push((
                     idx,
-                    rltk::DistanceAlg::PythagorasSquared.distance2d(
-                        rltk::Point::new(
-                            idx as i32 % build_data.map.width,
-                            idx as i32 / build_data.map.width,
-                        ),
-                        rltk::Point::new(seed_x, seed_y),
-                    ),
+                    rltk::DistanceAlg::PythagorasSquared
+                        .distance2d(rltk::Point::new(x, y), rltk::Point::new(seed_x, seed_y)),
                 ));
             }
         }
@@ -67,8 +63,9 @@ impl AreaStartingPosition {
 
         available_floors.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
 
-        let start_x = available_floors[0].0 as i32 % build_data.map.width;
-        let start_y = available_floors[0].0 as i32 / build_data.map.width;
+        // let start_x = available_floors[0].0 as i32 % build_data.map.width;
+        // let start_y = available_floors[0].0 as i32 / build_data.map.width;
+        let (start_x, start_y) = build_data.map.idx_xy(available_floors[0].0);
 
         build_data.starting_position = Some(Position {
             x: start_x,

@@ -1,10 +1,10 @@
 #![allow(unused)]
 use super::{
-    map::MAPWIDTH, AreaOfEffect, BlocksTile, CombatStats, Confusion, Consumable, DefenseBonus,
-    EntryTrigger, EquipmentSlot, Equippable, Hidden, HungerClock, HungerState, InflictsDamage,
-    Item, MagicMapper, Map, MeleePowerBonus, Monster, Name, Player, Position, ProvidesFood,
-    ProvidesHealing, RandomTable, Ranged, Rect, Renderable, SerializeMe, SingleActivation,
-    TileType, Viewshed,
+    map::MAPWIDTH, AreaOfEffect, BlocksTile, BlocksVisibility, CombatStats, Confusion, Consumable,
+    DefenseBonus, Door, EntryTrigger, EquipmentSlot, Equippable, Hidden, HungerClock, HungerState,
+    InflictsDamage, Item, MagicMapper, Map, MeleePowerBonus, Monster, Name, Player, Position,
+    ProvidesFood, ProvidesHealing, RandomTable, Ranged, Rect, Renderable, SerializeMe,
+    SingleActivation, TileType, Viewshed,
 };
 use rltk::{console, RandomNumberGenerator, RGB};
 use specs::prelude::*;
@@ -440,7 +440,6 @@ fn door(ecs: &mut World, x: i32, y: i32) {
         .with(Position { x, y })
         .with(Renderable {
             glyph: rltk::to_cp437('+'),
-            //glyph: rltk::to_cp437('x'),
             fg: RGB::named(rltk::CHOCOLATE),
             bg: RGB::named(rltk::BLACK),
             render_order: 2,
@@ -448,6 +447,9 @@ fn door(ecs: &mut World, x: i32, y: i32) {
         .with(Name {
             name: "Door".to_string(),
         })
+        .with(BlocksTile {})
+        .with(BlocksVisibility {})
+        .with(Door { open: false })
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }

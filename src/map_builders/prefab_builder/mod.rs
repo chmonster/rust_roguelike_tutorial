@@ -95,8 +95,7 @@ impl PrefabBuilder {
             ' ' => build_data.map.tiles[idx] = TileType::Floor,
             '#' => build_data.map.tiles[idx] = TileType::Wall,
             '@' => {
-                let x = idx as i32 % build_data.map.width;
-                let y = idx as i32 / build_data.map.width;
+                let (x, y) = build_data.map.idx_xy(idx);
                 build_data.map.tiles[idx] = TileType::Floor;
                 build_data.starting_position = Some(Position { x, y });
             }
@@ -295,8 +294,9 @@ impl PrefabBuilder {
 
             let mut idx = 0usize;
             loop {
-                let x = (idx % build_data.map.width as usize) as i32;
-                let y = (idx / build_data.map.width as usize) as i32;
+                // let x = (idx % build_data.map.width as usize) as i32;
+                // let y = (idx / build_data.map.width as usize) as i32;
+                let (x, y) = build_data.map.idx_xy(idx);
 
                 // Check that we won't overflow the map
                 if x > 1

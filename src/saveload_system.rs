@@ -98,7 +98,9 @@ pub fn save_game(ecs: &mut World) {
             Hidden,
             EntryTrigger,
             EntityMoved,
-            SingleActivation
+            SingleActivation,
+            BlocksVisibility,
+            Door
         );
     }
 
@@ -173,7 +175,9 @@ pub fn load_game(ecs: &mut World) {
             Hidden,
             EntryTrigger,
             EntityMoved,
-            SingleActivation
+            SingleActivation,
+            BlocksVisibility,
+            Door
         );
     }
 

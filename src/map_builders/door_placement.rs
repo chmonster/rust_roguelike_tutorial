@@ -17,8 +17,19 @@ impl DoorPlacement {
     }
 
     fn door_possible(&self, build_data: &mut BuilderMap, idx: usize) -> bool {
-        let x = idx as i32 % build_data.map.width;
-        let y = idx as i32 / build_data.map.width;
+        // let x = idx as i32 % build_data.map.width;
+        // let y = idx as i32 / build_data.map.width;
+        let (x, y) = build_data.map.idx_xy(idx);
+
+        let mut blocked = false;
+        for spawn in build_data.spawn_list.iter() {
+            if spawn.0 == idx {
+                blocked = true;
+            }
+        }
+        if blocked {
+            return false;
+        }
 
         // Check for east-west door possibility
         if build_data.map.tiles[idx] == TileType::Floor
@@ -47,13 +58,13 @@ impl DoorPlacement {
         false
     }
 
-    fn doors(&mut self, _rng: &mut RandomNumberGenerator, build_data: &mut BuilderMap) {
+    fn doors(&mut self, rng: &mut RandomNumberGenerator, build_data: &mut BuilderMap) {
         if let Some(halls_original) = &build_data.corridors {
             let halls = halls_original.clone(); // To avoid nested borrowing
             for hall in halls.iter() {
                 if hall.len() > 2 {
                     // We aren't interested in tiny corridors
-                    if self.door_possible(build_data, hall[0]) {
+                    if self.door_possible(build_data, hall[0]) && rng.roll_dice(1, 3) != 1 {
                         build_data.spawn_list.push((hall[0], "Door".to_string()));
                     }
                 }
@@ -62,7 +73,10 @@ impl DoorPlacement {
             // There are no corridors - scan for possible places
             let tiles = build_data.map.tiles.clone();
             for (i, tile) in tiles.iter().enumerate() {
-                if *tile == TileType::Floor && self.door_possible(build_data, i) {
+                if *tile == TileType::Floor
+                    && self.door_possible(build_data, i)
+                    && rng.roll_dice(1, 3) == 1
+                {
                     build_data.spawn_list.push((i, "Door".to_string()));
                 }
             }

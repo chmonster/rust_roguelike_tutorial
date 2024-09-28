@@ -292,12 +292,7 @@ pub fn random_builder(new_depth: i32, rng: &mut rltk::RandomNumberGenerator) -> 
 
     if rng.roll_dice(1, 5) == 1 {
         builder.with(WaveformCollapseBuilder::new());
-        //keeps loot, player and exit positions as is.
-        //quick solution: redo steps, as random shape room
-
-        // Set the start to the center and cull
-        builder.with(AreaStartingPosition::new(XStart::Center, YStart::Center));
-        builder.with(CullUnreachable::new());
+        //keeps loot, player and exit positions as is.  needs repeat generation
 
         // Now set the start to a random starting area
         let (start_x, start_y) = random_start_position(rng);
