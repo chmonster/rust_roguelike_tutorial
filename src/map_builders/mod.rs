@@ -60,6 +60,8 @@ mod room_corridors_lines;
 use room_corridors_lines::StraightLineCorridors;
 mod room_corridor_spawner;
 use room_corridor_spawner::CorridorSpawner;
+mod door_placement;
+use door_placement::DoorPlacement;
 
 //marked for special builder restrictions
 //must match positions in build_roll block
@@ -312,6 +314,7 @@ pub fn random_builder(new_depth: i32, rng: &mut rltk::RandomNumberGenerator) -> 
         ));
     }
 
+    builder.with(DoorPlacement::new());
     builder.with(PrefabBuilder::vaults());
 
     builder
