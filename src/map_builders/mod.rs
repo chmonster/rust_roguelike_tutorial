@@ -160,8 +160,9 @@ fn random_start_position(rng: &mut rltk::RandomNumberGenerator) -> (XStart, YSta
 }
 
 fn random_room_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut BuilderChain) {
-    //let build_roll = rng.roll_dice(1, 4);
-    let build_roll = RUBBLE_ID;
+    let build_roll = rng.roll_dice(1, 4);
+    //let build_roll = RUBBLE_ID;
+    //let build_roll = 4;
     match build_roll {
         1 => builder.start_with(BspDungeonBuilder::new()),
         BSP_INTERIOR_ID => builder.start_with(BspInteriorBuilder::new()),
@@ -230,7 +231,7 @@ fn random_room_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut Buil
 }
 
 fn random_shape_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut BuilderChain) {
-    let builder_roll = rng.roll_dice(1, 16);
+    let builder_roll = rng.roll_dice(1, 14);
     match builder_roll {
         1 => builder.start_with(CellularAutomataBuilder::new()),
         2 => builder.start_with(DrunkardsWalkBuilder::open_area()),
@@ -265,13 +266,13 @@ fn random_shape_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut Bui
 
 pub fn random_builder(new_depth: i32, rng: &mut rltk::RandomNumberGenerator) -> BuilderChain {
     let mut builder = BuilderChain::new(new_depth);
-    let type_roll = rng.roll_dice(1, 1);
+    let type_roll = rng.roll_dice(1, 2);
     match type_roll {
         1 => random_room_builder(rng, &mut builder),
         _ => random_shape_builder(rng, &mut builder),
     }
 
-    if rng.roll_dice(1, 1) == 1 {
+    if rng.roll_dice(1, 5) == 1 {
         builder.with(WaveformCollapseBuilder::new());
         //keeps loot, player and exit positions as is.
         //quick solution: redo steps, as random shape room
@@ -289,7 +290,7 @@ pub fn random_builder(new_depth: i32, rng: &mut rltk::RandomNumberGenerator) -> 
         builder.with(DistantExit::new());
     }
 
-    if rng.roll_dice(1, 20) == 1 {
+    if rng.roll_dice(1, 10) == 1 {
         builder.with(PrefabBuilder::sectional(
             prefab_builder::prefab_sections::UNDERGROUND_FORT,
         ));
