@@ -35,10 +35,8 @@ impl BspDungeonBuilder {
             let candidate = self.get_random_sub_rect(rect, rng);
 
             if self.is_possible(candidate, build_data, &rooms) {
-                //apply_room_to_map(&mut build_data.map, &candidate);
                 rooms.push(candidate);
                 self.add_subrects(rect);
-                //build_data.take_snapshot();
             }
 
             n_rooms += 1;

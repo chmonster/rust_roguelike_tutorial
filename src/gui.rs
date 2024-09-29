@@ -149,7 +149,6 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
 
     let mut tooltip: Vec<String> = Vec::new();
     for (name, position, _hidden) in (&names, &positions, !&hidden).join() {
-        //let idx = map.xy_idx(position.x, position.y);
         if position.x == mouse_map_pos.0 && position.y == mouse_map_pos.1 {
             let pos_string = format!("{} {}", position.x, position.y);
             tooltip.push(name.name.to_string());
@@ -226,7 +225,6 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
             );
 
             for s in tooltip.iter() {
-                //console::log(s);
                 ctx.print_color(
                     left_x + 1,
                     y,
@@ -235,7 +233,6 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
                     s,
                 );
                 let padding = width - 3 - s.len() as i32;
-                //console::log(format!("{} {} {}", width, s.len(), padding));
                 for i in 0..padding {
                     ctx.print_color(
                         arrow_pos.x + s.len() as i32 + 3 + i,
@@ -302,7 +299,6 @@ pub fn show_inventory(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option
     );
 
     let mut equippable: Vec<Entity> = Vec::new();
-    //let mut j = 0;
     for (j, (entity, _pack, name)) in (&entities, &backpack, &names)
         .join()
         .filter(|item| item.1.owner == *player_entity)
@@ -333,7 +329,6 @@ pub fn show_inventory(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option
         ctx.print(21, y, name.name.to_string());
         equippable.push(entity);
         y += 1;
-        //j += 1;
     }
 
     match ctx.key {
@@ -421,7 +416,6 @@ pub fn drop_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option
         ctx.print(21, y, name.name.to_string());
         equippable.push(entity);
         y += 1;
-        //j += 1;
     }
 
     match ctx.key {
@@ -478,7 +472,6 @@ pub fn remove_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Opti
     );
 
     let mut equippable: Vec<Entity> = Vec::new();
-    //let mut j = 0;
     for (j, (entity, _pack, name)) in (&entities, &backpack, &names)
         .join()
         .filter(|item| item.1.owner == *player_entity)
@@ -509,7 +502,6 @@ pub fn remove_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Opti
         ctx.print(21, y, name.name.to_string());
         equippable.push(entity);
         y += 1;
-        //j += 1;
     }
 
     match ctx.key {
@@ -595,7 +587,6 @@ pub fn ranged_target(
         };
 
         if ctx.left_click || return_key_hit {
-            //console::log(&format!("Selected {} {}", mouse_pos.0, mouse_pos.1));
             return (
                 ItemMenuResult::Selected,
                 Some(Point::new(mouse_map_pos.0, mouse_map_pos.1)),

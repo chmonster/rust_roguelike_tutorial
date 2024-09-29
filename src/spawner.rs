@@ -43,7 +43,6 @@ pub fn spawn_room(
     let mut possible_targets: Vec<usize> = Vec::new();
     {
         // Borrow scope - to keep access to the map separated
-        //let map = ecs.fetch::<Map>();
         for y in room.y1 + 1..room.y2 {
             for x in room.x1 + 1..room.x2 {
                 let idx = map.xy_idx(x, y);
@@ -70,7 +69,6 @@ pub fn spawn_region(
 
     // Scope to keep the borrow checker happy
     {
-        ///let mut rng = ecs.write_resource::<RandomNumberGenerator>();
         let num_spawns = i32::min(
             areas.len() as i32,
             (rng.roll_dice(1, BASE_SPAWN_NUMBER + 3) + (map_depth - 1) - 3) * (areas.len() as i32)
@@ -90,13 +88,6 @@ pub fn spawn_region(
             let map_idx = areas[array_index];
             spawn_points.insert(map_idx, spawn_table.roll(rng));
             areas.remove(array_index);
-            // console::log(&format!(
-            //     "spawn_region {} {} {:?} {:?}",
-            //     array_index,
-            //     map_idx,
-            //     map.idx_xy(map_idx),
-            //     map.tiles[map_idx]
-            // ));
         }
     }
 

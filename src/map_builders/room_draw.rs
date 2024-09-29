@@ -64,9 +64,7 @@ impl RoomDrawer {
             let dx = (y - y_start) / x_ang;
             for x in x_start..=x_end {
                 let dy = (x - x_start) / y_ang;
-                //let dx = 0;
                 let idx = build_data.map.xy_idx(x + dx, y + dy);
-                //console::log(format!("to place: {} {} {}", x + dx, y + dy, idx));
                 if idx > 0 && idx < ((build_data.width * build_data.height) - 1) as usize {
                     build_data.map.tiles[idx] = TileType::Floor;
                 }

@@ -6,11 +6,6 @@ use specs::error::NoError; //deprecated
 use specs::prelude::*;
 use specs::saveload::{ConvertSaveload, Marker};
 use specs_derive::*;
-//use std::convert::Infallible;
-// pub enum NoError {
-//     Infallible,
-// }
-//use specs::error::Infallible;
 
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct Position {

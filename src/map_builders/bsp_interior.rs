@@ -24,20 +24,14 @@ impl BspInteriorBuilder {
     fn build(&mut self, rng: &mut RandomNumberGenerator, build_data: &mut BuilderMap) {
         let mut rooms: Vec<Rect> = Vec::new();
         self.rects.clear();
-        self.rects.push(Rect::new(
-            1,
-            1,
-            build_data.width - 2,
-            build_data.height - 2,
-        )); // Start with a single map-sized rectangle
+        self.rects
+            .push(Rect::new(1, 1, build_data.width - 2, build_data.height - 2)); // Start with a single map-sized rectangle
         let first_room = self.rects[0];
         self.add_subrects(first_room, rng); // Divide the first room
 
         let rooms_copy = self.rects.clone();
         for r in rooms_copy.iter() {
             let room = *r;
-            //room.x2 -= 1;
-            //room.y2 -= 1;
             rooms.push(room);
             for y in room.y1..room.y2 {
                 for x in room.x1..room.x2 {

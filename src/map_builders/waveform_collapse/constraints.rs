@@ -79,7 +79,7 @@ pub fn build_patterns(
 #[allow(clippy::ptr_arg)]
 pub fn render_pattern_to_map(
     map: &mut Map,
-    chunk: &MapChunk, //pattern: &[TileType],
+    chunk: &MapChunk,
     chunk_size: i32,
     start_x: i32,
     start_y: i32,

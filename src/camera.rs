@@ -44,9 +44,7 @@ pub fn render_camera(ecs: &World, ctx: &mut Rltk) {
                     rltk::to_cp437('·'),
                 );
             }
-            //x += 1;
         }
-        //y += 1;
     }
 
     // render entities
@@ -93,12 +91,10 @@ pub fn render_debug_map(map: &Map, ctx: &mut Rltk) {
     let min_y = player_pos.y - center_y;
     let max_y = min_y + y_chars as i32;
 
-    let map_width = map.width; //-1;
-    let map_height = map.height; //-1;
+    let map_width = map.width;
+    let map_height = map.height;
 
-    //let mut y = 0;
     for (y, ty) in (min_y..=max_y).enumerate() {
-        //let mut x = 0;
         for (x, tx) in (min_x..=max_x).enumerate() {
             if tx > 0 && tx < map_width && ty > 0 && ty < map_height {
                 let idx = map.xy_idx(tx, ty);
@@ -115,9 +111,7 @@ pub fn render_debug_map(map: &Map, ctx: &mut Rltk) {
                     rltk::to_cp437('·'),
                 );
             }
-            //x += 1;
         }
-        //y += 1;
     }
 }
 
@@ -132,8 +126,6 @@ fn get_tile_glyph(idx: usize, map: &Map) -> (rltk::FontCharType, RGB, RGB) {
             fg = RGB::from_f32(0.0, 0.5, 0.5);
         }
         TileType::Wall => {
-            // let x = idx as i32 % map.width;
-            // let y = idx as i32 / map.width;
             let (x, y) = map.idx_xy(idx);
             glyph = wall_glyph(map, x, y);
             fg = RGB::from_f32(0., 1.0, 0.);

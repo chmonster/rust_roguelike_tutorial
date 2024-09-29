@@ -68,8 +68,6 @@ impl VoronoiCellBuilder {
         let mut voronoi_membership: Vec<i32> =
             vec![0; build_data.width as usize * build_data.height as usize];
         for (i, vid) in voronoi_membership.iter_mut().enumerate() {
-            // let x = i as i32 % build_data.width;
-            // let y = i as i32 / build_data.width;
             let (x, y) = build_data.map.idx_xy(i);
 
             for (seed, pos) in voronoi_seeds.iter().enumerate() {

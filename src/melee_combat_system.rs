@@ -95,19 +95,11 @@ impl<'a> System<'a> for MeleeCombatSystem {
                             "{} is unable to hurt {}",
                             &name.name, &target_name.name
                         ));
-                        // console::log(&format!(
-                        //     "{} is unable to hurt {}",
-                        //     &name.name, &target_name.name
-                        // ));
                     } else {
                         log.entries.push(format!(
                             "{} hits {}, for {} hp.",
                             &name.name, &target_name.name, damage
                         ));
-                        // console::log(&format!(
-                        //     "{} hits {}, for {} hp.",
-                        //     &name.name, &target_name.name, damage
-                        // ));
                         SufferDamage::new_damage(&mut inflict_damage, wants_melee.target, damage);
                     }
                 }

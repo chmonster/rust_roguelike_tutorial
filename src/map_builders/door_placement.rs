@@ -17,8 +17,6 @@ impl DoorPlacement {
     }
 
     fn door_possible(&self, build_data: &mut BuilderMap, idx: usize) -> bool {
-        // let x = idx as i32 % build_data.width;
-        // let y = idx as i32 / build_data.width;
         let (x, y) = build_data.map.idx_xy(idx);
 
         let mut blocked = false;

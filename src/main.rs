@@ -511,8 +511,6 @@ impl GameState for State {
     }
 }
 
-/// end State
-
 fn main() -> rltk::BError {
     use rltk::RltkBuilder;
     let mut context = RltkBuilder::vga(SCREENWIDTH, SCREENHEIGHT)
@@ -580,9 +578,6 @@ fn main() -> rltk::BError {
     let player_entity = spawner::player(&mut gs.ecs, 0, 0);
     gs.ecs.insert(player_entity);
 
-    // gs.ecs.insert(RunState::MainMenu {
-    //     menu_selection: gui::MainMenuSelection::NewGame,
-    // });
     gs.ecs.insert(RunState::MapGeneration {});
     gs.ecs.insert(gamelog::GameLog {
         entries: vec!["Welcome to Rusty Roguelike".to_string()],

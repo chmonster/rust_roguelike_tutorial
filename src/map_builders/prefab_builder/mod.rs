@@ -294,8 +294,6 @@ impl PrefabBuilder {
 
             let mut idx = 0usize;
             loop {
-                // let x = (idx % build_data.width as usize) as i32;
-                // let y = (idx / build_data.width as usize) as i32;
                 let (x, y) = build_data.map.idx_xy(idx);
 
                 // Check that we won't overflow the map
