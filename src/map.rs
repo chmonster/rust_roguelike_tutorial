@@ -7,8 +7,11 @@ use specs::prelude::*;
 use std::cmp::{max, min};
 use std::collections::HashSet;
 
-pub const MAPWIDTH: usize = SCREENWIDTH as usize;
-pub const MAPHEIGHT: usize = SCREENHEIGHT as usize - LOGHEIGHT - 1;
+//pub const MAPWIDTH: usize = SCREENWIDTH as usize;
+//pub const MAPHEIGHT: usize = SCREENHEIGHT as usize - LOGHEIGHT - 1;
+pub const MAPWIDTH: usize = 100;
+pub const MAPHEIGHT: usize = 100;
+
 pub const MAPCOUNT: usize = MAPHEIGHT * MAPWIDTH;
 
 #[derive(PartialEq, Eq, Hash, Copy, Clone, Debug, Serialize, Deserialize)]
@@ -220,7 +223,7 @@ fn wall_glyph(map: &Map, x: i32, y: i32) -> rltk::FontCharType {
     }
 
     match mask {
-        0 => 35,   // Pillar because we can't see neighbors
+        0 => 35,   // no neighbours
         1 => 186,  // Wall only to the north
         2 => 186,  // Wall only to the south
         3 => 186,  // Wall to the north and south

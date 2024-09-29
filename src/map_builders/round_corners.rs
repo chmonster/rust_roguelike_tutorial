@@ -16,6 +16,7 @@ impl RoomCornerRounder {
         Box::new(RoomCornerRounder {})
     }
 
+    //TO_FIX: will sometimes cut off corridor access
     fn fill_if_corner(&mut self, x: i32, y: i32, build_data: &mut BuilderMap) {
         let w = build_data.map.width;
         let h = build_data.map.height;

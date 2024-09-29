@@ -6,8 +6,8 @@ use rltk::{/*console,*/ GameState, Point, /*RandomNumberGenerator,*/ Rltk};
 use specs::prelude::*;
 use specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 
-//const SHOW_MAPGEN_VISUALIZER: bool = false;
-const SHOW_MAPGEN_VISUALIZER: bool = true;
+const SHOW_MAPGEN_VISUALIZER: bool = false;
+//const SHOW_MAPGEN_VISUALIZER: bool = true;
 const MAX_HISTORY_TIME: f32 = 10000.0;
 
 mod components;
@@ -46,7 +46,7 @@ mod spawner;
 pub mod trigger_system;
 
 pub const SCREENWIDTH: u32 = 80;
-pub const SCREENHEIGHT: u32 = 60;
+pub const SCREENHEIGHT: u32 = 40;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
@@ -305,16 +305,17 @@ impl GameState for State {
             RunState::MapGeneration => {
                 if !SHOW_MAPGEN_VISUALIZER {
                     newrunstate = self.mapgen_next_state.unwrap();
-                }
-                ctx.cls();
-                draw_map(&self.mapgen_history[self.mapgen_index], ctx);
+                } else {
+                    ctx.cls();
+                    draw_map(&self.mapgen_history[self.mapgen_index], ctx);
 
-                self.mapgen_timer += ctx.frame_time_ms;
-                if self.mapgen_timer > (MAX_HISTORY_TIME / (self.mapgen_history.len() as f32)) {
-                    self.mapgen_timer = 0.0;
-                    self.mapgen_index += 1;
-                    if self.mapgen_index >= self.mapgen_history.len() {
-                        newrunstate = self.mapgen_next_state.unwrap();
+                    self.mapgen_timer += ctx.frame_time_ms;
+                    if self.mapgen_timer > (MAX_HISTORY_TIME / (self.mapgen_history.len() as f32)) {
+                        self.mapgen_timer = 0.0;
+                        self.mapgen_index += 1;
+                        if self.mapgen_index >= self.mapgen_history.len() {
+                            newrunstate = self.mapgen_next_state.unwrap();
+                        }
                     }
                 }
             }
@@ -513,11 +514,12 @@ impl GameState for State {
 
 fn main() -> rltk::BError {
     use rltk::RltkBuilder;
-    let mut context = RltkBuilder::simple(SCREENWIDTH, SCREENHEIGHT)
-        .unwrap()
+    let mut context = RltkBuilder::vga(SCREENWIDTH, SCREENHEIGHT)
+        //.unwrap()
+        .with_tile_dimensions(12, 16)
         .with_title("Roguelike Tutorial")
         .build()?;
-    context.with_post_scanlines(true);
+    context.with_post_scanlines(false);
 
     let mut gs = State {
         ecs: World::new(),
