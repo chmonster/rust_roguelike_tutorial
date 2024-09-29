@@ -136,7 +136,7 @@ impl PrefabBuilder {
             for y in 0..layer.height {
                 for x in 0..layer.width {
                     let cell = layer.get(x, y).unwrap();
-                    if x < build_data.map.width as usize && y < build_data.map.height as usize {
+                    if x < build_data.width as usize && y < build_data.height as usize {
                         let idx = build_data.map.xy_idx(x as i32, y as i32);
                         // We're doing some nasty casting to make it easier to type things like '#' in the match
                         self.char_to_map(cell.ch as u8 as char, idx, build_data);
@@ -166,7 +166,7 @@ impl PrefabBuilder {
         let mut i = 0;
         for ty in 0..level.height {
             for tx in 0..level.width {
-                if tx < build_data.map.width as usize && ty < build_data.map.height as usize {
+                if tx < build_data.width as usize && ty < build_data.height as usize {
                     let idx = build_data.map.xy_idx(tx as i32, ty as i32);
                     if i < string_vec.len() {
                         self.char_to_map(string_vec[i], idx, build_data);
@@ -185,7 +185,7 @@ impl PrefabBuilder {
     ) where
         F: FnMut(i32, i32) -> bool,
     {
-        let width = build_data.map.width;
+        let width = build_data.width;
         build_data.spawn_list.retain(|(idx, _name)| {
             let x = *idx as i32 % width;
             let y = *idx as i32 / width;
@@ -208,14 +208,14 @@ impl PrefabBuilder {
         // Place the new section
         let chunk_x = match section.placement.0 {
             HorizontalPlacement::Left => 0,
-            HorizontalPlacement::Center => (build_data.map.width / 2) - (section.width as i32 / 2),
-            HorizontalPlacement::Right => (build_data.map.width - 1) - section.width as i32,
+            HorizontalPlacement::Center => (build_data.width / 2) - (section.width as i32 / 2),
+            HorizontalPlacement::Right => (build_data.width - 1) - section.width as i32,
         };
 
         let chunk_y = match section.placement.1 {
             VerticalPlacement::Top => 0,
-            VerticalPlacement::Center => (build_data.map.height / 2) - (section.height as i32 / 2),
-            VerticalPlacement::Bottom => (build_data.map.height - 1) - section.height as i32,
+            VerticalPlacement::Center => (build_data.height / 2) - (section.height as i32 / 2),
+            VerticalPlacement::Bottom => (build_data.height - 1) - section.height as i32,
         };
 
         // Build the map
@@ -234,8 +234,8 @@ impl PrefabBuilder {
         for ty in 0..section.height {
             for tx in 0..section.width {
                 if tx > 0
-                    && tx < build_data.map.width as usize - 1
-                    && ty < build_data.map.height as usize - 1
+                    && tx < build_data.width as usize - 1
+                    && ty < build_data.height as usize - 1
                     && ty > 0
                 {
                     let idx = build_data
@@ -294,15 +294,15 @@ impl PrefabBuilder {
 
             let mut idx = 0usize;
             loop {
-                // let x = (idx % build_data.map.width as usize) as i32;
-                // let y = (idx / build_data.map.width as usize) as i32;
+                // let x = (idx % build_data.width as usize) as i32;
+                // let y = (idx / build_data.width as usize) as i32;
                 let (x, y) = build_data.map.idx_xy(idx);
 
                 // Check that we won't overflow the map
                 if x > 1
-                    && (x + vault.width as i32) < build_data.map.width - 2
+                    && (x + vault.width as i32) < build_data.width - 2
                     && y > 1
-                    && (y + vault.height as i32) < build_data.map.height - 2
+                    && (y + vault.height as i32) < build_data.height - 2
                 {
                     let mut possible = true;
                     for ty in 0..vault.height as i32 {
@@ -340,8 +340,8 @@ impl PrefabBuilder {
                 let chunk_x = pos.x;
                 let chunk_y = pos.y;
 
-                let width = build_data.map.width; // The borrow checker really doesn't like it
-                let height = build_data.map.height; // when we access `self` inside the `retain`
+                let width = build_data.width; // The borrow checker really doesn't like it
+                let height = build_data.height; // when we access `self` inside the `retain`
                 build_data.spawn_list.retain(|e| {
                     let idx = e.0 as i32;
                     let x = idx % width;

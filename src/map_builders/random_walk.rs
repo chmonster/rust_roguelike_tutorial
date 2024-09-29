@@ -115,15 +115,15 @@ impl DrunkardsWalkBuilder {
     fn build(&mut self, rng: &mut RandomNumberGenerator, build_data: &mut BuilderMap) {
         // Set a central starting point
         let starting_position = Position {
-            x: build_data.map.width / 2,
-            y: build_data.map.height / 2,
+            x: build_data.width / 2,
+            y: build_data.height / 2,
         };
         let start_idx = build_data
             .map
             .xy_idx(starting_position.x, starting_position.y);
         build_data.map.tiles[start_idx] = TileType::Floor;
 
-        let total_tiles = build_data.map.width * build_data.map.height;
+        let total_tiles = build_data.width * build_data.height;
         let desired_floor_tiles = (self.settings.floor_percent * total_tiles as f32) as usize;
         let mut floor_tile_count = build_data
             .map
@@ -146,8 +146,8 @@ impl DrunkardsWalkBuilder {
                         drunk_x = starting_position.x;
                         drunk_y = starting_position.y;
                     } else {
-                        drunk_x = rng.roll_dice(1, build_data.map.width - 3) + 1;
-                        drunk_y = rng.roll_dice(1, build_data.map.height - 3) + 1;
+                        drunk_x = rng.roll_dice(1, build_data.width - 3) + 1;
+                        drunk_y = rng.roll_dice(1, build_data.height - 3) + 1;
                     }
                 }
             }
@@ -175,7 +175,7 @@ impl DrunkardsWalkBuilder {
                         }
                     }
                     2 => {
-                        if drunk_x < build_data.map.width - 2 {
+                        if drunk_x < build_data.width - 2 {
                             drunk_x += 1;
                         }
                     }
@@ -185,7 +185,7 @@ impl DrunkardsWalkBuilder {
                         }
                     }
                     _ => {
-                        if drunk_y < build_data.map.height - 2 {
+                        if drunk_y < build_data.height - 2 {
                             drunk_y += 1;
                         }
                     }

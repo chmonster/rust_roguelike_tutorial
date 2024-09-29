@@ -1,7 +1,7 @@
 #![allow(unused)]
 use super::{
-    map::MAPWIDTH, AreaOfEffect, BlocksTile, BlocksVisibility, CombatStats, Confusion, Consumable,
-    DefenseBonus, Door, EntryTrigger, EquipmentSlot, Equippable, Hidden, HungerClock, HungerState,
+    AreaOfEffect, BlocksTile, BlocksVisibility, CombatStats, Confusion, Consumable, DefenseBonus,
+    Door, EntryTrigger, EquipmentSlot, Equippable, Hidden, HungerClock, HungerState,
     InflictsDamage, Item, MagicMapper, Map, MeleePowerBonus, Monster, Name, Player, Position,
     ProvidesFood, ProvidesHealing, RandomTable, Ranged, Rect, Renderable, SerializeMe,
     SingleActivation, TileType, Viewshed,
@@ -108,9 +108,10 @@ pub fn spawn_region(
 
 /// Spawns a named entity (name in tuple.1) at the location in (tuple.0)
 pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String), map_depth: i32) {
-    let x = (*spawn.0 % MAPWIDTH) as i32;
-    let y = (*spawn.0 / MAPWIDTH) as i32;
-    // console::log(format!("spawn_entity {} {} {}", x, y, spawn.1));
+    let map = ecs.fetch::<Map>();
+    let width = map.width as usize;
+    let (x, y) = map.idx_xy(*spawn.0);
+    std::mem::drop(map);
 
     match spawn.1.as_ref() {
         "Goblin" => goblin(ecs, x, y, map_depth),

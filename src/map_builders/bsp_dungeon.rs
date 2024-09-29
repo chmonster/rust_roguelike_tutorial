@@ -22,12 +22,8 @@ impl BspDungeonBuilder {
     fn build(&mut self, rng: &mut RandomNumberGenerator, build_data: &mut BuilderMap) {
         let mut rooms: Vec<Rect> = Vec::new();
         self.rects.clear();
-        self.rects.push(Rect::new(
-            2,
-            2,
-            build_data.map.width - 5,
-            build_data.map.height - 5,
-        )); // Start with a single map-sized rectangle
+        self.rects
+            .push(Rect::new(2, 2, build_data.width - 5, build_data.height - 5)); // Start with a single map-sized rectangle
         let first_room = self.rects[0];
         self.add_subrects(first_room); // Divide the first room
 
@@ -119,10 +115,10 @@ impl BspDungeonBuilder {
 
         for y in expanded.y1..=expanded.y2 {
             for x in expanded.x1..=expanded.x2 {
-                if x > build_data.map.width - 2 {
+                if x > build_data.width - 2 {
                     can_build = false;
                 }
-                if y > build_data.map.height - 2 {
+                if y > build_data.height - 2 {
                     can_build = false;
                 }
                 if x < 1 {

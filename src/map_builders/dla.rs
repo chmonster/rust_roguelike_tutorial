@@ -103,8 +103,8 @@ impl DLABuilder {
     fn build(&mut self, rng: &mut RandomNumberGenerator, build_data: &mut BuilderMap) {
         // Carve a starting seed
         let starting_position = Position {
-            x: build_data.map.width / 2,
-            y: build_data.map.height / 2,
+            x: build_data.width / 2,
+            y: build_data.height / 2,
         };
         let start_idx = build_data
             .map
@@ -113,11 +113,11 @@ impl DLABuilder {
         build_data.map.tiles[start_idx] = TileType::Floor;
         build_data.map.tiles[start_idx - 1] = TileType::Floor;
         build_data.map.tiles[start_idx + 1] = TileType::Floor;
-        build_data.map.tiles[start_idx - build_data.map.width as usize] = TileType::Floor;
-        build_data.map.tiles[start_idx + build_data.map.width as usize] = TileType::Floor;
+        build_data.map.tiles[start_idx - build_data.width as usize] = TileType::Floor;
+        build_data.map.tiles[start_idx + build_data.width as usize] = TileType::Floor;
 
         // Random walker
-        let total_tiles = build_data.map.width * build_data.map.height;
+        let total_tiles = build_data.width * build_data.height;
         let desired_floor_tiles = (self.floor_percent * total_tiles as f32) as usize;
         let mut floor_tile_count = build_data
             .map
@@ -128,8 +128,8 @@ impl DLABuilder {
         while floor_tile_count < desired_floor_tiles {
             match self.algorithm {
                 DLAAlgorithm::WalkInwards => {
-                    let mut digger_x = rng.roll_dice(1, build_data.map.width - 3) + 1;
-                    let mut digger_y = rng.roll_dice(1, build_data.map.height - 3) + 1;
+                    let mut digger_x = rng.roll_dice(1, build_data.width - 3) + 1;
+                    let mut digger_y = rng.roll_dice(1, build_data.height - 3) + 1;
                     let mut prev_x = digger_x;
                     let mut prev_y = digger_y;
                     let mut digger_idx = build_data.map.xy_idx(digger_x, digger_y);
@@ -144,7 +144,7 @@ impl DLABuilder {
                                 }
                             }
                             2 => {
-                                if digger_x < build_data.map.width - 2 {
+                                if digger_x < build_data.width - 2 {
                                     digger_x += 1;
                                 }
                             }
@@ -154,7 +154,7 @@ impl DLABuilder {
                                 }
                             }
                             _ => {
-                                if digger_y < build_data.map.height - 2 {
+                                if digger_y < build_data.height - 2 {
                                     digger_y += 1;
                                 }
                             }
@@ -183,7 +183,7 @@ impl DLABuilder {
                                 }
                             }
                             2 => {
-                                if digger_x < build_data.map.width - 2 {
+                                if digger_x < build_data.width - 2 {
                                     digger_x += 1;
                                 }
                             }
@@ -193,7 +193,7 @@ impl DLABuilder {
                                 }
                             }
                             _ => {
-                                if digger_y < build_data.map.height - 2 {
+                                if digger_y < build_data.height - 2 {
                                     digger_y += 1;
                                 }
                             }
@@ -210,8 +210,8 @@ impl DLABuilder {
                 }
 
                 DLAAlgorithm::CentralAttractor => {
-                    let mut digger_x = rng.roll_dice(1, build_data.map.width - 3) + 1;
-                    let mut digger_y = rng.roll_dice(1, build_data.map.height - 3) + 1;
+                    let mut digger_x = rng.roll_dice(1, build_data.width - 3) + 1;
+                    let mut digger_y = rng.roll_dice(1, build_data.height - 3) + 1;
                     let mut prev_x = digger_x;
                     let mut prev_y = digger_y;
                     let mut digger_idx = build_data.map.xy_idx(digger_x, digger_y);

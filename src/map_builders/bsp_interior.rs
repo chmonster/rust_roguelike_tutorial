@@ -27,8 +27,8 @@ impl BspInteriorBuilder {
         self.rects.push(Rect::new(
             1,
             1,
-            build_data.map.width - 2,
-            build_data.map.height - 2,
+            build_data.width - 2,
+            build_data.height - 2,
         )); // Start with a single map-sized rectangle
         let first_room = self.rects[0];
         self.add_subrects(first_room, rng); // Divide the first room
@@ -42,9 +42,7 @@ impl BspInteriorBuilder {
             for y in room.y1..room.y2 {
                 for x in room.x1..room.x2 {
                     let idx = build_data.map.xy_idx(x, y);
-                    if idx > 0
-                        && idx < ((build_data.map.width * build_data.map.height) - 1) as usize
-                    {
+                    if idx > 0 && idx < ((build_data.width * build_data.height) - 1) as usize {
                         build_data.map.tiles[idx] = TileType::Floor;
                     }
                 }

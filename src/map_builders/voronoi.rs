@@ -55,8 +55,8 @@ impl VoronoiCellBuilder {
         let mut voronoi_seeds: Vec<(usize, rltk::Point)> = Vec::new();
 
         while voronoi_seeds.len() < self.n_seeds {
-            let vx = rng.roll_dice(1, build_data.map.width - 1);
-            let vy = rng.roll_dice(1, build_data.map.height - 1);
+            let vx = rng.roll_dice(1, build_data.width - 1);
+            let vy = rng.roll_dice(1, build_data.height - 1);
             let vidx = build_data.map.xy_idx(vx, vy);
             let candidate = (vidx, rltk::Point::new(vx, vy));
             if !voronoi_seeds.contains(&candidate) {
@@ -66,10 +66,10 @@ impl VoronoiCellBuilder {
 
         let mut voronoi_distance = vec![(0, 0.0f32); self.n_seeds];
         let mut voronoi_membership: Vec<i32> =
-            vec![0; build_data.map.width as usize * build_data.map.height as usize];
+            vec![0; build_data.width as usize * build_data.height as usize];
         for (i, vid) in voronoi_membership.iter_mut().enumerate() {
-            // let x = i as i32 % build_data.map.width;
-            // let y = i as i32 / build_data.map.width;
+            // let x = i as i32 % build_data.width;
+            // let y = i as i32 / build_data.width;
             let (x, y) = build_data.map.idx_xy(i);
 
             for (seed, pos) in voronoi_seeds.iter().enumerate() {
@@ -91,8 +91,8 @@ impl VoronoiCellBuilder {
             *vid = voronoi_distance[0].0 as i32;
         }
 
-        for y in 1..build_data.map.height - 1 {
-            for x in 1..build_data.map.width - 1 {
+        for y in 1..build_data.height - 1 {
+            for x in 1..build_data.width - 1 {
                 let mut neighbors = 0;
                 let my_idx = build_data.map.xy_idx(x, y);
                 let my_seed = voronoi_membership[my_idx];

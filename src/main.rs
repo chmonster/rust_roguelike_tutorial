@@ -45,8 +45,8 @@ pub mod saveload_system;
 mod spawner;
 pub mod trigger_system;
 
-pub const SCREENWIDTH: u32 = 80;
-pub const SCREENHEIGHT: u32 = 40;
+const SCREENWIDTH: u32 = 80;
+const SCREENHEIGHT: u32 = 40;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
@@ -118,7 +118,7 @@ impl State {
         self.mapgen_timer = 0.0;
         self.mapgen_history.clear();
         let mut rng = self.ecs.write_resource::<rltk::RandomNumberGenerator>();
-        let mut builder = map_builders::random_builder(new_depth, &mut rng);
+        let mut builder = map_builders::random_builder(new_depth, 64, 64, &mut rng);
         builder.build_map(&mut rng);
         std::mem::drop(rng);
         self.mapgen_history = builder.build_data.history.clone();
@@ -307,7 +307,9 @@ impl GameState for State {
                     newrunstate = self.mapgen_next_state.unwrap();
                 } else {
                     ctx.cls();
-                    draw_map(&self.mapgen_history[self.mapgen_index], ctx);
+                    if self.mapgen_index < self.mapgen_history.len() {
+                        camera::render_debug_map(&self.mapgen_history[self.mapgen_index], ctx);
+                    }
 
                     self.mapgen_timer += ctx.frame_time_ms;
                     if self.mapgen_timer > (MAX_HISTORY_TIME / (self.mapgen_history.len() as f32)) {
@@ -347,7 +349,6 @@ impl GameState for State {
                 newrunstate = RunState::AwaitingInput;
             }
             RunState::MagicMapReveal { row } => {
-                //console::log("MagicMapReveal");
                 let mut map = self.ecs.fetch_mut::<Map>();
 
                 let x_order = if row % 2 == 0 {
@@ -360,7 +361,7 @@ impl GameState for State {
                     let idx = map.xy_idx(x, row);
                     map.revealed_tiles[idx] = true;
                 }
-                if row as usize == MAPHEIGHT - 1 {
+                if row == map.height - 1 {
                     newrunstate = RunState::MonsterTurn;
                 } else {
                     newrunstate = RunState::MagicMapReveal { row: row + 1 };
@@ -572,7 +573,7 @@ fn main() -> rltk::BError {
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
-    gs.ecs.insert(Map::new(1));
+    gs.ecs.insert(Map::new(1, 64, 64));
     gs.ecs.insert(Point::new(0, 0));
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
 

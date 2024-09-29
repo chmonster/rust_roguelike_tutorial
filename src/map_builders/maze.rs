@@ -21,8 +21,8 @@ impl MazeBuilder {
     fn build(&mut self, rng: &mut RandomNumberGenerator, build_data: &mut BuilderMap) {
         // Maze gen
         let mut maze = Grid::new(
-            (build_data.map.width / 2) - 2,
-            (build_data.map.height / 2) - 2,
+            (build_data.width / 2) - 2,
+            (build_data.height / 2) - 2,
             rng,
         );
         maze.generate_maze(build_data);

@@ -49,8 +49,7 @@ impl RoomSorter {
                 .unwrap()
                 .sort_by(|a, b| b.y2.cmp(&a.y2)),
             RoomSort::Central => {
-                let map_center =
-                    rltk::Point::new(build_data.map.width / 2, build_data.map.height / 2);
+                let map_center = rltk::Point::new(build_data.width / 2, build_data.height / 2);
                 let center_sort = |a: &Rect, b: &Rect| {
                     let a_center = a.center();
                     let a_center_pt = rltk::Point::new(a_center.0, a_center.1);

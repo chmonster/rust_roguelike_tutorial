@@ -36,14 +36,14 @@ impl AreaStartingPosition {
     fn build(&mut self, _rng: &mut RandomNumberGenerator, build_data: &mut BuilderMap) {
         let seed_x = match self.x {
             XStart::Left => 1,
-            XStart::Center => build_data.map.width / 2,
-            XStart::Right => build_data.map.width - 2,
+            XStart::Center => build_data.width / 2,
+            XStart::Right => build_data.width - 2,
         };
 
         let seed_y = match self.y {
             YStart::Top => 1,
-            YStart::Center => build_data.map.height / 2,
-            YStart::Bottom => build_data.map.height - 2,
+            YStart::Center => build_data.height / 2,
+            YStart::Bottom => build_data.height - 2,
         };
 
         let mut available_floors: Vec<(usize, f32)> = Vec::new();
@@ -63,8 +63,6 @@ impl AreaStartingPosition {
 
         available_floors.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
 
-        // let start_x = available_floors[0].0 as i32 % build_data.map.width;
-        // let start_y = available_floors[0].0 as i32 / build_data.map.width;
         let (start_x, start_y) = build_data.map.idx_xy(available_floors[0].0);
 
         build_data.starting_position = Some(Position {

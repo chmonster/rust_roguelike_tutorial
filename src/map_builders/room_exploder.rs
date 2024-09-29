@@ -51,7 +51,7 @@ impl RoomExploder {
                                 }
                             }
                             2 => {
-                                if drunk_x < build_data.map.width - 2 {
+                                if drunk_x < build_data.width - 2 {
                                     drunk_x += 1;
                                 }
                             }
@@ -61,7 +61,7 @@ impl RoomExploder {
                                 }
                             }
                             _ => {
-                                if drunk_y < build_data.map.height - 2 {
+                                if drunk_y < build_data.height - 2 {
                                     drunk_y += 1;
                                 }
                             }

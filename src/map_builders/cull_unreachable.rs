@@ -22,8 +22,8 @@ impl CullUnreachable {
         build_data.map.populate_blocked();
         let map_starts: Vec<usize> = vec![start_idx];
         let dijkstra_map = rltk::DijkstraMap::new(
-            build_data.map.width as usize,
-            build_data.map.height as usize,
+            build_data.width as usize,
+            build_data.height as usize,
             &map_starts,
             &build_data.map,
             1000.0,

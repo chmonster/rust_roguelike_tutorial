@@ -1,18 +1,9 @@
-#![allow(unused)]
+//#![allow(unused)]
 
-use super::{gui::LOGHEIGHT, Rect, SCREENHEIGHT, SCREENWIDTH};
-use rltk::{console, Algorithm2D, BaseMap, Point, RandomNumberGenerator, Rltk, RGB};
+use rltk::{/*console,*/ Algorithm2D, BaseMap, Point, /*RandomNumberGenerator, Rltk, RGB,*/};
 use serde::{Deserialize, Serialize};
 use specs::prelude::*;
-use std::cmp::{max, min};
 use std::collections::HashSet;
-
-//pub const MAPWIDTH: usize = SCREENWIDTH as usize;
-//pub const MAPHEIGHT: usize = SCREENHEIGHT as usize - LOGHEIGHT - 1;
-pub const MAPWIDTH: usize = 100;
-pub const MAPHEIGHT: usize = 100;
-
-pub const MAPCOUNT: usize = MAPHEIGHT * MAPWIDTH;
 
 #[derive(PartialEq, Eq, Hash, Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum TileType {
@@ -39,6 +30,23 @@ pub struct Map {
 }
 
 impl Map {
+    /// Generates an empty map, consisting entirely of solid walls
+    pub fn new(new_depth: i32, width: i32, height: i32) -> Map {
+        let map_tile_count = (width * height) as usize;
+        Map {
+            tiles: vec![TileType::Wall; map_tile_count],
+            width,
+            height,
+            revealed_tiles: vec![false; map_tile_count],
+            visible_tiles: vec![false; map_tile_count],
+            blocked: vec![false; map_tile_count],
+            depth: new_depth,
+            bloodstains: HashSet::new(),
+            view_blocked: HashSet::new(),
+            tile_content: vec![Vec::new(); map_tile_count],
+        }
+    }
+
     pub fn xy_idx(&self, x: i32, y: i32) -> usize {
         (y as usize * self.width as usize) + x as usize
     }
@@ -60,39 +68,6 @@ impl Map {
             self.blocked[i] = *tile == TileType::Wall;
         }
     }
-
-    /// Generates an empty map, consisting entirely of solid walls
-    pub fn new(new_depth: i32) -> Map {
-        Map {
-            tiles: vec![TileType::Wall; MAPCOUNT],
-            //rooms: Vec::new(),
-            width: MAPWIDTH as i32,
-            height: MAPHEIGHT as i32,
-            revealed_tiles: vec![false; MAPCOUNT],
-            visible_tiles: vec![false; MAPCOUNT],
-            blocked: vec![false; MAPCOUNT],
-            tile_content: vec![Vec::new(); MAPCOUNT],
-            depth: new_depth,
-            bloodstains: HashSet::new(),
-            view_blocked: HashSet::new(),
-        }
-    }
-
-    /*fn apply_walls_to_limits(&mut self) {
-        // Make the boundaries walls
-        for x in 0..MAPWIDTH{
-            let topidx = self.xy_idx(x, 0);
-            let botidx = self.xy_idx(x, 49);
-            self.tiles[topidx] = TileType::Wall;
-            self.tiles[botidx] = TileType::Wall;
-        }
-        for y in 0..MAPHEIGHT {
-            let leftidx = self.xy_idx(0, y);
-            let rightidx = self.xy_idx(79, y);
-            self.tiles[leftidx] = TileType::Wall;
-            self.tiles[rightidx] = TileType::Wall;
-        }
-    }*/
 
     pub fn clear_content_index(&mut self) {
         for content in self.tile_content.iter_mut() {
@@ -157,9 +132,7 @@ impl BaseMap for Map {
     }
 }
 
-pub fn draw_map(map: &Map, ctx: &mut Rltk) {
-    //let map = ecs.fetch::<Map>();
-
+/*pub fn draw_map(map: &Map, ctx: &mut Rltk) {
     let mut y = 0;
     let mut x = 0;
     for (idx, tile) in map.tiles.iter().enumerate() {
@@ -196,7 +169,7 @@ pub fn draw_map(map: &Map, ctx: &mut Rltk) {
 
         // Move the coordinates
         x += 1;
-        if x >= MAPWIDTH as i32 {
+        if x > (map.width * map.height) - 1 {
             x = 0;
             y += 1;
         }
@@ -204,7 +177,7 @@ pub fn draw_map(map: &Map, ctx: &mut Rltk) {
 }
 
 fn wall_glyph(map: &Map, x: i32, y: i32) -> rltk::FontCharType {
-    if x < 1 || x > map.width - 2 || y < 1 || y > (map.height - 2) {
+    if x < 1 || x > map.width || y < 1 || y > map.height {
         return 35;
     }
     let mut mask: u8 = 0;
@@ -247,3 +220,4 @@ fn is_revealed_and_wall(map: &Map, x: i32, y: i32) -> bool {
     let idx = map.xy_idx(x, y);
     map.tiles[idx] == TileType::Wall && map.revealed_tiles[idx]
 }
+*/

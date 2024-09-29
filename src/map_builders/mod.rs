@@ -1,6 +1,6 @@
 #![allow(unused_imports)]
 
-use super::{spawner, Map, Position, Rect, TileType, MAPHEIGHT, MAPWIDTH, SHOW_MAPGEN_VISUALIZER};
+use super::{spawner, Map, Position, Rect, TileType, SHOW_MAPGEN_VISUALIZER};
 
 mod simple_map;
 
@@ -83,6 +83,8 @@ pub struct BuilderMap {
     pub rooms: Option<Vec<Rect>>,
     pub history: Vec<Map>,
     pub corridors: Option<Vec<Vec<usize>>>,
+    pub width: i32,
+    pub height: i32,
 }
 
 impl BuilderMap {
@@ -104,17 +106,19 @@ pub struct BuilderChain {
 }
 
 impl BuilderChain {
-    pub fn new(new_depth: i32) -> BuilderChain {
+    pub fn new(new_depth: i32, width: i32, height: i32) -> BuilderChain {
         BuilderChain {
             starter: None,
             builders: Vec::new(),
             build_data: BuilderMap {
                 spawn_list: Vec::new(),
-                map: Map::new(new_depth),
+                map: Map::new(new_depth, width, height),
                 starting_position: None,
                 rooms: None,
                 corridors: None,
                 history: Vec::new(),
+                width,
+                height,
             },
         }
     }
@@ -171,9 +175,9 @@ fn random_start_position(rng: &mut rltk::RandomNumberGenerator) -> (XStart, YSta
 }
 
 fn random_room_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut BuilderChain) {
-    //let build_roll = rng.roll_dice(1, 4);
+    let build_roll = rng.roll_dice(1, 4);
     //let build_roll = RUBBLE_ID;
-    let build_roll = 4;
+    //let build_roll = 4;
     match build_roll {
         1 => builder.start_with(BspDungeonBuilder::new()),
         BSP_INTERIOR_ID => builder.start_with(BspInteriorBuilder::new()),
@@ -283,16 +287,21 @@ fn random_shape_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut Bui
     builder.with(DistantExit::new());
 }
 
-pub fn random_builder(new_depth: i32, rng: &mut rltk::RandomNumberGenerator) -> BuilderChain {
-    let mut builder = BuilderChain::new(new_depth);
-    //let type_roll = rng.roll_dice(1, 2);
-    let type_roll = 1;
+pub fn random_builder(
+    new_depth: i32,
+    width: i32,
+    height: i32,
+    rng: &mut rltk::RandomNumberGenerator,
+) -> BuilderChain {
+    let mut builder = BuilderChain::new(new_depth, width, height);
+    let type_roll = rng.roll_dice(1, 2);
+    //let type_roll = 1;
     match type_roll {
         1 => random_room_builder(rng, &mut builder),
         _ => random_shape_builder(rng, &mut builder),
     }
 
-    if rng.roll_dice(1, 5) == 1 {
+    if rng.roll_dice(1, 4) == 1 {
         builder.with(WaveformCollapseBuilder::new());
         //keeps loot, player and exit positions as is.  needs repeat generation
 
@@ -305,7 +314,7 @@ pub fn random_builder(new_depth: i32, rng: &mut rltk::RandomNumberGenerator) -> 
         builder.with(DistantExit::new());
     }
 
-    if rng.roll_dice(1, 10) == 1 {
+    if rng.roll_dice(1, 7) == 1 {
         builder.with(PrefabBuilder::sectional(
             prefab_builder::prefab_sections::UNDERGROUND_FORT,
         ));

@@ -20,7 +20,7 @@ impl RoomDrawer {
         for y in room.y1 + 1..=room.y2 {
             for x in room.x1 + 1..=room.x2 {
                 let idx = build_data.map.xy_idx(x, y);
-                if idx > 0 && idx < ((build_data.map.width * build_data.map.height) - 1) as usize {
+                if idx > 0 && idx < ((build_data.width * build_data.height) - 1) as usize {
                     build_data.map.tiles[idx] = TileType::Floor;
                 }
             }
@@ -67,7 +67,7 @@ impl RoomDrawer {
                 //let dx = 0;
                 let idx = build_data.map.xy_idx(x + dx, y + dy);
                 //console::log(format!("to place: {} {} {}", x + dx, y + dy, idx));
-                if idx > 0 && idx < ((build_data.map.width * build_data.map.height) - 1) as usize {
+                if idx > 0 && idx < ((build_data.width * build_data.height) - 1) as usize {
                     build_data.map.tiles[idx] = TileType::Floor;
                 }
             }
@@ -84,7 +84,7 @@ impl RoomDrawer {
                 let distance =
                     rltk::DistanceAlg::Pythagoras.distance2d(center_pt, rltk::Point::new(x, y));
                 if idx > 0
-                    && idx < ((build_data.map.width * build_data.map.height) - 1) as usize
+                    && idx < ((build_data.width * build_data.height) - 1) as usize
                     && distance <= radius
                 {
                     build_data.map.tiles[idx] = TileType::Floor;

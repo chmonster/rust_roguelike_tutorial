@@ -1,11 +1,12 @@
-#![allow(unused)]
+//#![allow(unused)]
 
 use super::{
     camera, CombatStats, Equipped, GameLog, Hidden, HungerClock, HungerState, InBackpack, Map,
-    Name, Player, Position, RexAssets, RunState, State, Viewshed, /*MAPHEIGHT, MAPWIDTH,*/
-    SCREENHEIGHT, SCREENWIDTH,
+    Name, Player, Position, RexAssets, RunState, State,
+    Viewshed, /*MAPHEIGHT, MAPWIDTH,*/
+              /*SCREENHEIGHT, SCREENWIDTH,*/
 };
-use rltk::{console, Point, Rltk, VirtualKeyCode, RGB};
+use rltk::{/*console,*/ Point, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
 use std::cmp::max;
 
@@ -25,11 +26,14 @@ pub enum MainMenuResult {
 }
 
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
+    let (screen_width, screen_height) = ctx.get_char_size();
+
+    //log box
     ctx.draw_box(
         0,
-        SCREENHEIGHT - LOGHEIGHT - 1,
-        SCREENWIDTH - 1,
-        LOGHEIGHT,
+        screen_height - LOGHEIGHT - 2,
+        screen_width - 1,
+        LOGHEIGHT + 1,
         RGB::named(rltk::WHITE),
         RGB::named(rltk::BLACK),
     );
@@ -49,7 +53,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
 
         ctx.print_color(
             12,
-            SCREENHEIGHT - LOGHEIGHT - 1,
+            screen_height - LOGHEIGHT - 2,
             RGB::named(health_color),
             RGB::named(rltk::BLACK),
             &health,
@@ -57,23 +61,23 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
 
         match hc.state {
             HungerState::WellFed => ctx.print_color(
-                SCREENWIDTH - 9,
-                SCREENHEIGHT - LOGHEIGHT,
+                screen_width - 9,
+                screen_height - LOGHEIGHT - 1,
                 RGB::named(rltk::BLUE),
                 RGB::named(rltk::BLACK),
                 "Well Fed",
             ),
             HungerState::Normal => {}
             HungerState::Hungry => ctx.print_color(
-                SCREENWIDTH - 9,
-                SCREENHEIGHT - LOGHEIGHT,
+                screen_width - 9,
+                screen_height - LOGHEIGHT - 1,
                 RGB::named(rltk::ORANGE),
                 RGB::named(rltk::BLACK),
                 "Hungry",
             ),
             HungerState::Starving => ctx.print_color(
-                SCREENWIDTH - 9,
-                SCREENHEIGHT - LOGHEIGHT,
+                screen_width - 9,
+                screen_height - LOGHEIGHT - 1,
                 RGB::named(rltk::RED),
                 RGB::named(rltk::BLACK),
                 "Starving",
@@ -82,8 +86,8 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
 
         ctx.draw_bar_horizontal(
             28,
-            SCREENHEIGHT - LOGHEIGHT - 1,
-            SCREENWIDTH - 29,
+            screen_height - LOGHEIGHT - 2,
+            screen_width - 29,
             stats.hp,
             stats.max_hp,
             RGB::named(health_color),
@@ -91,13 +95,12 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         );
 
         let log = ecs.fetch::<GameLog>();
-
-        let mut y: i32 = SCREENHEIGHT as i32 - 2;
+        let mut log_y: i32 = screen_height as i32 - 2;
         for s in log.entries.iter().rev() {
-            if y > (SCREENHEIGHT - LOGHEIGHT - 1) as i32 {
-                ctx.print(2, y, s);
+            if log_y > (screen_height - LOGHEIGHT - 2) as i32 {
+                ctx.print(2, log_y, s);
             }
-            y -= 1;
+            log_y -= 1;
         }
     }
 
@@ -106,7 +109,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let depth = format!("Depth: {}", map.depth);
     ctx.print_color(
         2,
-        SCREENHEIGHT - LOGHEIGHT - 1,
+        screen_height - LOGHEIGHT - 2,
         RGB::named(rltk::AQUA),
         RGB::named(rltk::BLACK),
         &depth,
@@ -121,6 +124,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
 
 fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
     let (min_x, _max_x, min_y, _max_y) = camera::get_screen_bounds(ecs, ctx);
+    let (screen_width, _screen_height) = ctx.get_char_size();
 
     let map = ecs.fetch::<Map>();
     let names = ecs.read_storage::<Name>();
@@ -145,7 +149,7 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
 
     let mut tooltip: Vec<String> = Vec::new();
     for (name, position, _hidden) in (&names, &positions, !&hidden).join() {
-        let idx = map.xy_idx(position.x, position.y);
+        //let idx = map.xy_idx(position.x, position.y);
         if position.x == mouse_map_pos.0 && position.y == mouse_map_pos.1 {
             let pos_string = format!("{} {}", position.x, position.y);
             tooltip.push(name.name.to_string());
@@ -164,7 +168,7 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
         //pad for " ->" or "<- "
         width += 3;
 
-        if mouse_pos.0 > SCREENWIDTH as i32 / 2 {
+        if mouse_pos.0 > screen_width as i32 / 2 {
             //item to right of player, draw to left of item
             let arrow_pos = Point::new(mouse_pos.0 - 2, mouse_pos.1);
             let left_x = mouse_pos.0 - width;
@@ -187,7 +191,7 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
                     RGB::named(rltk::BLACK),
                     s,
                 );
-                let padding = (width - 3 - s.len() as i32);
+                let padding = width - 3 - s.len() as i32;
                 for i in 0..padding {
                     ctx.print_color(
                         arrow_pos.x - 2 - i,
@@ -230,7 +234,7 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
                     RGB::named(rltk::BLACK),
                     s,
                 );
-                let padding = (width - 3 - s.len() as i32);
+                let padding = width - 3 - s.len() as i32;
                 //console::log(format!("{} {} {}", width, s.len(), padding));
                 for i in 0..padding {
                     ctx.print_color(
@@ -299,7 +303,7 @@ pub fn show_inventory(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option
 
     let mut equippable: Vec<Entity> = Vec::new();
     //let mut j = 0;
-    for (mut j, (entity, _pack, name)) in (&entities, &backpack, &names)
+    for (j, (entity, _pack, name)) in (&entities, &backpack, &names)
         .join()
         .filter(|item| item.1.owner == *player_entity)
         .enumerate()
@@ -329,7 +333,7 @@ pub fn show_inventory(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option
         ctx.print(21, y, name.name.to_string());
         equippable.push(entity);
         y += 1;
-        j += 1;
+        //j += 1;
     }
 
     match ctx.key {
@@ -387,7 +391,7 @@ pub fn drop_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option
 
     let mut equippable: Vec<Entity> = Vec::new();
 
-    for (mut j, (entity, _pack, name)) in (&entities, &backpack, &names)
+    for (j, (entity, _pack, name)) in (&entities, &backpack, &names)
         .join()
         .filter(|item| item.1.owner == *player_entity)
         .enumerate()
@@ -417,7 +421,7 @@ pub fn drop_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option
         ctx.print(21, y, name.name.to_string());
         equippable.push(entity);
         y += 1;
-        j += 1;
+        //j += 1;
     }
 
     match ctx.key {
@@ -475,7 +479,7 @@ pub fn remove_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Opti
 
     let mut equippable: Vec<Entity> = Vec::new();
     //let mut j = 0;
-    for (mut j, (entity, _pack, name)) in (&entities, &backpack, &names)
+    for (j, (entity, _pack, name)) in (&entities, &backpack, &names)
         .join()
         .filter(|item| item.1.owner == *player_entity)
         .enumerate()
@@ -505,7 +509,7 @@ pub fn remove_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Opti
         ctx.print(21, y, name.name.to_string());
         equippable.push(entity);
         y += 1;
-        j += 1;
+        //j += 1;
     }
 
     match ctx.key {
@@ -583,7 +587,7 @@ pub fn ranged_target(
     if valid_target {
         ctx.set_bg(mouse_pos.0, mouse_pos.1, RGB::named(rltk::CYAN));
 
-        let return_key_hit: bool = match (ctx.key) {
+        let return_key_hit: bool = match ctx.key {
             None => false,
 
             Some(VirtualKeyCode::Return) => true,
@@ -613,6 +617,8 @@ pub enum GameOverResult {
 }
 
 pub fn game_over(ctx: &mut Rltk) -> GameOverResult {
+    let (screen_width, screen_height) = ctx.get_char_size();
+
     let line1 = "Your journey has ended!";
     let line2 = "One day, we'll tell you all about how you did.";
     let line3 = "That day, sadly, is not in this chapter...";
@@ -621,8 +627,8 @@ pub fn game_over(ctx: &mut Rltk) -> GameOverResult {
     let text_width = max(line1.len(), max(line2.len(), max(line3.len(), line4.len())));
     let menu_width = 4 + text_width + text_width % 2;
     let menu_height = 10;
-    let x_offset = (SCREENWIDTH as usize - menu_width) / 2;
-    let y_offset = (SCREENHEIGHT as usize - menu_height) / 2;
+    let x_offset = (screen_width as usize - menu_width) / 2;
+    let y_offset = (screen_height as usize - menu_height) / 2;
 
     ctx.draw_box_double(
         x_offset - 1,
@@ -665,6 +671,8 @@ pub fn game_over(ctx: &mut Rltk) -> GameOverResult {
 }
 
 pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
+    let (screen_width, screen_height) = ctx.get_char_size();
+
     let save_exists = super::saveload_system::does_save_exist();
     let runstate = gs.ecs.fetch::<RunState>();
 
@@ -687,8 +695,8 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
         ),
     );
     let menu_width = 4 + line_width + line_width % 2;
-    let x_offset = (SCREENWIDTH as usize - menu_width) / 2;
-    let y_offset = SCREENHEIGHT - menu_height - 2;
+    let x_offset = (screen_width as usize - menu_width) / 2;
+    let y_offset = screen_height - menu_height - 2;
 
     ctx.draw_box_double(
         x_offset - 1,

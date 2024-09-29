@@ -28,8 +28,8 @@ impl SimpleMapBuilder {
         for _i in 0..MAX_ROOMS {
             let w = rng.range(MIN_SIZE, MAX_SIZE);
             let h = rng.range(MIN_SIZE, MAX_SIZE);
-            let x = rng.roll_dice(1, build_data.map.width - w - 1) - 1;
-            let y = rng.roll_dice(1, build_data.map.height - h - 1) - 1;
+            let x = rng.roll_dice(1, build_data.width - w - 1) - 1;
+            let y = rng.roll_dice(1, build_data.height - h - 1) - 1;
             let new_room = Rect::new(x, y, w, h);
             let mut ok = true;
             for other_room in rooms.iter() {

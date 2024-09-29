@@ -18,8 +18,8 @@ impl RoomCornerRounder {
 
     //TO_FIX: will sometimes cut off corridor access
     fn fill_if_corner(&mut self, x: i32, y: i32, build_data: &mut BuilderMap) {
-        let w = build_data.map.width;
-        let h = build_data.map.height;
+        let w = build_data.width;
+        let h = build_data.height;
         let idx = build_data.map.xy_idx(x, y);
         let mut neighbor_walls = 0;
         if x > 0 && build_data.map.tiles[idx - 1] == TileType::Wall {
