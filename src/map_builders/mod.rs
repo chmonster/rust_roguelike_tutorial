@@ -171,9 +171,9 @@ fn random_start_position(rng: &mut rltk::RandomNumberGenerator) -> (XStart, YSta
 }
 
 fn random_room_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut BuilderChain) {
-    let build_roll = rng.roll_dice(1, 4);
+    //let build_roll = rng.roll_dice(1, 4);
     //let build_roll = RUBBLE_ID;
-    //let build_roll = 4;
+    let build_roll = 4;
     match build_roll {
         1 => builder.start_with(BspDungeonBuilder::new()),
         BSP_INTERIOR_ID => builder.start_with(BspInteriorBuilder::new()),
@@ -198,7 +198,8 @@ fn random_room_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut Buil
             _ => builder.with(RoomSorter::new(RoomSort::Central)),
         }
 
-        let corridor_roll = rng.roll_dice(1, 4);
+        //let corridor_roll = rng.roll_dice(1, 4);
+        let corridor_roll = 3;
         match corridor_roll {
             1 => builder.with(DoglegCorridors::new()),
             2 => builder.with(NearestCorridors::new()),
@@ -284,7 +285,8 @@ fn random_shape_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut Bui
 
 pub fn random_builder(new_depth: i32, rng: &mut rltk::RandomNumberGenerator) -> BuilderChain {
     let mut builder = BuilderChain::new(new_depth);
-    let type_roll = rng.roll_dice(1, 2);
+    //let type_roll = rng.roll_dice(1, 2);
+    let type_roll = 1;
     match type_roll {
         1 => random_room_builder(rng, &mut builder),
         _ => random_shape_builder(rng, &mut builder),

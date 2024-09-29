@@ -63,5 +63,6 @@ impl StraightLineCorridors {
                 build_data.take_snapshot();
             }
         }
+        build_data.corridors = Some(corridors);
     }
 }

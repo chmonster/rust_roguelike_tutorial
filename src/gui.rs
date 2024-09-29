@@ -1,9 +1,9 @@
 #![allow(unused)]
 
 use super::{
-    CombatStats, Equipped, GameLog, Hidden, HungerClock, HungerState, InBackpack, Map, Name,
-    Player, Position, RexAssets, RunState, State, Viewshed, MAPHEIGHT, MAPWIDTH, SCREENHEIGHT,
-    SCREENWIDTH,
+    camera, CombatStats, Equipped, GameLog, Hidden, HungerClock, HungerState, InBackpack, Map,
+    Name, Player, Position, RexAssets, RunState, State, Viewshed, MAPHEIGHT, MAPWIDTH,
+    SCREENHEIGHT, SCREENWIDTH,
 };
 use rltk::{console, Point, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
@@ -112,35 +112,62 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
 }
 
 fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
+    let (min_x, _max_x, min_y, _max_y) = camera::get_screen_bounds(ecs, ctx);
+
     let map = ecs.fetch::<Map>();
     let names = ecs.read_storage::<Name>();
     let positions = ecs.read_storage::<Position>();
     let hidden = ecs.read_storage::<Hidden>();
 
     let mouse_pos = ctx.mouse_pos();
-    if mouse_pos.0 >= map.width || mouse_pos.1 >= map.height {
+    let mut mouse_map_pos = mouse_pos;
+    mouse_map_pos.0 += min_x;
+    mouse_map_pos.1 += min_y;
+
+    if mouse_map_pos.0 >= map.width
+        || mouse_map_pos.1 >= map.height
+        || mouse_map_pos.0 < 1
+        || mouse_map_pos.1 < 1
+    {
         return;
     }
+    if !map.visible_tiles[map.xy_idx(mouse_map_pos.0, mouse_map_pos.1)] {
+        return;
+    }
+
     let mut tooltip: Vec<String> = Vec::new();
     for (name, position, _hidden) in (&names, &positions, !&hidden).join() {
         let idx = map.xy_idx(position.x, position.y);
-        if position.x == mouse_pos.0 && position.y == mouse_pos.1 && map.visible_tiles[idx] {
+        if position.x == mouse_map_pos.0 && position.y == mouse_map_pos.1 {
+            //let name_string_len = name.name.to_string().len();
+            let pos_string = format!("{} {}", position.x, position.y);
             tooltip.push(name.name.to_string());
+            tooltip.push(pos_string);
             //debug
-            tooltip.push(format!(" {} {}", position.x, position.y));
+            // let mut padding = String::new();
+            // if (name_string_len > 5) {
+            //     for _i in 1..(name_string_len - 3) {
+            //         padding.push(' ');
+            //     }
+            // }
+            // tooltip.push(format!("{}{} {}", padding, position.x, position.y));
+            // tooltip.push
         }
     }
 
     if !tooltip.is_empty() {
+        //get width of longest string in tooltip
         let mut width: i32 = 0;
         for s in tooltip.iter() {
             if width < s.len() as i32 {
                 width = s.len() as i32;
             }
         }
+        //pad for " ->" or "<- "
         width += 3;
 
-        if mouse_pos.0 > 40 {
+        if mouse_pos.0 > SCREENWIDTH as i32 / 2 {
+            //item to right of player, draw to left of item
             let arrow_pos = Point::new(mouse_pos.0 - 2, mouse_pos.1);
             let left_x = mouse_pos.0 - width;
             let mut y = mouse_pos.1;
@@ -172,10 +199,12 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
                 "->".to_string(),
             );
         } else {
+            //item to left of player, draw to right of item
             let arrow_pos = Point::new(mouse_pos.0 + 1, mouse_pos.1);
             let left_x = mouse_pos.0 + 3;
             let mut y = mouse_pos.1;
             for s in tooltip.iter() {
+                //console::log(s);
                 ctx.print_color(
                     left_x + 1,
                     y,
@@ -183,10 +212,11 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
                     RGB::named(rltk::BLACK),
                     s,
                 );
-                let padding = (width - s.len() as i32) - 1;
+                let padding = (width - 3 - s.len() as i32);
+                //console::log(format!("{} {} {}", width, s.len(), padding));
                 for i in 0..padding {
                     ctx.print_color(
-                        arrow_pos.x + 1 + i,
+                        arrow_pos.x + s.len() as i32 + 3 + i,
                         y,
                         RGB::named(rltk::WHITE),
                         RGB::named(rltk::BLACK),

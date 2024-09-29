@@ -12,6 +12,7 @@ const MAX_HISTORY_TIME: f32 = 10000.0;
 
 mod components;
 pub use components::*;
+pub mod camera;
 mod map;
 pub use map::*;
 mod player;
@@ -136,26 +137,6 @@ impl State {
         // Spawn bad guys
         builder.spawn_entities(&mut self.ecs, new_depth);
 
-        /*
-            fn generate_world_map(&mut self, new_depth: i32) {
-                self.mapgen_index = 0;
-                self.mapgen_timer = 0.0;
-                self.mapgen_history.clear();
-
-                let mut builder = map_builders::random_builder(new_depth);
-                builder.build_map();
-                self.mapgen_history = builder.get_snapshot_history();
-                let player_start;
-
-                {
-                    let mut worldmap_resource = self.ecs.write_resource::<Map>();
-                    *worldmap_resource = builder.get_map();
-                    player_start = builder.get_starting_position();
-                }
-
-                // Spawn bad guys
-                builder.spawn_entities(&mut self.ecs, new_depth);
-        */
         // Place the player and update resources
         let (player_x, player_y) = (player_start.x, player_start.y);
         let mut player_position = self.ecs.write_resource::<Point>();
@@ -288,7 +269,13 @@ impl GameState for State {
 
         match newrunstate {
             RunState::MainMenu { .. } => {}
+            RunState::GameOver { .. } => {}
+
             _ => {
+                camera::render_camera(&self.ecs, ctx);
+                gui::draw_ui(&self.ecs, ctx);
+
+                /*
                 draw_map(&self.ecs.fetch::<Map>(), ctx);
 
                 {
@@ -310,6 +297,7 @@ impl GameState for State {
 
                     gui::draw_ui(&self.ecs, ctx);
                 }
+                */
             }
         }
 
