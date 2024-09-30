@@ -18,22 +18,25 @@
 - Unicode (post-ASCII) tile art
   - custom tiles have already been widely explored
   - but CP437 is a cliche
+  - Requires elbow-deep work in Rltk
 - extending the grid
   - Grid edge topological connections and wraparounds
   - Torus, Platonic solids (cube, dodecahedron, icosahedron), Sphere, Dyson sphere, Klein bottle, Pyramid
   - Random terrain generation integrated with zone theme
 - Word balloon conversations
   - tooltip-like
-  - possibly with crpg-type conversation options
+  - possibly with crpg-type conversation options (Baldur's Gate)
 ### Entities
 - Doors leading to unconnected spaces (ie non random teleport)
+- What else can traps, walls, water do?
 - different takes on rpg mobs, races, loot etc.
   - Gold not taken as currency?
   - Guns, parachutes, vehicles?
 - item use not necessarily revealed on acquisition
-  - avoiding rogue/rpg item cliches
-  - Use of chaos as appropriate to plot/progression
-
+  - avoiding rogue/rpg item cliches  
+- Mobs operating outside turn cycle - pseudo-realtime gameplay
+  - eg random swarm, acting each tick rather than each turn
+- Use of chaos as appropriate to plot/progression
 ### Controls
 - Minimalist controls and UI
   - WASM/browser
@@ -53,7 +56,7 @@
     - rapid path to location
 ### Game saves and loads
 - WASM is sandboxed
-  - can cookies, browser storage
+  - are cookies, browser storage possible
     - clearing cookies will delete character progress
   - external save import/export files?
 
@@ -65,17 +68,24 @@
     - abilities and stats randomized but not known at start
       - incrementally revealed during gameplay
   - zone bosses/npcs talk about progress meta-textually
-    - npcs refer to literary/philosophical figures (as the pc does)
+    - npcs refer to literary/philosophical figures (as the pc does) or even pop culture
+      - Socrates, Sartre, Mickey Mouse
+      - definitely a talking Minotaur for the maze
+      - Kafka final boss?
     - while still alluding to rogue/rpg stereotypes (dragons, demons etc)
   ### Plot
   - character starts in a little room
   - leaves and enters a series of weird levels
+    - linear with side missions
   - travels through zones - multiple levels within a zone sharing topology and features
     - map topology is plot appropriate
     - figuring out how the map works is part of the game
     - unique items at end of zone
       - matching zone shape - orb, D20, magic donut
       - opening new UI features, stat knowledge, etc, instead of just new abilities
-      - effectively gates to get to the next zone
+      - effectively gates to get to the next zone 
+        - magic key but you have to do something other than opening a door
+          - jump, fly, zap, eat?
+  - self-aware hero's journey
   - at the end, transcendence
     - replayability options granted?
