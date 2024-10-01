@@ -66,7 +66,7 @@ impl PrefabBuilder {
 
     #[allow(dead_code)]
     pub fn sectional(section: prefab_sections::PrefabSection) -> Box<PrefabBuilder> {
-        console::log(format!("section {}", section.template.len()));
+        //console::log(format!("section {}", section.template.len()));
         Box::new(PrefabBuilder {
             mode: PrefabMode::Sectional { section },
         })

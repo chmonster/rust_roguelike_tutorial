@@ -1,7 +1,7 @@
 #![allow(unused)]
 use super::{
-    AreaOfEffect, BlocksTile, BlocksVisibility, CombatStats, Confusion, Consumable, DefenseBonus,
-    Door, EntryTrigger, EquipmentSlot, Equippable, Hidden, HungerClock, HungerState,
+    data::*, AreaOfEffect, BlocksTile, BlocksVisibility, CombatStats, Confusion, Consumable,
+    DefenseBonus, Door, EntryTrigger, EquipmentSlot, Equippable, Hidden, HungerClock, HungerState,
     InflictsDamage, Item, MagicMapper, Map, MeleePowerBonus, Monster, Name, Player, Position,
     ProvidesFood, ProvidesHealing, RandomTable, Ranged, Rect, Renderable, SerializeMe,
     SingleActivation, TileType, Viewshed,
@@ -9,6 +9,7 @@ use super::{
 use rltk::{console, RandomNumberGenerator, RGB};
 use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
+use std::cmp::max;
 use std::collections::HashMap;
 
 const BASE_SPAWN_NUMBER: i32 = 4;
@@ -17,19 +18,22 @@ const AVG_ROOM_SIZE: i32 = 8 * 8;
 
 fn room_table(map_depth: i32) -> RandomTable {
     RandomTable::new()
-        .add("Goblin", 10)
+        .add("Kobold", max(0, 10 - map_depth))
         .add("Orc", 1 + map_depth)
+        .add("Goblin", 5)
         .add("Health Potion", 7)
         .add("Fireball Scroll", 2 + map_depth)
         .add("Confusion Scroll", 2 + map_depth)
         .add("Magic Missile Scroll", 4)
+        .add("Magic Mapping Scroll", 4)
         .add("Dagger", 3)
         .add("Shield", 3)
         .add("Longsword", map_depth - 1)
         .add("Tower Shield", map_depth - 1)
-        .add("Rations", 10)
-        .add("Magic Mapping Scroll", 4)
+        .add("Rations", 5)
+        .add("Apple", 10)
         .add("Bear Trap", 10)
+        .add("Fire Trap", 5 + map_depth)
 }
 
 #[allow(clippy::map_entry)]
@@ -104,23 +108,20 @@ pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String), map_depth: i32) 
     let (x, y) = map.idx_xy(*spawn.0);
     std::mem::drop(map);
 
-    match spawn.1.as_ref() {
-        "Goblin" => goblin(ecs, x, y, map_depth),
-        "Orc" => orc(ecs, x, y, map_depth),
-        "Health Potion" => health_potion(ecs, x, y),
-        "Fireball Scroll" => fireball_scroll(ecs, x, y),
-        "Confusion Scroll" => confusion_scroll(ecs, x, y),
-        "Magic Missile Scroll" => magic_missile_scroll(ecs, x, y),
-        "Dagger" => dagger(ecs, x, y),
-        "Shield" => shield(ecs, x, y),
-        "Longsword" => longsword(ecs, x, y),
-        "Tower Shield" => tower_shield(ecs, x, y),
-        "Rations" => rations(ecs, x, y),
-        "Magic Mapping Scroll" => magic_mapping_scroll(ecs, x, y),
-        "Bear Trap" => bear_trap(ecs, x, y),
-        "Door" => door(ecs, x, y),
-        _ => {}
+    let spawn_result = spawn_named_entity(
+        &DATA.lock().unwrap(),
+        ecs.create_entity(),
+        spawn.1,
+        SpawnType::AtPosition { x, y },
+    );
+    if spawn_result.is_some() {
+        return;
     }
+
+    rltk::console::log(format!(
+        "WARNING: We don't know how to spawn [{}]!",
+        spawn.1
+    ));
 }
 
 /// Spawns the player and returns his/her entity object.

@@ -44,7 +44,7 @@ impl RandomTable {
         let mut roll = rng.roll_dice(1, self.total_weight) - 1;
         let mut index: usize = 0;
 
-        while roll > 0 {
+        while roll >= 0 {
             if roll < self.entries[index].weight {
                 return self.entries[index].name.clone();
             }

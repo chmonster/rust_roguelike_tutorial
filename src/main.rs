@@ -12,6 +12,8 @@ const MAX_HISTORY_TIME: f32 = 10000.0;
 
 mod components;
 pub use components::*;
+pub mod data;
+//pub use data::*;
 pub mod camera;
 mod map;
 pub use map::*;
@@ -44,6 +46,9 @@ pub mod map_builders;
 pub mod saveload_system;
 mod spawner;
 pub mod trigger_system;
+
+#[macro_use]
+extern crate lazy_static;
 
 const SCREENWIDTH: u32 = 80;
 const SCREENHEIGHT: u32 = 40;
@@ -121,6 +126,7 @@ impl State {
         let mut builder = map_builders::random_builder(new_depth, 64, 64, &mut rng);
         builder.build_map(&mut rng);
         std::mem::drop(rng);
+
         self.mapgen_history = builder.build_data.history.clone();
         let player_start;
         {
@@ -274,30 +280,6 @@ impl GameState for State {
             _ => {
                 camera::render_camera(&self.ecs, ctx);
                 gui::draw_ui(&self.ecs, ctx);
-
-                /*
-                draw_map(&self.ecs.fetch::<Map>(), ctx);
-
-                {
-                    let positions = self.ecs.read_storage::<Position>();
-                    let renderables = self.ecs.read_storage::<Renderable>();
-                    let hidden = self.ecs.read_storage::<Hidden>();
-                    let map = self.ecs.fetch::<Map>();
-
-                    let mut data = (&positions, &renderables, !&hidden)
-                        .join()
-                        .collect::<Vec<_>>();
-                    data.sort_by(|&a, &b| b.1.render_order.cmp(&a.1.render_order));
-                    for (pos, render, _hidden) in data.iter() {
-                        let idx = map.xy_idx(pos.x, pos.y);
-                        if map.visible_tiles[idx] {
-                            ctx.set(pos.x, pos.y, render.fg, render.bg, render.glyph)
-                        }
-                    }
-
-                    gui::draw_ui(&self.ecs, ctx);
-                }
-                */
             }
         }
 
@@ -570,6 +552,8 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Door>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
+
+    data::load_data();
 
     gs.ecs.insert(Map::new(1, 64, 64));
     gs.ecs.insert(Point::new(0, 0));

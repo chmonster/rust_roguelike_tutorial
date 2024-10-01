@@ -175,8 +175,8 @@ fn random_start_position(rng: &mut rltk::RandomNumberGenerator) -> (XStart, YSta
 }
 
 fn random_room_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut BuilderChain) {
-    let build_roll = rng.roll_dice(1, 4);
-    //let build_roll = RUBBLE_ID;
+    //let build_roll = rng.roll_dice(1, 4);
+    let build_roll = RUBBLE_ID;
     //let build_roll = 4;
     match build_roll {
         1 => builder.start_with(BspDungeonBuilder::new()),
