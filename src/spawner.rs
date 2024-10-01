@@ -17,23 +17,7 @@ const MAX_ITEMS: i32 = 4;
 const AVG_ROOM_SIZE: i32 = 8 * 8;
 
 fn room_table(map_depth: i32) -> RandomTable {
-    RandomTable::new()
-        .add("Kobold", max(0, 10 - map_depth))
-        .add("Orc", 1 + map_depth)
-        .add("Goblin", 5)
-        .add("Health Potion", 7)
-        .add("Fireball Scroll", 2 + map_depth)
-        .add("Confusion Scroll", 2 + map_depth)
-        .add("Magic Missile Scroll", 4)
-        .add("Magic Mapping Scroll", 4)
-        .add("Dagger", 3)
-        .add("Shield", 3)
-        .add("Longsword", map_depth - 1)
-        .add("Tower Shield", map_depth - 1)
-        .add("Rations", 5)
-        .add("Apple", 10)
-        .add("Bear Trap", 10)
-        .add("Fire Trap", 5 + map_depth)
+    get_spawn_table_for_depth(&DATA.lock().unwrap(), map_depth)
 }
 
 #[allow(clippy::map_entry)]

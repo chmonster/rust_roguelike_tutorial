@@ -7,8 +7,13 @@ mod mob_structs;
 use mob_structs::*;
 mod prop_structs;
 use prop_structs::*;
+mod spawn_table_structs;
+use spawn_table_structs::*;
 mod data_master;
 pub use data_master::*;
+
+use crate::random_table::RandomTable;
+
 use serde::Deserialize;
 use std::sync::Mutex;
 
@@ -23,6 +28,7 @@ pub struct Data {
     pub items: Vec<Item>,
     pub mobs: Vec<Mob>,
     pub props: Vec<Prop>,
+    pub spawn_table: Vec<SpawnTableEntry>,
 }
 
 pub fn load_data() {
