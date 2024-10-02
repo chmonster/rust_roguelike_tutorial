@@ -36,22 +36,34 @@
         },
         { "name": "Dagger", "weight": 3, "min_depth": 0, "max_depth": 100 },
         { "name": "Shield", "weight": 3, "min_depth": 0, "max_depth": 100 },
-        { "name": "Longsword", "weight": 1, "min_depth": 1, "max_depth": 100 },
+        {
+            "name": "Longsword",
+            "weight": 1,
+            "min_depth": 1,
+            "max_depth": 100,
+            "add_map_depth_to_weight": true
+        },
         {
             "name": "Tower Shield",
             "weight": 1,
-            "min_depth": 1,
-            "max_depth": 100
+            "min_depth": 2,
+            "max_depth": 100,
+            "add_map_depth_to_weight": true
         },
         { "name": "Rations", "weight": 10, "min_depth": 0, "max_depth": 100 },
+        { "name": "Apple", "weight": 5, "min_depth": 2, "max_depth": 100 },
         {
             "name": "Magic Mapping Scroll",
             "weight": 2,
             "min_depth": 0,
             "max_depth": 100
         },
-        { "name": "Bear Trap", "weight": 5, "min_depth": 0, "max_depth": 100 }
+        { "name": "Bear Trap", "weight": 5, "min_depth": 0, "max_depth": 100 },
+        { "name": "Fire Trap", "weight": 2, "min_depth": 2, "max_depth": 100 },
+        { "name": "Battleaxe", "weight": 1, "min_depth": 3, "max_depth": 100 },
+        { "name": "Kobold", "weight": 15, "min_depth": 0, "max_depth": 3 }
     ],
+
     "items": [
         {
             "name": "Health Potion",
@@ -214,6 +226,20 @@
             "shield": {
                 "defense_bonus": 3
             }
+        },
+
+        {
+            "name": "Battleaxe",
+            "renderable": {
+                "glyph": "¶",
+                "fg": "#FF55FF",
+                "bg": "#000000",
+                "order": 2
+            },
+            "weapon": {
+                "range": "melee",
+                "power_bonus": 5
+            }
         }
     ],
 
@@ -231,7 +257,7 @@
                 "max_hp": 16,
                 "hp": 16,
                 "defense": 1,
-                "power": 4
+                "power": 5
             },
             "vision_range": 10
         },
@@ -249,7 +275,7 @@
                 "max_hp": 8,
                 "hp": 8,
                 "defense": 1,
-                "power": 3
+                "power": 4
             },
             "vision_range": 8
         },
@@ -267,7 +293,7 @@
                 "max_hp": 4,
                 "hp": 4,
                 "defense": 1,
-                "power": 2
+                "power": 3
             },
             "vision_range": 6
         }
@@ -303,7 +329,8 @@
                 "effects": {
                     "damage": "6"
                 }
-            }
+            },
+            "add_map_depth_to_weight": true
         },
         {
             "name": "Door",

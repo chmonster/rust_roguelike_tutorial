@@ -45,6 +45,6 @@ pub fn load_data() {
 
     DATA.lock().unwrap().load(decoder);
 
-    let decoder: Data = serde_json::from_str(raw_string).expect("Unable to parse JSON");
-    rltk::console::log(format!("{:?}", decoder));
+    //let decoder: Data = serde_json::from_str(raw_string).expect("Unable to parse JSON");
+    //rltk::console::log(format!("{:?}", decoder));
 }
