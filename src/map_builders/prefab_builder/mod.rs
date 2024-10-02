@@ -90,6 +90,7 @@ impl PrefabBuilder {
         build_data.take_snapshot();
     }
 
+    //TODO: handle characters with multiple spawn possibilities (Rations/Apple, Dagger/Longsword, etc)
     fn char_to_map(&mut self, ch: char, idx: usize, build_data: &mut BuilderMap) {
         match ch {
             ' ' => build_data.map.tiles[idx] = TileType::Floor,
