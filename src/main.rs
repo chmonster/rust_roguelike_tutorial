@@ -6,8 +6,8 @@ use rltk::{/*console,*/ GameState, Point, /*RandomNumberGenerator,*/ Rltk};
 use specs::prelude::*;
 use specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 
-const SHOW_MAPGEN_VISUALIZER: bool = false;
-//const SHOW_MAPGEN_VISUALIZER: bool = true;
+//const SHOW_MAPGEN_VISUALIZER: bool = false;
+const SHOW_MAPGEN_VISUALIZER: bool = true;
 const MAX_HISTORY_TIME: f32 = 10000.0;
 
 mod components;
@@ -123,7 +123,7 @@ impl State {
         self.mapgen_timer = 0.0;
         self.mapgen_history.clear();
         let mut rng = self.ecs.write_resource::<rltk::RandomNumberGenerator>();
-        let mut builder = map_builders::random_builder(new_depth, 64, 64, &mut rng);
+        let mut builder = map_builders::level_builder(new_depth, &mut rng, 80, 50);
         builder.build_map(&mut rng);
         std::mem::drop(rng);
 

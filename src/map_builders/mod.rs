@@ -1,6 +1,6 @@
 #![allow(unused_imports)]
 
-use super::{spawner, Map, Position, Rect, TileType, SHOW_MAPGEN_VISUALIZER};
+use super::{map::*, spawner, Map, Position, Rect, TileType, SHOW_MAPGEN_VISUALIZER};
 
 mod simple_map;
 
@@ -62,6 +62,8 @@ mod room_corridor_spawner;
 use room_corridor_spawner::CorridorSpawner;
 mod door_placement;
 use door_placement::DoorPlacement;
+mod town;
+use town::town_builder;
 
 //marked for special builder restrictions
 //must match positions in build_roll block
@@ -153,6 +155,19 @@ impl BuilderChain {
         for entity in self.build_data.spawn_list.iter() {
             spawner::spawn_entity(ecs, &(&entity.0, &entity.1), map_depth);
         }
+    }
+}
+
+pub fn level_builder(
+    new_depth: i32,
+    rng: &mut rltk::RandomNumberGenerator,
+    width: i32,
+    height: i32,
+) -> BuilderChain {
+    rltk::console::log(format!("Depth: {}", new_depth));
+    match new_depth {
+        1 => town_builder(new_depth, rng, width, height),
+        _ => random_builder(new_depth, rng, width, height),
     }
 }
 
@@ -289,9 +304,9 @@ fn random_shape_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut Bui
 
 pub fn random_builder(
     new_depth: i32,
+    rng: &mut rltk::RandomNumberGenerator,
     width: i32,
     height: i32,
-    rng: &mut rltk::RandomNumberGenerator,
 ) -> BuilderChain {
     let mut builder = BuilderChain::new(new_depth, width, height);
     let type_roll = rng.roll_dice(1, 2);
