@@ -100,7 +100,8 @@ pub fn save_game(ecs: &mut World) {
             EntityMoved,
             SingleActivation,
             BlocksVisibility,
-            Door
+            Door,
+            Bystander
         );
     }
 
@@ -177,7 +178,8 @@ pub fn load_game(ecs: &mut World) {
             EntityMoved,
             SingleActivation,
             BlocksVisibility,
-            Door
+            Door,
+            Bystander
         );
     }
 

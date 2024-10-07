@@ -1,6 +1,6 @@
 //#![allow(unused)]
 
-use rltk::{/*console,*/ Algorithm2D, BaseMap, Point, /*RandomNumberGenerator, Rltk, RGB,*/};
+use rltk::{/*console,*/ Algorithm2D, BaseMap, Point};
 use serde::{Deserialize, Serialize};
 use specs::prelude::*;
 use std::collections::HashSet;
