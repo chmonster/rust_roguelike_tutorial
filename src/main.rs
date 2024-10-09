@@ -42,6 +42,7 @@ pub mod hunger_system;
 pub mod particle_system;
 pub mod rex_assets;
 use rex_assets::RexAssets;
+pub mod bystander_ai_system;
 pub mod map_builders;
 pub mod saveload_system;
 mod spawner;
@@ -114,6 +115,8 @@ impl State {
         hunger.run_now(&self.ecs);
         let mut particles = particle_system::ParticleSpawnSystem {};
         particles.run_now(&self.ecs);
+        let mut bystander = bystander_ai_system::BystanderAI {};
+        bystander.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -551,6 +554,8 @@ fn main() -> rltk::BError {
     gs.ecs.register::<BlocksVisibility>();
     gs.ecs.register::<Door>();
     gs.ecs.register::<Bystander>();
+    gs.ecs.register::<Vendor>();
+    gs.ecs.register::<Quips>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

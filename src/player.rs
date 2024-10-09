@@ -3,7 +3,7 @@
 use super::{
     BlocksTile, BlocksVisibility, Bystander, CombatStats, Door, EntityMoved, GameLog, HungerClock,
     HungerState, Item, Map, Monster, Player, Position, Renderable, RunState, State, TileType,
-    Viewshed, WantsToMelee, WantsToPickupItem,
+    Vendor, Viewshed, WantsToMelee, WantsToPickupItem,
 };
 use rltk::{console, Point, Rltk, VirtualKeyCode};
 use specs::prelude::*;
@@ -24,6 +24,8 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let mut renderables = ecs.write_storage::<Renderable>();
 
     let bystanders = ecs.read_storage::<Bystander>();
+    let vendors = ecs.read_storage::<Vendor>();
+
     let mut swap_entities: Vec<(Entity, i32, i32)> = Vec::new();
 
     for (entity, _player, pos, viewshed) in
@@ -41,6 +43,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
         for potential_target in map.tile_content[destination_idx].iter() {
             //handle bystanders: swap positions instead of attacking
             let bystander = bystanders.get(*potential_target);
+            let vendor = vendors.get(*potential_target);
             if bystander.is_some() {
                 // Note that we want to move the bystander
                 swap_entities.push((*potential_target, pos.x, pos.y));
