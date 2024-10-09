@@ -1,10 +1,10 @@
 #![allow(unused)]
 
 use super::{
-    particle_system::ParticleBuilder, Confusion, EntityMoved, Map, Monster, Position, RunState,
-    Viewshed, WantsToMelee,
+    particle_system::ParticleBuilder, Confusion, EntityMoved, GameLog, Map, Monster, Name,
+    Position, Quips, RunState, Viewshed, WantsToMelee,
 };
-use rltk::Point;
+use rltk::{Point, RandomNumberGenerator};
 use specs::prelude::*;
 
 pub struct MonsterAI {}
@@ -19,11 +19,15 @@ impl<'a> System<'a> for MonsterAI {
         Entities<'a>,
         WriteStorage<'a, Viewshed>,
         ReadStorage<'a, Monster>,
+        ReadStorage<'a, Name>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, WantsToMelee>,
         WriteStorage<'a, Confusion>,
         WriteExpect<'a, ParticleBuilder>,
         WriteStorage<'a, EntityMoved>,
+        WriteStorage<'a, Quips>,
+        WriteExpect<'a, rltk::RandomNumberGenerator>,
+        WriteExpect<'a, GameLog>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -35,21 +39,47 @@ impl<'a> System<'a> for MonsterAI {
             entities,
             mut viewshed,
             monster,
+            names,
             mut position,
             mut wants_to_melee,
             mut confused,
             mut particle_builder,
             mut entity_moved,
+            mut quips,
+            mut rng,
+            mut gamelog,
         ) = data;
 
         if *runstate != RunState::MonsterTurn {
             return;
         }
 
-        for (entity, mut viewshed, _monster, mut pos) in
+        for (entity, mut viewshed, monster, mut pos) in
             (&entities, &mut viewshed, &monster, &mut position).join()
         {
             let mut can_act = true;
+
+            // Possibly quip
+            let quip = quips.get_mut(entity);
+            if let Some(quip) = quip {
+                if !quip.available.is_empty()
+                    && viewshed.visible_tiles.contains(&player_pos)
+                    && rng.roll_dice(1, 6) == 1
+                {
+                    let name = names.get(entity);
+                    let quip_index = if quip.available.len() == 1 {
+                        0
+                    } else {
+                        (rng.roll_dice(1, quip.available.len() as i32) - 1) as usize
+                    };
+                    gamelog.entries.push(format!(
+                        "{} growls \"{}\"",
+                        name.unwrap().name,
+                        quip.available[quip_index]
+                    ));
+                    quip.available.remove(quip_index);
+                }
+            }
 
             let is_confused = confused.get_mut(entity);
             if let Some(i_am_confused) = is_confused {
