@@ -24,9 +24,7 @@ pub fn town_builder(
 ) -> BuilderChain {
     let mut chain = BuilderChain::new(new_depth, width, height);
     chain.start_with(TownBuilder::new());
-    //let (start_x, start_y) = super::random_start_position(rng);
-    //chain.with(AreaStartingPosition::new(start_x, start_y));
-    //chain.with(DistantExit::new());
+
     chain
 }
 
@@ -42,6 +40,46 @@ impl InitialMapBuilder for TownBuilder {
 impl TownBuilder {
     pub fn new() -> Box<TownBuilder> {
         Box::new(TownBuilder {})
+    }
+
+    fn spawn_dockers(
+        &mut self,
+        build_data: &mut BuilderMap,
+        rng: &mut rltk::RandomNumberGenerator,
+    ) {
+        for (idx, tt) in build_data.map.tiles.iter().enumerate() {
+            if *tt == TileType::Bridge && rng.roll_dice(1, 6) == 1 {
+                let roll = rng.roll_dice(1, 3);
+                match roll {
+                    1 => build_data.spawn_list.push((idx, "Dock Worker".to_string())),
+                    2 => build_data
+                        .spawn_list
+                        .push((idx, "Wannabe Pirate".to_string())),
+                    _ => build_data.spawn_list.push((idx, "Fisher".to_string())),
+                }
+            }
+        }
+    }
+
+    fn spawn_townsfolk(
+        &mut self,
+        build_data: &mut BuilderMap,
+        rng: &mut rltk::RandomNumberGenerator,
+        available_building_tiles: &mut HashSet<usize>,
+    ) {
+        for idx in available_building_tiles.iter() {
+            if rng.roll_dice(1, 10) == 1 {
+                let roll = rng.roll_dice(1, 4);
+                match roll {
+                    1 => build_data.spawn_list.push((*idx, "Peasant".to_string())),
+                    2 => build_data.spawn_list.push((*idx, "Drunk".to_string())),
+                    3 => build_data
+                        .spawn_list
+                        .push((*idx, "Dock Worker".to_string())),
+                    _ => build_data.spawn_list.push((*idx, "Fisher".to_string())),
+                }
+            }
+        }
     }
 
     pub fn build_rooms(
@@ -63,6 +101,10 @@ impl TownBuilder {
         //find pub, largest building on the map
         let building_size = self.sort_buildings(&buildings);
         self.building_factory(rng, build_data, &buildings, &building_size);
+
+        //outdoor friendly mobs
+        self.spawn_dockers(build_data, rng);
+        self.spawn_townsfolk(build_data, rng, &mut available_building_tiles);
 
         // Start in the pub
         let the_pub = &buildings[building_size[0].0];
@@ -119,7 +161,7 @@ impl TownBuilder {
                 BuildingTag::Alchemist => self.build_alchemist(building, build_data, rng),
                 BuildingTag::PlayerHouse => self.build_my_house(building, build_data, rng),
                 BuildingTag::Hovel => self.build_hovel(building, build_data, rng),
-                BuildingTag::Abandoned => self.build_abandoned_house(&building, build_data, rng),
+                BuildingTag::Abandoned => self.build_abandoned_house(building, build_data, rng),
 
                 _ => {}
             }
