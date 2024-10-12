@@ -7,6 +7,8 @@ use specs::prelude::*;
 use specs::saveload::{ConvertSaveload, Marker};
 use specs_derive::*;
 
+use std::collections::HashMap;
+
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct Position {
     pub x: i32,
@@ -44,6 +46,7 @@ pub struct Viewshed {
 #[derive(Component, Serialize, Deserialize, Clone)]
 pub struct BlocksTile {}
 
+/*
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct CombatStats {
     pub max_hp: i32,
@@ -51,6 +54,8 @@ pub struct CombatStats {
     pub defense: i32,
     pub power: i32,
 }
+ */
+
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct WantsToMelee {
     pub target: Entity,
@@ -233,4 +238,30 @@ pub struct Attributes {
     pub fitness: Attribute,
     pub quickness: Attribute,
     pub intelligence: Attribute,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Hash)]
+pub enum Skill {
+    Melee,
+    Defense,
+    Magic,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Skills {
+    pub skills: HashMap<Skill, i32>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Pool {
+    pub max: i32,
+    pub current: i32,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Pools {
+    pub hit_points: Pool,
+    pub mana: Pool,
+    pub xp: i32,
+    pub level: i32,
 }

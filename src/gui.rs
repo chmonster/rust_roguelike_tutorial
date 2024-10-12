@@ -1,8 +1,8 @@
 //#![allow(unused)]
 
 use super::{
-    camera, CombatStats, Equipped, GameLog, Hidden, HungerClock, HungerState, InBackpack, Map,
-    Name, Player, Position, RexAssets, RunState, State,
+    camera, Equipped, GameLog, Hidden, HungerClock, HungerState, InBackpack, Map, Name, Player,
+    Pools, Position, RexAssets, RunState, State,
     Viewshed, /*MAPHEIGHT, MAPWIDTH,*/
               /*SCREENHEIGHT, SCREENWIDTH,*/
 };
@@ -38,13 +38,16 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         RGB::named(rltk::BLACK),
     );
 
-    let combat_stats = ecs.read_storage::<CombatStats>();
+    let combat_stats = ecs.read_storage::<Pools>();
     let players = ecs.read_storage::<Player>();
     let hunger = ecs.read_storage::<HungerClock>();
 
     for (_player, stats, hc) in (&players, &combat_stats, &hunger).join() {
-        let health = format!(" HP: {} / {} ", stats.hp, stats.max_hp);
-        let health_color = match stats.hp {
+        let health = format!(
+            " HP: {} / {} ",
+            stats.hit_points.current, stats.hit_points.max
+        );
+        let health_color = match stats.hit_points.current {
             20..=30 => rltk::GREEN,
             10..=19 => rltk::ORANGE,
             1..=9 => rltk::RED,
@@ -88,8 +91,8 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
             28,
             screen_height - LOGHEIGHT - 2,
             screen_width - 29,
-            stats.hp,
-            stats.max_hp,
+            stats.hit_points.current,
+            stats.hit_points.max,
             RGB::named(health_color),
             RGB::named(rltk::BLACK),
         );

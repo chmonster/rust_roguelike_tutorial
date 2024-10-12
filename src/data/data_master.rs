@@ -1,6 +1,6 @@
 use super::{Data, RandomTable};
-use crate::attr_bonus;
 use crate::components::*;
+use crate::gamesystem::*;
 use specs::prelude::*;
 use std::collections::{HashMap, HashSet};
 
@@ -269,13 +269,15 @@ pub fn spawn_named_mob(
             eb = eb.with(BlocksTile {});
         }
 
-        eb = eb.with(CombatStats {
+        /*eb = eb.with(CombatStats {
             max_hp: mob_template.stats.max_hp,
             hp: mob_template.stats.hp,
             power: mob_template.stats.power,
             defense: mob_template.stats.defense,
-        });
+        });*/
 
+        let mut mob_fitness = 11;
+        let mut mob_int = 11;
         let mut attr = Attributes {
             might: Attribute {
                 base: 11,
@@ -311,6 +313,7 @@ pub fn spawn_named_mob(
                 modifiers: 0,
                 bonus: attr_bonus(fitness),
             };
+            mob_fitness = fitness;
         }
         if let Some(quickness) = mob_template.attributes.quickness {
             attr.quickness = Attribute {
@@ -325,8 +328,57 @@ pub fn spawn_named_mob(
                 modifiers: 0,
                 bonus: attr_bonus(intelligence),
             };
+            mob_int = intelligence;
         }
         eb = eb.with(attr);
+
+        let mob_level = if mob_template.level.is_some() {
+            mob_template.level.unwrap()
+        } else {
+            1
+        };
+        let mob_hp = npc_hp(mob_fitness, mob_level);
+        let mob_mana = mana_at_level(mob_int, mob_level);
+
+        let pools = Pools {
+            level: mob_level,
+            xp: 0,
+            hit_points: Pool {
+                current: mob_hp,
+                max: mob_hp,
+            },
+            mana: Pool {
+                current: mob_mana,
+                max: mob_mana,
+            },
+        };
+        eb = eb.with(pools);
+
+        let mut skills = Skills {
+            skills: HashMap::new(),
+        };
+        skills.skills.insert(Skill::Melee, 1);
+        skills.skills.insert(Skill::Defense, 1);
+        skills.skills.insert(Skill::Magic, 1);
+        if let Some(mobskills) = &mob_template.skills {
+            for sk in mobskills.iter() {
+                match sk.0.as_str() {
+                    "Melee" => {
+                        skills.skills.insert(Skill::Melee, *sk.1);
+                    }
+                    "Defense" => {
+                        skills.skills.insert(Skill::Defense, *sk.1);
+                    }
+                    "Magic" => {
+                        skills.skills.insert(Skill::Magic, *sk.1);
+                    }
+                    _ => {
+                        rltk::console::log(format!("Unknown skill referenced: [{}]", sk.0));
+                    }
+                }
+            }
+        }
+        eb = eb.with(skills);
 
         eb = eb.with(Viewshed {
             visible_tiles: Vec::new(),
