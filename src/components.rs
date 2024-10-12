@@ -219,3 +219,18 @@ pub struct Vendor {}
 pub struct Quips {
     pub available: Vec<String>,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Attribute {
+    pub base: i32,
+    pub modifiers: i32,
+    pub bonus: i32,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Attributes {
+    pub might: Attribute,
+    pub fitness: Attribute,
+    pub quickness: Attribute,
+    pub intelligence: Attribute,
+}

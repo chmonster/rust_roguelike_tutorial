@@ -1,16 +1,19 @@
 #![allow(unused)]
 use super::{
-    data::*, AreaOfEffect, BlocksTile, BlocksVisibility, CombatStats, Confusion, Consumable,
-    DefenseBonus, Door, EntryTrigger, EquipmentSlot, Equippable, Hidden, HungerClock, HungerState,
-    InflictsDamage, Item, MagicMapper, Map, MeleePowerBonus, Monster, Name, Player, Position,
-    ProvidesFood, ProvidesHealing, RandomTable, Ranged, Rect, Renderable, SerializeMe,
-    SingleActivation, TileType, Viewshed,
+    data::*, AreaOfEffect, Attribute, Attributes, BlocksTile, BlocksVisibility, CombatStats,
+    Confusion, Consumable, DefenseBonus, Door, EntryTrigger, EquipmentSlot, Equippable, Hidden,
+    HungerClock, HungerState, InflictsDamage, Item, MagicMapper, Map, MeleePowerBonus, Monster,
+    Name, Player, Position, ProvidesFood, ProvidesHealing, RandomTable, Ranged, Rect, Renderable,
+    SerializeMe, SingleActivation, TileType, Viewshed,
 };
+
 use rltk::{console, RandomNumberGenerator, RGB};
 use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
 use std::cmp::max;
 use std::collections::HashMap;
+
+use crate::attr_bonus;
 
 const BASE_SPAWN_NUMBER: i32 = 4;
 const MAX_ITEMS: i32 = 4;
@@ -139,6 +142,28 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         .with(HungerClock {
             state: HungerState::WellFed,
             duration: 20,
+        })
+        .with(Attributes {
+            might: Attribute {
+                base: 11,
+                modifiers: 0,
+                bonus: attr_bonus(11),
+            },
+            fitness: Attribute {
+                base: 11,
+                modifiers: 0,
+                bonus: attr_bonus(11),
+            },
+            quickness: Attribute {
+                base: 11,
+                modifiers: 0,
+                bonus: attr_bonus(11),
+            },
+            intelligence: Attribute {
+                base: 11,
+                modifiers: 0,
+                bonus: attr_bonus(11),
+            },
         })
         .marked::<SimpleMarker<SerializeMe>>()
         .build()

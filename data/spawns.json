@@ -260,7 +260,10 @@
                 "power": 4
             },
             "vision_range": 4,
-            "ai": "vendor"
+            "ai": "vendor",
+            "attributes": {
+                "intelligence": 13
+            }
         },
 
         {
@@ -279,7 +282,8 @@
                 "power": 4
             },
             "vision_range": 4,
-            "ai": "vendor"
+            "ai": "vendor",
+            "attributes": {}
         },
 
         {
@@ -303,7 +307,8 @@
                 "Quiet down, i'm trying to sleep!",
                 "Oh me nerves.",
                 "Still saving the world, eh?"
-            ]
+            ],
+            "attributes": {}
         },
         {
             "name": "Priest",
@@ -321,7 +326,8 @@
                 "power": 4
             },
             "vision_range": 4,
-            "ai": "bystander"
+            "ai": "bystander",
+            "attributes": {}
         },
 
         {
@@ -345,7 +351,8 @@
                 "Great to see a new face here!",
                 "I hear there's going to be a good sermon on tea",
                 "Want some cake?"
-            ]
+            ],
+            "attributes": {}
         },
 
         {
@@ -364,7 +371,8 @@
                 "power": 4
             },
             "vision_range": 4,
-            "ai": "vendor"
+            "ai": "vendor",
+            "attributes": {}
         },
 
         {
@@ -383,7 +391,8 @@
                 "power": 4
             },
             "vision_range": 4,
-            "ai": "vendor"
+            "ai": "vendor",
+            "attributes": {}
         },
 
         {
@@ -402,7 +411,8 @@
                 "power": 4
             },
             "vision_range": 4,
-            "ai": "vendor"
+            "ai": "vendor",
+            "attributes": {}
         },
 
         {
@@ -427,7 +437,8 @@
                 "Off saving the world again?",
                 "Be careful in the dungeon!",
                 "Your father would be so proud, were he here."
-            ]
+            ],
+            "attributes": {}
         },
 
         {
@@ -447,7 +458,8 @@
             },
             "vision_range": 4,
             "ai": "bystander",
-            "quips": ["Why are you in my house?"]
+            "quips": ["Why are you in my house?"],
+            "attributes": {}
         },
         {
             "name": "Dock Worker",
@@ -466,7 +478,8 @@
             },
             "vision_range": 4,
             "ai": "bystander",
-            "quips": ["Lovely day, eh?", "Nice weather", "Hello"]
+            "quips": ["Lovely day, eh?", "Nice weather", "Hello"],
+            "attributes": {}
         },
 
         {
@@ -490,7 +503,8 @@
                 "They're biting today!",
                 "I caught something, but it wasn't a fish!",
                 "Looks like rain"
-            ]
+            ],
+            "attributes": {}
         },
 
         {
@@ -510,7 +524,8 @@
             },
             "vision_range": 4,
             "ai": "bystander",
-            "quips": ["Arrr", "Grog!", "Booze!"]
+            "quips": ["Arrr", "Grog!", "Booze!"],
+            "attributes": {}
         },
 
         {
@@ -530,7 +545,8 @@
             },
             "vision_range": 4,
             "ai": "bystander",
-            "quips": ["Hic", "Need... more... booze!", "Spare a copper?"]
+            "quips": ["Hic", "Need... more... booze!", "Spare a copper?"],
+            "attributes": {}
         },
         {
             "name": "Orc",
@@ -548,7 +564,8 @@
                 "power": 5
             },
             "vision_range": 10,
-            "ai": "melee"
+            "ai": "melee",
+            "attributes": {}
         },
 
         {
@@ -567,7 +584,8 @@
                 "power": 4
             },
             "vision_range": 8,
-            "ai": "melee"
+            "ai": "melee",
+            "attributes": {}
         },
 
         {
@@ -586,7 +604,8 @@
                 "power": 3
             },
             "vision_range": 6,
-            "ai": "melee"
+            "ai": "melee",
+            "attributes": {}
         },
 
         {
@@ -606,7 +625,8 @@
             },
             "vision_range": 8,
             "ai": "melee",
-            "quips": ["..cheese..."]
+            "quips": ["..cheese..."],
+            "attributes": {}
         }
     ],
 

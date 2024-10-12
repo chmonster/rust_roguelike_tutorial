@@ -12,9 +12,8 @@ const MAX_HISTORY_TIME: f32 = 10000.0;
 
 mod components;
 pub use components::*;
-pub mod data;
-//pub use data::*;
 pub mod camera;
+pub mod data;
 mod map;
 pub use map::*;
 mod player;
@@ -47,6 +46,9 @@ pub mod map_builders;
 pub mod saveload_system;
 mod spawner;
 pub mod trigger_system;
+
+mod gamesystem;
+pub use gamesystem::*;
 
 #[macro_use]
 extern crate lazy_static;
@@ -556,6 +558,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Bystander>();
     gs.ecs.register::<Vendor>();
     gs.ecs.register::<Quips>();
+    gs.ecs.register::<Attributes>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
