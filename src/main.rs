@@ -6,8 +6,8 @@ use rltk::{/*console,*/ GameState, Point, /*RandomNumberGenerator,*/ Rltk};
 use specs::prelude::*;
 use specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 
-//const SHOW_MAPGEN_VISUALIZER: bool = false;
-const SHOW_MAPGEN_VISUALIZER: bool = true;
+const SHOW_MAPGEN_VISUALIZER: bool = false;
+//const SHOW_MAPGEN_VISUALIZER: bool = true;
 const MAX_HISTORY_TIME: f32 = 10000.0;
 
 mod components;
@@ -226,18 +226,10 @@ impl State {
         }
         self.generate_world_map(current_depth + 1);
 
-        // Place the player and update resources
-        //let player_entity = self.ecs.fetch::<Entity>();
         let mut gamelog = self.ecs.fetch_mut::<gamelog::GameLog>();
         gamelog
             .entries
             .push("You descend to the next level.".to_string());
-
-        //let mut player_health_store = self.ecs.write_storage::<Pools>();
-        //let player_health = player_health_store.get_mut(*player_entity);
-        // if let Some(player_health) = player_health {
-        //     player_health.hit_points.current = i32::max(player_health.hp, player_health.max_hp / 2);
-        // }
     }
 
     fn game_over_cleanup(&mut self) {
@@ -543,8 +535,8 @@ fn main() -> rltk::BError {
     gs.ecs.register::<SerializationHelper>();
     gs.ecs.register::<Equippable>();
     gs.ecs.register::<Equipped>();
-    gs.ecs.register::<MeleePowerBonus>();
-    gs.ecs.register::<DefenseBonus>();
+    gs.ecs.register::<MeleeWeapon>();
+    gs.ecs.register::<Wearable>();
     gs.ecs.register::<ParticleLifetime>();
     gs.ecs.register::<HungerClock>();
     gs.ecs.register::<ProvidesFood>();
@@ -561,6 +553,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Attributes>();
     gs.ecs.register::<Skills>();
     gs.ecs.register::<Pools>();
+    gs.ecs.register::<NaturalAttackDefense>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
