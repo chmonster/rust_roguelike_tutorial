@@ -7,6 +7,7 @@ impl InitialMapBuilder for MazeBuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
         console::log("MazeBuilder");
+        build_data.map.name = "MazeBuilder".to_string();
         self.build(rng, build_data);
     }
 }
@@ -20,11 +21,7 @@ impl MazeBuilder {
     #[allow(clippy::map_entry)]
     fn build(&mut self, rng: &mut RandomNumberGenerator, build_data: &mut BuilderMap) {
         // Maze gen
-        let mut maze = Grid::new(
-            (build_data.width / 2) - 2,
-            (build_data.height / 2) - 2,
-            rng,
-        );
+        let mut maze = Grid::new((build_data.width / 2) - 2, (build_data.height / 2) - 2, rng);
         maze.generate_maze(build_data);
     }
 }

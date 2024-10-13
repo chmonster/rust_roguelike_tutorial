@@ -5,7 +5,6 @@ pub struct DistantExit {}
 
 impl MetaMapBuilder for DistantExit {
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        //console::log("DistantExit");
         console::log(format!("DistantExit {}", build_data.map.depth));
         self.build(rng, build_data);
     }

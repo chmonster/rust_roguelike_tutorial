@@ -9,6 +9,7 @@ impl InitialMapBuilder for BspDungeonBuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
         console::log("BSPDungeon");
+        build_data.map.name = "BSPDungeon".to_string();
         self.build(rng, build_data);
     }
 }

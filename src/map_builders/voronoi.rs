@@ -18,6 +18,7 @@ impl InitialMapBuilder for VoronoiCellBuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
         console::log("Voronoi");
+        build_data.map.name = "Voronoi".to_string();
         self.build(rng, build_data);
     }
 }

@@ -9,6 +9,7 @@ impl InitialMapBuilder for SimpleMapBuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
         console::log("SimpleMapBuilder");
+        build_data.map.name = "SimpleMap".to_string();
         self.build_rooms(rng, build_data);
     }
 }
