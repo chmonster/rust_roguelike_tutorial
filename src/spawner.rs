@@ -138,12 +138,6 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         .with(Name {
             name: "Player".to_string(),
         })
-        // .with(CombatStats {
-        //     max_hp: 30,
-        //     hp: 30,
-        //     defense: 2,
-        //     power: 5,
-        // })
         .with(HungerClock {
             state: HungerState::WellFed,
             duration: 20,
@@ -222,6 +216,12 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         ecs,
         "Old Boots",
         SpawnType::Equipped { by: player },
+    );
+    spawn_named_entity(
+        &DATA.lock().unwrap(),
+        ecs,
+        "Magic Mapping Scroll",
+        SpawnType::Carried { by: player },
     );
 
     player

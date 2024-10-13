@@ -23,7 +23,8 @@ pub struct AreaStartingPosition {
 
 impl MetaMapBuilder for AreaStartingPosition {
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("AreaStartingPosition");
+        //console::log("AreaStartingPosition");
+        console::log(format!("AreaStartingPosition {}", build_data.map.depth));
         self.build(rng, build_data);
     }
 }

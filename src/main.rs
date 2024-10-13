@@ -7,8 +7,13 @@ use specs::prelude::*;
 use specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 
 const SHOW_MAPGEN_VISUALIZER: bool = false;
-//const SHOW_MAPGEN_VISUALIZER: bool = true;
+//const SHOW_MAPGEN_VISUALIZER: bool = true;\\
+const CLEAR_LOG_AFTER_DEATH: bool = false;
 const MAX_HISTORY_TIME: f32 = 10000.0;
+const SCREENWIDTH: u32 = 80;
+const SCREENHEIGHT: u32 = 60;
+const TILEWIDTH: u32 = 12;
+const TILEHEIGHT: u32 = 12;
 
 mod components;
 pub use components::*;
@@ -52,11 +57,6 @@ pub use gamesystem::*;
 
 #[macro_use]
 extern crate lazy_static;
-
-const SCREENWIDTH: u32 = 80;
-const SCREENHEIGHT: u32 = 60;
-const TILEWIDTH: u32 = 12;
-const TILEHEIGHT: u32 = 12;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
@@ -250,7 +250,10 @@ impl State {
             let mut player_entity_writer = self.ecs.write_resource::<Entity>();
             *player_entity_writer = player_entity;
             let mut gamelog = self.ecs.fetch_mut::<gamelog::GameLog>();
-            gamelog.entries.clear();
+            if CLEAR_LOG_AFTER_DEATH {
+                gamelog.entries.clear();
+            }
+
             gamelog
                 .entries
                 .push("Welcome back to Rusty Roguelike".to_string());

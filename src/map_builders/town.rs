@@ -2,6 +2,7 @@ use super::{
     AreaStartingPosition, BuilderChain, BuilderMap, DistantExit, InitialMapBuilder, Position,
     TileType,
 };
+use rltk::console;
 use std::collections::HashSet;
 
 enum BuildingTag {
@@ -33,6 +34,7 @@ pub struct TownBuilder {}
 impl InitialMapBuilder for TownBuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
+        console::log("TownBuilder");
         self.build_rooms(rng, build_data);
     }
 }

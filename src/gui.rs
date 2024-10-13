@@ -9,7 +9,7 @@ use rltk::{/*console,*/ Point, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
 use std::cmp::max;
 
-pub const STATHEIGHT: u32 = 7;
+pub const STATHEIGHT: u32 = 9;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum MainMenuSelection {
@@ -81,6 +81,8 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let black = RGB::named(rltk::BLACK);
     let white = RGB::named(rltk::WHITE);
 
+    let log_height = SCREENHEIGHT - VIEWHEIGHT;
+
     draw_hollow_box(
         ctx,
         0,
@@ -104,7 +106,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         0,
         VIEWHEIGHT as i32 + 1,
         SCREENWIDTH as i32 - 1,
-        (SCREENHEIGHT - VIEWHEIGHT - 2) as i32,
+        (log_height - 2) as i32,
         box_gray,
         black,
     ); // Log box
@@ -169,6 +171,20 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let player_entity = ecs.fetch::<Entity>();
     let pools = ecs.read_storage::<Pools>();
     let player_pools = pools.get(*player_entity).unwrap();
+
+    let hb3: i32 = player_pools.hit_points.max;
+    let hb2: i32 = player_pools.hit_points.max * 2 / 3;
+    let hb1: i32 = player_pools.hit_points.max / 3;
+    let chp = player_pools.hit_points.current;
+
+    let health_color = match chp {
+        chp if chp < 1 => rltk::BLACK,
+        chp if chp < hb1 => rltk::RED,
+        chp if chp < hb2 => rltk::ORANGE,
+        chp if chp < hb3 => rltk::GREEN,
+        _ => rltk::GREEN,
+    };
+
     let health = format!(
         "Health: {}/{}",
         player_pools.hit_points.current, player_pools.hit_points.max
@@ -185,7 +201,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         14,
         player_pools.hit_points.current,
         player_pools.hit_points.max,
-        RGB::named(rltk::RED),
+        RGB::named(health_color),
         RGB::named(rltk::BLACK),
     );
     ctx.draw_bar_horizontal(
@@ -205,20 +221,21 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     draw_attribute("Quickness:", &attr.quickness, 5, ctx);
     draw_attribute("Fitness:", &attr.fitness, 6, ctx);
     draw_attribute("Intelligence:", &attr.intelligence, 7, ctx);
+    //draw_attribute("Armor Class:", &attr.fitness, 7, ctx);
 
     // Equipped
-    let mut y = 9;
+    let mut equipment_y = STATHEIGHT + 2;
     let equipped = ecs.read_storage::<Equipped>();
     let name = ecs.read_storage::<Name>();
     for (equipped_by, item_name) in (&equipped, &name).join() {
         if equipped_by.owner == *player_entity {
-            ctx.print_color(50, y, white, black, &item_name.name);
-            y += 1;
+            ctx.print_color(VIEWWIDTH + 2, equipment_y, white, black, &item_name.name);
+            equipment_y += 1;
         }
     }
 
     // Consumables
-    y += 1;
+    let mut consumable_y = equipment_y + 2;
     let green = RGB::from_f32(0.0, 1.0, 0.0);
     let yellow = RGB::named(rltk::YELLOW);
     let consumables = ecs.read_storage::<Consumable>();
@@ -226,9 +243,15 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let mut index = 1;
     for (carried_by, _consumable, item_name) in (&backpack, &consumables, &name).join() {
         if carried_by.owner == *player_entity && index < 10 {
-            ctx.print_color(50, y, yellow, black, &format!("↑{}", index));
-            ctx.print_color(53, y, green, black, &item_name.name);
-            y += 1;
+            ctx.print_color(
+                VIEWWIDTH + 2,
+                consumable_y,
+                yellow,
+                black,
+                &format!("↑{}", index),
+            );
+            ctx.print_color(VIEWWIDTH + 5, consumable_y, green, black, &item_name.name);
+            consumable_y += 1;
             index += 1;
         }
     }
@@ -237,23 +260,23 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let hc = hunger.get(*player_entity).unwrap();
     match hc.state {
         HungerState::WellFed => ctx.print_color(
-            50,
-            44,
+            VIEWWIDTH + 2,
+            VIEWHEIGHT,
             RGB::named(rltk::GREEN),
             RGB::named(rltk::BLACK),
             "Well Fed",
         ),
         HungerState::Normal => {}
         HungerState::Hungry => ctx.print_color(
-            50,
-            44,
+            VIEWWIDTH + 2,
+            VIEWHEIGHT,
             RGB::named(rltk::ORANGE),
             RGB::named(rltk::BLACK),
             "Hungry",
         ),
         HungerState::Starving => ctx.print_color(
-            50,
-            44,
+            VIEWWIDTH + 2,
+            VIEWHEIGHT,
             RGB::named(rltk::RED),
             RGB::named(rltk::BLACK),
             "Starving",
@@ -262,12 +285,12 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
 
     // Draw the log
     let log = ecs.fetch::<GameLog>();
-    let mut y = 46;
+    let mut log_y = SCREENHEIGHT as i32 - 2;
     for s in log.entries.iter().rev() {
-        if y < 59 {
-            ctx.print(2, y, s);
+        if log_y > (SCREENHEIGHT as i32 - log_height as i32 + 1) {
+            ctx.print(2, log_y, s);
         }
-        y += 1;
+        log_y -= 1;
     }
 
     /*let (screen_width, screen_height) = ctx.get_char_size();

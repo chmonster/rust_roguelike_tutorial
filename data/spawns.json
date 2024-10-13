@@ -211,9 +211,9 @@
             },
             "weapon": {
                 "range": "melee",
-                "attribute": "Might",
-                "base_damage": "1d8-1",
-                "hit_bonus": -1
+                "attribute": "Quickness",
+                "base_damage": "1d4",
+                "hit_bonus": 0
             }
         },
 
@@ -228,8 +228,8 @@
             "weapon": {
                 "range": "melee",
                 "attribute": "Might",
-                "base_damage": "1d8-1",
-                "hit_bonus": -1
+                "base_damage": "1d8",
+                "hit_bonus": 0
             }
         },
 
@@ -257,8 +257,9 @@
                 "bg": "#000000",
                 "order": 2
             },
-            "shield": {
-                "defense_bonus": 1
+            "wearable": {
+                "slot": "Shield",
+                "armor_class": 1.0
             }
         },
 
@@ -270,8 +271,9 @@
                 "bg": "#000000",
                 "order": 2
             },
-            "shield": {
-                "defense_bonus": 3
+            "wearable": {
+                "slot": "Shield",
+                "armor_class": 2.0
             }
         },
 
@@ -328,8 +330,8 @@
             "weapon": {
                 "range": "melee",
                 "attribute": "Might",
-                "base_damage": "1d8-1",
-                "hit_bonus": -1
+                "base_damage": "2d4+1",
+                "hit_bonus": 0
             }
         },
 
@@ -655,7 +657,14 @@
             "blocks_tile": true,
             "vision_range": 8,
             "ai": "melee",
-            "attributes": {}
+            "attributes": {
+                "Might": 8,
+                "Fitness": 8
+            },
+            "skills": {
+                "Melee": 0,
+                "Defense": 0
+            }
         },
 
         {
@@ -669,7 +678,14 @@
             "blocks_tile": true,
             "vision_range": 6,
             "ai": "melee",
-            "attributes": {}
+            "attributes": {
+                "Might": 5,
+                "Fitness": 5
+            },
+            "skills": {
+                "Melee": 0,
+                "Defense": 0
+            }
         },
 
         {
