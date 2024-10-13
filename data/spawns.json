@@ -643,7 +643,13 @@
             "blocks_tile": true,
             "vision_range": 10,
             "ai": "melee",
-            "attributes": {}
+            "attributes": {},
+            "quips": [
+                "I'll eat your face.",
+                "Fresh meat!",
+                "New boot leather!",
+                "Orc eating well tonight."
+            ]
         },
 
         {
@@ -664,7 +670,8 @@
             "skills": {
                 "Melee": 0,
                 "Defense": 0
-            }
+            },
+            "quips": ["Die sun-rat!", "Kill the intruder!", "I want its shoes!"]
         },
 
         {
@@ -678,6 +685,7 @@
             "blocks_tile": true,
             "vision_range": 6,
             "ai": "melee",
+            "quips": ["woof", "snarl", "howwwwwwwwl"],
             "attributes": {
                 "Might": 5,
                 "Fitness": 5
