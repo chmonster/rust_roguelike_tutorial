@@ -54,7 +54,9 @@ pub use gamesystem::*;
 extern crate lazy_static;
 
 const SCREENWIDTH: u32 = 80;
-const SCREENHEIGHT: u32 = 40;
+const SCREENHEIGHT: u32 = 60;
+const TILEWIDTH: u32 = 12;
+const TILEHEIGHT: u32 = 12;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
@@ -492,10 +494,10 @@ impl GameState for State {
 
 fn main() -> rltk::BError {
     use rltk::RltkBuilder;
-    let mut context = RltkBuilder::vga(SCREENWIDTH, SCREENHEIGHT)
-        //.unwrap()
-        .with_tile_dimensions(12, 16)
-        .with_title("Roguelike Tutorial")
+    let mut context = RltkBuilder::simple(SCREENWIDTH, SCREENHEIGHT)
+        .unwrap()
+        .with_tile_dimensions(TILEWIDTH, TILEHEIGHT)
+        .with_title("rust-roguelike by chmonster")
         .build()?;
     context.with_post_scanlines(false);
 
@@ -559,7 +561,7 @@ fn main() -> rltk::BError {
 
     data::load_data();
 
-    gs.ecs.insert(Map::new(1, 64, 64));
+    gs.ecs.insert(Map::new(1, 64, 64, "New Map"));
     gs.ecs.insert(Point::new(0, 0));
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
 

@@ -1,15 +1,19 @@
-use super::{gui::LOGHEIGHT, Hidden, Map, Position, Renderable, TileType};
+use super::{/*gui::LOGHEIGHT,*/ Hidden, Map, Position, Renderable, TileType};
 use rltk::{Point, Rltk, RGB};
 use specs::prelude::*;
 
 const SHOW_BOUNDARIES: bool = true;
+pub const VIEWHEIGHT: u32 = 44;
+pub const VIEWWIDTH: u32 = 48;
 
-pub fn get_screen_bounds(ecs: &World, ctx: &mut Rltk) -> (i32, i32, i32, i32) {
+pub fn get_screen_bounds(ecs: &World, _ctx: &mut Rltk) -> (i32, i32, i32, i32) {
     let player_pos = ecs.fetch::<Point>();
-    let (x_chars, y_chars) = ctx.get_char_size();
+    //let (x_chars, y_chars) = ctx.get_char_size();
+    let (x_chars, y_chars) = (VIEWWIDTH, VIEWHEIGHT);
 
     let center_x = (x_chars / 2) as i32;
-    let center_y = ((y_chars - LOGHEIGHT) / 2) as i32;
+    //let center_y = ((y_chars - LOGHEIGHT) / 2) as i32;
+    let center_y = (y_chars / 2) as i32;
 
     let min_x = player_pos.x - center_x;
     let max_x = min_x + x_chars as i32;
