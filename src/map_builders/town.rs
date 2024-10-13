@@ -44,6 +44,46 @@ impl TownBuilder {
         Box::new(TownBuilder {})
     }
 
+    pub fn build_rooms(
+        &mut self,
+        rng: &mut rltk::RandomNumberGenerator,
+        build_data: &mut BuilderMap,
+    ) {
+        //environment
+        self.grass_layer(build_data);
+        self.water_and_piers(rng, build_data);
+
+        let (mut available_building_tiles, wall_gap_y) = self.town_walls(rng, build_data);
+
+        let mut buildings = self.buildings(rng, build_data, &mut available_building_tiles);
+        let doors = self.add_doors(rng, build_data, &mut buildings, wall_gap_y);
+        self.add_paths(build_data, &doors);
+
+        let exit_idx = build_data.map.xy_idx(build_data.width - 5, wall_gap_y);
+        build_data.map.tiles[exit_idx] = TileType::DownStairs;
+
+        //find pub, largest building on the map
+        let building_size = self.sort_buildings(&buildings);
+        self.building_factory(rng, build_data, &buildings, &building_size);
+
+        //outdoor friendly mobs
+        self.spawn_dockers(build_data, rng);
+        self.spawn_townsfolk(build_data, rng, &mut available_building_tiles);
+
+        // Start in the pub
+        let the_pub = &buildings[building_size[0].0];
+        build_data.starting_position = Some(Position {
+            x: the_pub.0 + (the_pub.2 / 2),
+            y: the_pub.1 + (the_pub.3 / 2),
+        });
+
+        // Make visible for screenshot
+        for t in build_data.map.visible_tiles.iter_mut() {
+            *t = true;
+        }
+        build_data.take_snapshot();
+    }
+
     fn spawn_dockers(
         &mut self,
         build_data: &mut BuilderMap,
@@ -84,44 +124,6 @@ impl TownBuilder {
         }
     }
 
-    pub fn build_rooms(
-        &mut self,
-        rng: &mut rltk::RandomNumberGenerator,
-        build_data: &mut BuilderMap,
-    ) {
-        self.grass_layer(build_data);
-        self.water_and_piers(rng, build_data);
-
-        let (mut available_building_tiles, wall_gap_y) = self.town_walls(rng, build_data);
-        let mut buildings = self.buildings(rng, build_data, &mut available_building_tiles);
-        let doors = self.add_doors(rng, build_data, &mut buildings, wall_gap_y);
-        self.add_paths(build_data, &doors);
-
-        let exit_idx = build_data.map.xy_idx(build_data.width - 5, wall_gap_y);
-        build_data.map.tiles[exit_idx] = TileType::DownStairs;
-
-        //find pub, largest building on the map
-        let building_size = self.sort_buildings(&buildings);
-        self.building_factory(rng, build_data, &buildings, &building_size);
-
-        //outdoor friendly mobs
-        self.spawn_dockers(build_data, rng);
-        self.spawn_townsfolk(build_data, rng, &mut available_building_tiles);
-
-        // Start in the pub
-        let the_pub = &buildings[building_size[0].0];
-        build_data.starting_position = Some(Position {
-            x: the_pub.0 + (the_pub.2 / 2),
-            y: the_pub.1 + (the_pub.3 / 2),
-        });
-
-        // Make visible for screenshot
-        for t in build_data.map.visible_tiles.iter_mut() {
-            *t = true;
-        }
-        build_data.take_snapshot();
-    }
-
     fn sort_buildings(
         &mut self,
         buildings: &[(i32, i32, i32, i32)],
@@ -153,7 +155,11 @@ impl TownBuilder {
         building_index: &[(usize, i32, BuildingTag)],
     ) {
         for (i, building) in buildings.iter().enumerate() {
-            let build_type = &building_index[i].2;
+            let mut j = 0;
+            while building_index[j].0 != i {
+                j += 1;
+            }
+            let build_type = &building_index[j].2;
             #[allow(clippy::single_match)]
             match build_type {
                 BuildingTag::Pub => self.build_pub(building, build_data, rng),

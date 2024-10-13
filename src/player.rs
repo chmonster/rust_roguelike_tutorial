@@ -175,6 +175,7 @@ pub fn try_next_level(ecs: &mut World) -> bool {
 
 pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
     // Hotkeys
+    //TOFIX: not registered for OS build (WASM is okay)
     if ctx.shift && ctx.key.is_some() {
         let key: Option<i32> = match ctx.key.unwrap() {
             VirtualKeyCode::Key1 => Some(1),

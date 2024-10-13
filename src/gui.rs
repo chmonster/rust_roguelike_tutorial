@@ -421,11 +421,11 @@ impl Tooltip {
     }
 
     fn render(&self, ctx: &mut Rltk, x: i32, y: i32) {
-        let box_gray: RGB = RGB::from_hex("#999999").expect("Oops");
+        //let box_gray: RGB = RGB::from_hex("#999999").expect("Oops");
         let light_gray: RGB = RGB::from_hex("#DDDDDD").expect("Oops");
         let white = RGB::named(rltk::WHITE);
         let black = RGB::named(rltk::BLACK);
-        ctx.draw_box(x, y, self.width() - 1, self.height() - 1, white, box_gray);
+        ctx.draw_box(x, y, self.width() - 1, self.height() - 1, white, black);
         for (i, s) in self.lines.iter().enumerate() {
             let col = if i == 0 { white } else { light_gray };
             ctx.print_color(x + 1, y + i as i32 + 1, col, black, s);
@@ -510,6 +510,11 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
                 tip.add(format!("Level: {}", stat.level));
             }
 
+            #[cfg(debug_assertions)]
+            {
+                tip.add(format!("{}, {}", position.x, position.y));
+            }
+
             tip_boxes.push(tip);
         }
     }
@@ -523,7 +528,7 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
     let arrow;
     let arrow_x;
     let arrow_y = mouse_pos.1;
-    if mouse_pos.0 < 40 {
+    if mouse_pos.0 < VIEWWIDTH as i32 / 2 {
         // Render to the left
         arrow = to_cp437('→');
         arrow_x = mouse_pos.0 - 1;
@@ -540,15 +545,17 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
     }
 
     let mut y = mouse_pos.1 - (total_height / 2);
+    //TODO: why 50?
     while y + (total_height / 2) > 50 {
         y -= 1;
     }
 
     for tt in tip_boxes.iter() {
-        let x = if mouse_pos.0 < 40 {
+        let x = if mouse_pos.0 < VIEWWIDTH as i32 / 2 {
             mouse_pos.0 - (1 + tt.width())
         } else {
-            mouse_pos.0 + (1 + tt.width())
+            //mouse_pos.0 + (1 + tt.width())
+            mouse_pos.0 + 2
         };
         tt.render(ctx, x, y);
         y += tt.height();
