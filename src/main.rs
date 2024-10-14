@@ -47,13 +47,14 @@ pub mod particle_system;
 pub mod rex_assets;
 use rex_assets::RexAssets;
 pub mod bystander_ai_system;
+mod gamesystem;
 pub mod map_builders;
 pub mod saveload_system;
 mod spawner;
 pub mod trigger_system;
-
-mod gamesystem;
 pub use gamesystem::*;
+pub mod animal_ai_system;
+//use animal_ai_system::AnimalAI;
 
 #[macro_use]
 extern crate lazy_static;
@@ -99,6 +100,8 @@ impl State {
         vis.run_now(&self.ecs);
         let mut mob = MonsterAI {};
         mob.run_now(&self.ecs);
+        let mut animal = animal_ai_system::AnimalAI {};
+        animal.run_now(&self.ecs);
         let mut triggers = trigger_system::TriggerSystem {};
         triggers.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem {};
@@ -559,6 +562,9 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Skills>();
     gs.ecs.register::<Pools>();
     gs.ecs.register::<NaturalAttackDefense>();
+    gs.ecs.register::<LootTable>();
+    gs.ecs.register::<Carnivore>();
+    gs.ecs.register::<Herbivore>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

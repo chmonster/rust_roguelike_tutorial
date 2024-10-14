@@ -1,6 +1,9 @@
 #![allow(unused)]
 
-use super::{GameLog, Map, Name, Player, Pools, Position, RunState, SufferDamage};
+use super::{
+    Equipped, GameLog, InBackpack, LootTable, Map, Name, Player, Pools, Position, RunState,
+    SufferDamage,
+};
 use rltk::console;
 use specs::prelude::*;
 
@@ -58,6 +61,73 @@ pub fn delete_the_dead(ecs: &mut World) {
                     }
                 }
             }
+        }
+    }
+
+    // Drop everything held by dead people
+    let mut to_spawn: Vec<(String, Position)> = Vec::new();
+    {
+        // To avoid keeping hold of borrowed entries, use a scope
+        let mut to_drop: Vec<(Entity, Position)> = Vec::new();
+        let entities = ecs.entities();
+        let mut equipped = ecs.write_storage::<Equipped>();
+        let mut carried = ecs.write_storage::<InBackpack>();
+        let mut positions = ecs.write_storage::<Position>();
+        let loot_tables = ecs.read_storage::<LootTable>();
+        let mut rng = ecs.write_resource::<rltk::RandomNumberGenerator>();
+        for victim in dead.iter() {
+            let pos = positions.get(*victim);
+            for (entity, equipped) in (&entities, &equipped).join() {
+                if equipped.owner == *victim {
+                    // Drop their stuff
+                    if let Some(pos) = pos {
+                        to_drop.push((entity, pos.clone()));
+                    }
+                }
+            }
+            for (entity, backpack) in (&entities, &carried).join() {
+                if backpack.owner == *victim {
+                    // Drop their stuff
+                    if let Some(pos) = pos {
+                        to_drop.push((entity, pos.clone()));
+                    }
+                }
+            }
+
+            if let Some(table) = loot_tables.get(*victim) {
+                let drop_finder = crate::data::get_item_drop(
+                    &crate::data::DATA.lock().unwrap(),
+                    &mut rng,
+                    &table.table,
+                );
+                if let Some(tag) = drop_finder {
+                    if let Some(pos) = pos {
+                        to_spawn.push((tag, pos.clone()));
+                    }
+                }
+            }
+        }
+
+        for drop in to_drop.iter() {
+            equipped.remove(drop.0);
+            carried.remove(drop.0);
+            positions
+                .insert(drop.0, drop.1.clone())
+                .expect("Unable to insert position");
+        }
+    }
+
+    {
+        for drop in to_spawn.iter() {
+            crate::data::spawn_named_item(
+                &crate::data::DATA.lock().unwrap(),
+                ecs,
+                &drop.0,
+                crate::data::SpawnType::AtPosition {
+                    x: drop.1.x,
+                    y: drop.1.y,
+                },
+            );
         }
     }
 

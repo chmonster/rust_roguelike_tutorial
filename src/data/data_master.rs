@@ -38,6 +38,7 @@ pub struct DataMaster {
     item_index: HashMap<String, usize>,
     mob_index: HashMap<String, usize>,
     prop_index: HashMap<String, usize>,
+    loot_index: HashMap<String, usize>,
 }
 
 impl DataMaster {
@@ -48,10 +49,12 @@ impl DataMaster {
                 mobs: Vec::new(),
                 props: Vec::new(),
                 spawn_table: Vec::new(),
+                loot_tables: Vec::new(),
             },
             item_index: HashMap::new(),
             mob_index: HashMap::new(),
             prop_index: HashMap::new(),
+            loot_index: HashMap::new(),
         }
     }
 
@@ -88,6 +91,10 @@ impl DataMaster {
             }
             self.prop_index.insert(prop.name.clone(), i);
             used_names.insert(prop.name.clone());
+        }
+
+        for (i, loot) in self.data.loot_tables.iter().enumerate() {
+            self.loot_index.insert(loot.name.clone(), i);
         }
 
         for spawn in self.data.spawn_table.iter() {
@@ -302,20 +309,14 @@ pub fn spawn_named_mob(
             "melee" => eb = eb.with(Monster {}),
             "bystander" => eb = eb.with(Bystander {}),
             "vendor" => eb = eb.with(Vendor {}),
-
+            "carnivore" => eb = eb.with(Carnivore {}),
+            "herbivore" => eb = eb.with(Herbivore {}),
             _ => {}
         }
 
         if mob_template.blocks_tile {
             eb = eb.with(BlocksTile {});
         }
-
-        /*eb = eb.with(CombatStats {
-            max_hp: mob_template.stats.max_hp,
-            hp: mob_template.stats.hp,
-            power: mob_template.stats.power,
-            defense: mob_template.stats.defense,
-        });*/
 
         let mut mob_fitness = 11;
         let mut mob_int = 11;
@@ -448,6 +449,12 @@ pub fn spawn_named_mob(
             eb = eb.with(nature);
         }
 
+        if let Some(loot) = &mob_template.loot_table {
+            eb = eb.with(LootTable {
+                table: loot.clone(),
+            });
+        }
+
         let new_mob = eb.build();
 
         // Are they wielding anyting?
@@ -551,4 +558,20 @@ pub fn string_to_slot(slot: &str) -> EquipmentSlot {
             EquipmentSlot::Melee
         }
     }
+}
+pub fn get_item_drop(
+    data: &DataMaster,
+    rng: &mut rltk::RandomNumberGenerator,
+    table: &str,
+) -> Option<String> {
+    if data.loot_index.contains_key(table) {
+        let mut rt = RandomTable::new();
+        let available_options = &data.data.loot_tables[data.loot_index[table]];
+        for item in available_options.drops.iter() {
+            rt = rt.add(item.name.clone(), item.weight);
+        }
+        return Some(rt.roll(rng));
+    }
+
+    None
 }

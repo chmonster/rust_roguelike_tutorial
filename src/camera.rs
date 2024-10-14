@@ -1,4 +1,5 @@
-use super::{/*gui::LOGHEIGHT,*/ Hidden, Map, Position, Renderable, TileType};
+use super::{/*gui::LOGHEIGHT,*/ Hidden, Map, Position, Renderable /*TileType*/};
+use crate::map::tile_glyph;
 use rltk::{Point, Rltk, RGB};
 use specs::prelude::*;
 
@@ -36,7 +37,7 @@ pub fn render_camera(ecs: &World, ctx: &mut Rltk) {
             if tx > 0 && tx < map_width && ty > 0 && ty < map_height {
                 let idx = map.xy_idx(tx, ty);
                 if map.revealed_tiles[idx] {
-                    let (glyph, fg, bg) = get_tile_glyph(idx, &map);
+                    let (glyph, fg, bg) = tile_glyph(idx, &map);
                     ctx.set(x, y, fg, bg, glyph);
                 }
             } else if SHOW_BOUNDARIES {
@@ -103,7 +104,7 @@ pub fn render_debug_map(map: &Map, ctx: &mut Rltk) {
             if tx > 0 && tx < map_width && ty > 0 && ty < map_height {
                 let idx = map.xy_idx(tx, ty);
                 if map.revealed_tiles[idx] {
-                    let (glyph, fg, bg) = get_tile_glyph(idx, map);
+                    let (glyph, fg, bg) = tile_glyph(idx, map);
                     ctx.set(x, y, fg, bg, glyph);
                 }
             } else if SHOW_BOUNDARIES {
@@ -119,6 +120,7 @@ pub fn render_debug_map(map: &Map, ctx: &mut Rltk) {
     }
 }
 
+/*
 fn get_tile_glyph(idx: usize, map: &Map) -> (rltk::FontCharType, RGB, RGB) {
     let glyph;
     let mut fg;
@@ -224,3 +226,4 @@ fn is_revealed_and_wall(map: &Map, x: i32, y: i32) -> bool {
     let idx = map.xy_idx(x, y);
     map.tiles[idx] == TileType::Wall && map.revealed_tiles[idx]
 }
+ */

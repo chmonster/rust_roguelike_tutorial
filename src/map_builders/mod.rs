@@ -64,6 +64,8 @@ mod door_placement;
 use door_placement::DoorPlacement;
 mod town;
 use town::town_builder;
+mod forest;
+use forest::forest_builder;
 
 //marked for special builder restrictions
 //must match positions in build_roll block
@@ -167,6 +169,7 @@ pub fn level_builder(
     rltk::console::log(format!("Depth: {}", new_depth));
     match new_depth {
         1 => town_builder(new_depth, rng, width, height),
+        2 => forest_builder(new_depth, rng, width, height),
         _ => random_builder(new_depth, rng, width, height),
     }
 }
@@ -334,7 +337,10 @@ pub fn random_builder(
         ));
     }
 
-    builder.with(DoorPlacement::new());
+    if builder.build_data.map.name != "MazeBuilder" {
+        builder.with(DoorPlacement::new());
+    }
+
     builder.with(PrefabBuilder::vaults());
 
     builder

@@ -9,6 +9,9 @@ mod prop_structs;
 use prop_structs::*;
 mod spawn_table_structs;
 use spawn_table_structs::*;
+mod loot_structs;
+use loot_structs::*;
+
 mod data_master;
 pub use data_master::*;
 
@@ -29,6 +32,7 @@ pub struct Data {
     pub mobs: Vec<Mob>,
     pub props: Vec<Prop>,
     pub spawn_table: Vec<SpawnTableEntry>,
+    pub loot_tables: Vec<LootTable>,
 }
 
 pub fn load_data() {
