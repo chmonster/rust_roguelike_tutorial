@@ -17,7 +17,7 @@ impl MetaMapBuilder for WaveformCollapseBuilder {
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
         console::log(format!("WaveformCollapse {}", build_data.map.depth));
         let old_name = build_data.map.name.clone();
-        build_data.map.name = "WaveFormCollapse ".to_string();
+        build_data.map.name = "WFC ".to_string();
         build_data.map.name.push_str(&old_name);
 
         self.build(rng, build_data);

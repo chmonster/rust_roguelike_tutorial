@@ -71,6 +71,7 @@ impl<'a> System<'a> for TriggerSystem {
                                     &mut inflict_damage,
                                     entity,
                                     damage.damage,
+                                    false,
                                 );
                             }
 
@@ -91,6 +92,7 @@ impl<'a> System<'a> for TriggerSystem {
                                     &mut inflict_damage,
                                     entity,
                                     damage.damage,
+                                    false,
                                 );
                             }
                             // If it is single activation, it needs to be removed

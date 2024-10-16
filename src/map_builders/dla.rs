@@ -30,7 +30,7 @@ impl MetaMapBuilder for DLABuilder {
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
         console::log("DLABuilder meta");
         let old_name = build_data.map.name.clone();
-        build_data.map.name = "DLABuilder ".to_string();
+        build_data.map.name = "DLA ".to_string();
         build_data.map.name.push_str(&old_name);
 
         self.build(rng, build_data);

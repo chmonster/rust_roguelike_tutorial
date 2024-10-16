@@ -152,7 +152,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         to_cp437('┤'),
     );
 
-    // Draw the town name
+    // Draw level name
     let map = ecs.fetch::<Map>();
     let name_length = map.name.len() + 2;
     let x_pos = (VIEWHEIGHT as i32 - 4 - name_length as i32) / 2;
@@ -193,8 +193,12 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         "Mana:   {}/{}",
         player_pools.mana.current, player_pools.mana.max
     );
+    let xp = format!("Level:  {}", player_pools.level);
+
     ctx.print_color(50, 1, white, black, &health);
     ctx.print_color(50, 2, white, black, &mana);
+    ctx.print_color(50, 3, white, black, &xp);
+
     ctx.draw_bar_horizontal(
         64,
         1,
@@ -211,6 +215,19 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         player_pools.mana.current,
         player_pools.mana.max,
         RGB::named(rltk::BLUE),
+        RGB::named(rltk::BLACK),
+    );
+
+    //format!("Level:  {}", player_pools.level);
+    //ctx.print_color(50, 3, white, black, &xp);
+    let xp_level_start = (player_pools.level - 1) * 1000;
+    ctx.draw_bar_horizontal(
+        64,
+        3,
+        14,
+        player_pools.xp - xp_level_start,
+        1000,
+        RGB::named(rltk::GOLD),
         RGB::named(rltk::BLACK),
     );
 
