@@ -1,8 +1,8 @@
 #![allow(unused)]
 
 use super::{
-    mana_at_level, player_hp_at_level, Attributes, Equipped, GameLog, InBackpack, LootTable, Map,
-    Name, Player, Pools, Position, RunState, SufferDamage,
+    mana_at_level, particle_system::ParticleBuilder, player_hp_at_level, Attributes, Equipped,
+    GameLog, InBackpack, LootTable, Map, Name, Player, Pools, Position, RunState, SufferDamage,
 };
 use rltk::console;
 use specs::prelude::*;
@@ -18,10 +18,24 @@ impl<'a> System<'a> for DamageSystem {
         Entities<'a>,
         ReadExpect<'a, Entity>,
         ReadStorage<'a, Attributes>,
+        WriteExpect<'a, GameLog>,
+        WriteExpect<'a, ParticleBuilder>,
+        ReadExpect<'a, rltk::Point>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (mut stats, mut damage, positions, mut map, entities, player, attributes) = data;
+        let (
+            mut stats,
+            mut damage,
+            positions,
+            mut map,
+            entities,
+            player,
+            attributes,
+            mut log,
+            mut particles,
+            player_pos,
+        ) = data;
         let mut xp_gain = 0;
 
         for (entity, mut stats, damage) in (&entities, &mut stats, &damage).join() {
@@ -43,6 +57,7 @@ impl<'a> System<'a> for DamageSystem {
             let mut player_stats = stats.get_mut(*player).unwrap();
             let player_attributes = attributes.get(*player).unwrap();
             player_stats.xp += xp_gain;
+            log.entries.push(format!("You gained {} XP", xp_gain));
             if player_stats.xp >= player_stats.level * 1000 {
                 // We've gone up a level!
                 player_stats.level += 1;
@@ -56,6 +71,22 @@ impl<'a> System<'a> for DamageSystem {
                     player_stats.level,
                 );
                 player_stats.mana.current = player_stats.mana.max;
+                log.entries.push(format!(
+                    "Congratulations, you are now level {}",
+                    player_stats.level
+                ));
+                for i in 0..10 {
+                    if player_pos.y - i > 1 {
+                        particles.request(
+                            player_pos.x,
+                            player_pos.y - i,
+                            rltk::RGB::named(rltk::GOLD),
+                            rltk::RGB::named(rltk::BLACK),
+                            rltk::to_cp437('░'),
+                            200.0,
+                        );
+                    }
+                }
             }
         }
 
