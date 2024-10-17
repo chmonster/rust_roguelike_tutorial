@@ -83,6 +83,7 @@ pub enum RunState {
         row: i32,
     },
     MapGeneration,
+    ShowCheatMenu,
 }
 
 pub struct State {
@@ -140,48 +141,8 @@ impl State {
         } else {
             map::thaw_level_entities(&mut self.ecs);
         }
-
-        /*
-        let mut rng = self.ecs.write_resource::<rltk::RandomNumberGenerator>();
-        let mut builder = map_builders::level_builder(new_depth, &mut rng, 80, 50);
-        builder.build_map(&mut rng);
-        std::mem::drop(rng);
-
-        self.mapgen_history = builder.build_data.history.clone();
-        let player_start;
-        {
-            let mut worldmap_resource = self.ecs.write_resource::<Map>();
-            *worldmap_resource = builder.build_data.map.clone();
-            player_start = builder
-                .build_data
-                .starting_position
-                .as_mut()
-                .unwrap()
-                .clone();
-        }
-
-        // Spawn bad guys
-        builder.spawn_entities(&mut self.ecs, new_depth);
-
-        // Place the player and update resources
-        let (player_x, player_y) = (player_start.x, player_start.y);
-        let mut player_position = self.ecs.write_resource::<Point>();
-        *player_position = Point::new(player_x, player_y);
-        let mut position_components = self.ecs.write_storage::<Position>();
-        let player_entity = self.ecs.fetch::<Entity>();
-        let player_pos_comp = position_components.get_mut(*player_entity);
-        if let Some(player_pos_comp) = player_pos_comp {
-            player_pos_comp.x = player_x;
-            player_pos_comp.y = player_y;
-        }
-
-        // Mark the player's visibility as dirty
-        let mut viewshed_components = self.ecs.write_storage::<Viewshed>();
-        let vs = viewshed_components.get_mut(*player_entity);
-        if let Some(vs) = vs {
-            vs.dirty = true;
-        } */
     }
+
     /*
     fn entities_to_remove_on_level_change(&mut self) -> Vec<Entity> {
         let entities = self.ecs.entities();
@@ -433,6 +394,19 @@ impl GameState for State {
                                 .expect("Unable to insert intent");
                             newrunstate = RunState::PlayerTurn;
                         }
+                    }
+                }
+            }
+
+            RunState::ShowCheatMenu => {
+                let result = gui::show_cheat_mode(self, ctx);
+                match result {
+                    gui::CheatMenuResult::Cancel => newrunstate = RunState::AwaitingInput,
+                    gui::CheatMenuResult::NoResponse => {}
+                    gui::CheatMenuResult::TeleportToExit => {
+                        self.goto_level(1);
+                        self.mapgen_next_state = Some(RunState::PreRun);
+                        newrunstate = RunState::MapGeneration;
                     }
                 }
             }
