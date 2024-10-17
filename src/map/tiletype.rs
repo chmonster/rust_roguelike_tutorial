@@ -13,6 +13,8 @@ pub enum TileType {
     Bridge,
     Gravel,
     UpStairs,
+    Stalactite,
+    Stalagmite,
 }
 
 //TOFIX: newly opened doors are not walkable unless the player moves elsewhere first
@@ -32,7 +34,10 @@ pub fn tile_walkable(tt: TileType) -> bool {
 }
 
 pub fn tile_opaque(tt: TileType) -> bool {
-    matches!(tt, TileType::Wall)
+    matches!(
+        tt,
+        TileType::Wall | TileType::Stalactite | TileType::Stalagmite
+    )
 }
 
 pub fn tile_cost(tt: TileType) -> f32 {
