@@ -88,6 +88,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
                 let glyph = renderables.get_mut(*potential_target).unwrap();
                 glyph.glyph = rltk::to_cp437('\\');
                 viewshed.dirty = true;
+                result = RunState::PlayerTurn;
             }
         }
 
