@@ -12,13 +12,16 @@ pub enum TileType {
     WoodFloor,
     Bridge,
     Gravel,
+    UpStairs,
 }
 
+//TOFIX: newly opened doors are not walkable unless the player moves elsewhere first
 pub fn tile_walkable(tt: TileType) -> bool {
     matches!(
         tt,
         TileType::Floor
             | TileType::DownStairs
+            | TileType::UpStairs
             | TileType::Road
             | TileType::Grass
             | TileType::ShallowWater

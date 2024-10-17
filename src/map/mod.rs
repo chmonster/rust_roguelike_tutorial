@@ -9,6 +9,8 @@ mod tiletype;
 pub use tiletype::{tile_cost, tile_opaque, tile_walkable, TileType};
 mod themes;
 pub use themes::*;
+mod dungeon;
+pub use dungeon::*;
 
 #[derive(Default, Serialize, Deserialize, Clone)]
 pub struct Map {

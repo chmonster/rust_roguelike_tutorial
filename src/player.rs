@@ -8,13 +8,14 @@ use super::{
 use rltk::{console, Point, Rltk, VirtualKeyCode};
 use specs::prelude::*;
 
-pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
+pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState {
     let mut positions = ecs.write_storage::<Position>();
-    let mut players = ecs.write_storage::<Player>();
+    let players = ecs.write_storage::<Player>();
     let mut viewsheds = ecs.write_storage::<Viewshed>();
+    let entities = ecs.entities();
     let combat_stats = ecs.read_storage::<Pools>();
     let map = ecs.fetch::<Map>();
-    let entities = ecs.entities();
+    
     let mut wants_to_melee = ecs.write_storage::<WantsToMelee>();
     let mut entity_moved = ecs.write_storage::<EntityMoved>();
 
@@ -26,6 +27,8 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let bystanders = ecs.read_storage::<Bystander>();
     let vendors = ecs.read_storage::<Vendor>();
 
+    let mut result = RunState::AwaitingInput;
+
     let mut swap_entities: Vec<(Entity, i32, i32)> = Vec::new();
 
     for (entity, _player, pos, viewshed) in
@@ -36,7 +39,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
             || pos.y + delta_y < 1
             || pos.y + delta_y > map.height - 1
         {
-            return;
+            return RunState::AwaitingInput;
         }
         let destination_idx = map.xy_idx(pos.x + delta_x, pos.y + delta_y);
 
@@ -61,6 +64,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
                 let mut ppos = ecs.write_resource::<Point>();
                 ppos.x = pos.x;
                 ppos.y = pos.y;
+                result = RunState::PlayerTurn;
             } else {
                 let target = combat_stats.get(*potential_target);
                 if let Some(_target) = target {
@@ -72,23 +76,10 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
                             },
                         )
                         .expect("Add target failed");
-                    return;
+                    return RunState::PlayerTurn;
                 }
             }
-            /*
-            let target = combat_stats.get(*potential_target);
-            if let Some(_target) = target {
-                wants_to_melee
-                    .insert(
-                        entity,
-                        WantsToMelee {
-                            target: *potential_target,
-                        },
-                    )
-                    .expect("Add target failed");
-                return;
-            }
-             */
+
             let door = doors.get_mut(*potential_target);
             if let Some(door) = door {
                 door.open = true;
@@ -103,15 +94,21 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
         if !map.blocked[destination_idx] {
             pos.x = (pos.x + delta_x).clamp(0, map.width - 1);
             pos.y = (pos.y + delta_y).clamp(0, map.height - 1);
-
-            let mut ppos = ecs.write_resource::<Point>();
-            ppos.x = pos.x;
-            ppos.y = pos.y;
-
-            viewshed.dirty = true;
             entity_moved
                 .insert(entity, EntityMoved {})
                 .expect("Unable to insert marker");
+            viewshed.dirty = true;
+            let mut ppos = ecs.write_resource::<Point>();
+            ppos.x = pos.x;
+            ppos.y = pos.y;
+            result = RunState::PlayerTurn;
+            match map.tiles[destination_idx] {
+                TileType::DownStairs => result = RunState::NextLevel,
+                TileType::UpStairs => result = RunState::PreviousLevel,
+                _ => {}
+            } 
+        
+
         }
     }
 
@@ -122,6 +119,8 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
             their_pos.y = m.2;
         }
     }
+
+    result
 }
 
 fn get_item(ecs: &mut World) {
@@ -173,9 +172,23 @@ pub fn try_next_level(ecs: &mut World) -> bool {
     }
 }
 
+pub fn try_previous_level(ecs: &mut World) -> bool {
+    let player_pos = ecs.fetch::<Point>();
+    let map = ecs.fetch::<Map>();
+    let player_idx = map.xy_idx(player_pos.x, player_pos.y);
+    if map.tiles[player_idx] == TileType::UpStairs {
+        true
+    } else {
+        let mut gamelog = ecs.fetch_mut::<GameLog>();
+        gamelog.entries.push("There is no way up from here.".to_string());
+        false
+    }
+}
+
+
 pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
     // Hotkeys
-    //TOFIX: not registered for OS build (WASM is okay)
+    //TOFIX: not working for OS build (WASM is okay)
     if ctx.shift && ctx.key.is_some() {
         let key: Option<i32> = match ctx.key.unwrap() {
             VirtualKeyCode::Key1 => Some(1),
@@ -198,31 +211,31 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
     match ctx.key {
         None => return RunState::AwaitingInput, // Nothing happened
         Some(key) => match key {
-            VirtualKeyCode::Left | VirtualKeyCode::Numpad4 | VirtualKeyCode::A => {
-                try_move_player(-1, 0, &mut gs.ecs)
+            VirtualKeyCode::Left | VirtualKeyCode::Numpad4 | VirtualKeyCode::H => {
+                return try_move_player(-1, 0, &mut gs.ecs);
             }
 
-            VirtualKeyCode::Right | VirtualKeyCode::Numpad6 | VirtualKeyCode::D => {
-                try_move_player(1, 0, &mut gs.ecs)
+            VirtualKeyCode::Right | VirtualKeyCode::Numpad6 | VirtualKeyCode::L => {
+                return try_move_player(1, 0, &mut gs.ecs);
             }
 
-            VirtualKeyCode::Up | VirtualKeyCode::Numpad8 | VirtualKeyCode::W => {
-                try_move_player(0, -1, &mut gs.ecs)
+            VirtualKeyCode::Up | VirtualKeyCode::Numpad8 | VirtualKeyCode::K => {
+                return try_move_player(0, -1, &mut gs.ecs);
             }
 
-            VirtualKeyCode::Down | VirtualKeyCode::Numpad2 | VirtualKeyCode::S => {
-                try_move_player(0, 1, &mut gs.ecs)
+            VirtualKeyCode::Down | VirtualKeyCode::Numpad2 | VirtualKeyCode::J => {
+                return try_move_player(0, 1, &mut gs.ecs);
             }
 
             // Diagonals
             //NE
-            VirtualKeyCode::Numpad9 | VirtualKeyCode::E => try_move_player(1, -1, &mut gs.ecs),
+            VirtualKeyCode::Numpad9 | VirtualKeyCode::U => return try_move_player(1, -1, &mut gs.ecs),
             //NW
-            VirtualKeyCode::Numpad7 | VirtualKeyCode::Q => try_move_player(-1, -1, &mut gs.ecs),
+            VirtualKeyCode::Numpad7 | VirtualKeyCode::Y => return try_move_player(-1, -1, &mut gs.ecs),
             //SE
-            VirtualKeyCode::Numpad3 | VirtualKeyCode::C => try_move_player(1, 1, &mut gs.ecs),
+            VirtualKeyCode::Numpad3 | VirtualKeyCode::N => return try_move_player(1, 1, &mut gs.ecs),
             //SW
-            VirtualKeyCode::Numpad1 | VirtualKeyCode::Z => try_move_player(-1, 1, &mut gs.ecs),
+            VirtualKeyCode::Numpad1 | VirtualKeyCode::B => return try_move_player(-1, 1, &mut gs.ecs),
 
             // Level changes
             VirtualKeyCode::Period => {
@@ -230,13 +243,19 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
                     return RunState::NextLevel;
                 }
             }
+            VirtualKeyCode::Comma => {
+                if try_previous_level(&mut gs.ecs) {
+                    return RunState::PreviousLevel;
+                }
+            }
+            
 
             // Skip Turn
             VirtualKeyCode::Numpad5 => return skip_turn(&mut gs.ecs),
             VirtualKeyCode::Space => return skip_turn(&mut gs.ecs),
 
             //non-movement
-            VirtualKeyCode::G | VirtualKeyCode::Comma => get_item(&mut gs.ecs),
+            VirtualKeyCode::G /*| VirtualKeyCode::Comma*/ => get_item(&mut gs.ecs),
             VirtualKeyCode::I => return RunState::ShowInventory,
             VirtualKeyCode::D => return RunState::ShowDropItem,
             VirtualKeyCode::R => return RunState::ShowRemoveItem,
