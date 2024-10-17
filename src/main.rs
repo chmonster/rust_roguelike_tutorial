@@ -54,6 +54,7 @@ mod spawner;
 pub mod trigger_system;
 pub use gamesystem::*;
 pub mod animal_ai_system;
+pub mod lighting_system;
 //use animal_ai_system::AnimalAI;
 
 #[macro_use]
@@ -126,6 +127,8 @@ impl State {
         particles.run_now(&self.ecs);
         let mut bystander = bystander_ai_system::BystanderAI {};
         bystander.run_now(&self.ecs);
+        let mut lighting = lighting_system::LightingSystem {};
+        lighting.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -598,6 +601,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Herbivore>();
     gs.ecs.register::<OtherLevelPosition>();
     gs.ecs.register::<DMSerializationHelper>();
+    gs.ecs.register::<LightSource>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

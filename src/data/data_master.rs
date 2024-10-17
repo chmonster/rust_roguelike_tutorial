@@ -428,6 +428,13 @@ pub fn spawn_named_mob(
             dirty: true,
         });
 
+        if let Some(light) = &mob_template.light {
+            eb = eb.with(LightSource {
+                range: light.range,
+                color: rltk::RGB::from_hex(&light.color).expect("Bad color"),
+            });
+        }
+
         if let Some(na) = &mob_template.natural {
             let mut nature = NaturalAttackDefense {
                 armor_class: na.armor_class,

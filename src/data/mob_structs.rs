@@ -17,12 +17,19 @@ pub struct Mob {
     pub equipped: Option<Vec<String>>,
     pub natural: Option<MobNatural>,
     pub loot_table: Option<String>,
+    pub light: Option<MobLight>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct MobNatural {
     pub armor_class: Option<i32>,
     pub attacks: Option<Vec<NaturalAttack>>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct MobLight {
+    pub range: i32,
+    pub color: String,
 }
 
 #[derive(Deserialize, Debug)]

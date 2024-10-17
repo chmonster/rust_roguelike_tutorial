@@ -314,3 +314,9 @@ pub struct OtherLevelPosition {
 pub struct DMSerializationHelper {
     pub map: super::map::MasterDungeonMap,
 }
+
+#[derive(Component, Serialize, Deserialize, Clone)]
+pub struct LightSource {
+    pub color: RGB,
+    pub range: i32,
+}
