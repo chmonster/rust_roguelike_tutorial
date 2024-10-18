@@ -539,6 +539,7 @@ fn main() -> rltk::BError {
         .unwrap()
         .with_tile_dimensions(TILEWIDTH, TILEHEIGHT)
         .with_title("rust-roguelike by chmonster")
+        .with_advanced_input(true)
         .build()?;
     context.with_post_scanlines(false);
 

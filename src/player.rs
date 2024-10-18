@@ -5,7 +5,8 @@ use super::{
     Item, Map, Monster, Player, Pools, Position, Renderable, RunState, State, TileType, Vendor,
     Viewshed, WantsToMelee, WantsToPickupItem,
 };
-use rltk::{console, Point, Rltk, VirtualKeyCode};
+use rltk::{console, Point, Rltk, VirtualKeyCode, BEvent};
+use rltk::prelude::INPUT;
 use specs::prelude::*;
 
 pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState {
@@ -189,8 +190,34 @@ pub fn try_previous_level(ecs: &mut World) -> bool {
 
 pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
     // Hotkeys
-    //TOFIX: not working for OS build (WASM is okay)
-    if ctx.shift && ctx.key.is_some() {
+
+    let mut input = INPUT.lock();
+    /*
+    for (i, key) in input.scan_code_pressed_set().iter().enumerate() {
+        ctx.print(50, 24 + i as i32, format!("Scan code: {}", key));
+    }
+
+    for (i, key) in input.key_pressed_set().iter().enumerate() {
+        ctx.print(50, 25 + i as i32, format!("Key code: {:?}", key));
+    }
+     */
+
+    input.for_each_message(|event| {
+        //console::log(format!("{:#?}", event));
+        if event == BEvent::CloseRequested {
+            ctx.quitting = true;
+        }
+    });
+
+    let shift = input.key_pressed_set().contains(&VirtualKeyCode::LShift) 
+        || input.key_pressed_set().contains(&VirtualKeyCode::RShift);
+
+    let ctrl = input.key_pressed_set().contains(&VirtualKeyCode::LControl) 
+        || input.key_pressed_set().contains(&VirtualKeyCode::RControl);
+
+    if (shift || ctrl) && ctx.key.is_some() {
+
+        console::log(format!("Shift {:#?}", ctx.key.unwrap()));
         let key: Option<i32> = match ctx.key.unwrap() {
             VirtualKeyCode::Key1 => Some(1),
             VirtualKeyCode::Key2 => Some(2),

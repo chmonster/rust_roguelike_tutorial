@@ -65,9 +65,9 @@ fn draw_attribute(name: &str, attribute: &Attribute, y: i32, ctx: &mut Rltk) {
         y,
         color,
         black,
-        &format!("{}", attribute.base + attribute.modifiers),
+        format!("{}", attribute.base + attribute.modifiers),
     );
-    ctx.print_color(73, y, color, black, &format!("{}", attribute.bonus));
+    ctx.print_color(73, y, color, black, format!("{}", attribute.bonus));
     if attribute.bonus > 0 {
         ctx.set(72, y, color, black, rltk::to_cp437('+'));
     }
@@ -265,7 +265,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
                 consumable_y,
                 yellow,
                 black,
-                &format!("↑{}", index),
+                format!("↑{}", index),
             );
             ctx.print_color(VIEWWIDTH + 5, consumable_y, green, black, &item_name.name);
             consumable_y += 1;
