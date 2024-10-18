@@ -258,6 +258,8 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let consumables = ecs.read_storage::<Consumable>();
     let backpack = ecs.read_storage::<InBackpack>();
     let mut index = 1;
+    let keymarker = if cfg!(unix) { "Ctrl-" } else { "Shift-" };
+
     for (carried_by, _consumable, item_name) in (&backpack, &consumables, &name).join() {
         if carried_by.owner == *player_entity && index < 10 {
             ctx.print_color(
@@ -265,9 +267,15 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
                 consumable_y,
                 yellow,
                 black,
-                format!("↑{}", index),
+                format!("{}{}", &keymarker, index),
             );
-            ctx.print_color(VIEWWIDTH + 5, consumable_y, green, black, &item_name.name);
+            ctx.print_color(
+                VIEWWIDTH + keymarker.len() as u32 + 4,
+                consumable_y,
+                green,
+                black,
+                &item_name.name,
+            );
             consumable_y += 1;
             index += 1;
         }

@@ -3,7 +3,7 @@
 use super::{
     BlocksTile, BlocksVisibility, Bystander, Door, EntityMoved, GameLog, HungerClock, HungerState,
     Item, Map, Monster, Player, Pools, Position, Renderable, RunState, State, TileType, Vendor,
-    Viewshed, WantsToMelee, WantsToPickupItem,
+    Viewshed, WantsToMelee, WantsToPickupItem, Name
 };
 use rltk::{console, Point, Rltk, VirtualKeyCode, BEvent};
 use rltk::prelude::INPUT;
@@ -16,6 +16,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
     let entities = ecs.entities();
     let combat_stats = ecs.read_storage::<Pools>();
     let map = ecs.fetch::<Map>();
+    let items = ecs.read_storage::<Item>();
     
     let mut wants_to_melee = ecs.write_storage::<WantsToMelee>();
     let mut entity_moved = ecs.write_storage::<EntityMoved>();
@@ -24,6 +25,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
     let mut blocks_visibility = ecs.write_storage::<BlocksVisibility>();
     let mut blocks_movement = ecs.write_storage::<BlocksTile>();
     let mut renderables = ecs.write_storage::<Renderable>();
+    //let mut items = ecs.write_storage::<Item>();
 
     let bystanders = ecs.read_storage::<Bystander>();
     let vendors = ecs.read_storage::<Vendor>();
@@ -31,6 +33,8 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
     let mut result = RunState::AwaitingInput;
 
     let mut swap_entities: Vec<(Entity, i32, i32)> = Vec::new();
+
+    
 
     for (entity, _player, pos, viewshed) in
         (&entities, &players, &mut positions, &mut viewsheds).join()
@@ -103,17 +107,48 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
             let mut ppos = ecs.write_resource::<Point>();
             ppos.x = pos.x;
             ppos.y = pos.y;
-            result = RunState::PlayerTurn;
-            match map.tiles[destination_idx] {
-                TileType::DownStairs => result = RunState::NextLevel,
-                TileType::UpStairs => result = RunState::PreviousLevel,
-                _ => {}
-            } 
-        
-
+            //log_items_in_new_space(ecs);
+         
         }
-    }
 
+
+
+        result = RunState::PlayerTurn;
+        match map.tiles[destination_idx] {
+            TileType::DownStairs => result = RunState::NextLevel,
+            TileType::UpStairs => result = RunState::PreviousLevel,
+            _ => {}
+        } 
+    
+    }
+    
+    //list item contents of new space
+    {
+        let names= ecs.read_storage::<Name>();
+        let mut gamelog = ecs.fetch_mut::<GameLog>();
+        let mut target_item: Vec<Option<Entity>> = Vec::new();
+        let mut ppos = ecs.write_resource::<Point>();
+
+        for (item_entity, _item, position) in (&entities, &items, &positions).join() {
+            if position.x == ppos.x && position.y == ppos.y {
+                target_item.push( Some(item_entity));
+            }
+        }
+
+        let mut item_string: String = String::new();
+        for item in target_item.iter()
+        {
+            if item.is_some() {
+                item_string.push_str(&names.get(item.expect("target_item not found")).unwrap().name);
+                item_string.push_str(", ")
+            }
+        }
+        if !item_string.is_empty(){
+            item_string.truncate(item_string.len()-2);
+            gamelog.entries.push(format!("You see here: {}", item_string));
+        }
+
+    }
     for m in swap_entities.iter() {
         let their_pos = positions.get_mut(m.0);
         if let Some(their_pos) = their_pos {
@@ -209,15 +244,15 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
         }
     });
 
-    let shift = input.key_pressed_set().contains(&VirtualKeyCode::LShift) 
-        || input.key_pressed_set().contains(&VirtualKeyCode::RShift);
+    let modifier = if cfg!(unix) {input.key_pressed_set().contains(&VirtualKeyCode::LControl) 
+        || input.key_pressed_set().contains(&VirtualKeyCode::RControl)
+    } else {input.key_pressed_set().contains(&VirtualKeyCode::LShift) 
+            || input.key_pressed_set().contains(&VirtualKeyCode::RShift)
+    };
 
-    let ctrl = input.key_pressed_set().contains(&VirtualKeyCode::LControl) 
-        || input.key_pressed_set().contains(&VirtualKeyCode::RControl);
+    if modifier && ctx.key.is_some() {
 
-    if (shift || ctrl) && ctx.key.is_some() {
-
-        console::log(format!("Shift {:#?}", ctx.key.unwrap()));
+        //console::log(format!("{:#?} {:#?}", modifier, ctx.key.unwrap()));
         let key: Option<i32> = match ctx.key.unwrap() {
             VirtualKeyCode::Key1 => Some(1),
             VirtualKeyCode::Key2 => Some(2),
