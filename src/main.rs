@@ -27,8 +27,6 @@ mod rect;
 pub use rect::Rect;
 mod visibility_system;
 use visibility_system::VisibilitySystem;
-mod monsters;
-pub use monsters::MonsterAI;
 mod map_indexing_system;
 use map_indexing_system::MapIndexingSystem;
 mod melee_combat_system;
@@ -46,14 +44,22 @@ pub mod hunger_system;
 pub mod particle_system;
 pub mod rex_assets;
 use rex_assets::RexAssets;
-pub mod bystander_ai_system;
 mod gamesystem;
 pub mod map_builders;
 pub mod saveload_system;
 mod spawner;
 pub mod trigger_system;
 pub use gamesystem::*;
-pub mod animal_ai_system;
+mod ai;
+/*
+mod animal_ai_system;
+mod bystander_ai_system;
+mod monster_ai_system;
+pub use animal_ai_system::AnimalAI;
+pub use bystander_ai_system::BystanderAI;
+pub use monster_ai_system::MonsterAI;
+ */
+
 pub mod lighting_system;
 //use animal_ai_system::AnimalAI;
 
@@ -101,9 +107,9 @@ impl State {
         //rw.run_now(&self.ecs);
         let mut vis = VisibilitySystem {};
         vis.run_now(&self.ecs);
-        let mut mob = MonsterAI {};
+        let mut mob = ai::MonsterAI {};
         mob.run_now(&self.ecs);
-        let mut animal = animal_ai_system::AnimalAI {};
+        let mut animal = ai::AnimalAI {};
         animal.run_now(&self.ecs);
         let mut triggers = trigger_system::TriggerSystem {};
         triggers.run_now(&self.ecs);
@@ -125,7 +131,7 @@ impl State {
         hunger.run_now(&self.ecs);
         let mut particles = particle_system::ParticleSpawnSystem {};
         particles.run_now(&self.ecs);
-        let mut bystander = bystander_ai_system::BystanderAI {};
+        let mut bystander = ai::BystanderAI {};
         bystander.run_now(&self.ecs);
         let mut lighting = lighting_system::LightingSystem {};
         lighting.run_now(&self.ecs);

@@ -1,4 +1,4 @@
-use super::{
+use crate::{
     /*particle_system::ParticleBuilder,*/ Carnivore, /*Confusion,*/ EntityMoved,
     Herbivore, Item, Map, Position, RunState, Viewshed, WantsToMelee,
 };

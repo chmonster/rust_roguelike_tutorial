@@ -1,6 +1,6 @@
 #![allow(unused)]
 
-use super::{
+use crate::{
     particle_system::ParticleBuilder, Confusion, EntityMoved, GameLog, Map, Monster, Name,
     Position, Quips, RunState, Viewshed, WantsToMelee,
 };
