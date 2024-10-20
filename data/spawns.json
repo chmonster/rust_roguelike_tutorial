@@ -825,7 +825,7 @@
             },
             "blocks_tile": true,
             "vision_range": 8,
-            "ai": "melee",
+            "ai": "carnivore",
             "attributes": {
                 "Might": 3,
                 "Fitness": 3
@@ -852,7 +852,7 @@
             },
             "blocks_tile": true,
             "vision_range": 8,
-            "ai": "melee",
+            "ai": "carnivore",
             "attributes": {
                 "Might": 3,
                 "Fitness": 3
@@ -877,7 +877,7 @@
             },
             "blocks_tile": true,
             "vision_range": 8,
-            "ai": "bystander",
+            "ai": "herbivore",
             "attributes": {
                 "Might": 3,
                 "Fitness": 3
