@@ -12,7 +12,9 @@ impl InitialMapBuilder for RubbleMapBuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
         console::log("RubbleMapBuilder");
-        build_data.map.name = "RubbleMap".to_string();
+        if build_data.map.name == "New Map" {
+            build_data.map.name = "RubbleMap".to_string();
+        }
         self.rubble_map(rng, build_data);
     }
 }

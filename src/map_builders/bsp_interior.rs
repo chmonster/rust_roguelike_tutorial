@@ -11,7 +11,9 @@ impl InitialMapBuilder for BspInteriorBuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
         console::log("BspInterior");
-        build_data.map.name = "BspInterior".to_string();
+        if build_data.map.name == "New Map" {
+            build_data.map.name = "BspInterior".to_string();
+        }
         self.build(rng, build_data);
     }
 }

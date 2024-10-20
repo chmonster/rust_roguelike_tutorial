@@ -7,7 +7,9 @@ impl InitialMapBuilder for CellularAutomataBuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
         console::log("CellularAutomata");
-        build_data.map.name = "CellularAutomata".to_string();
+        if build_data.map.name == "New Map" {
+            build_data.map.name = "CellularAutomata".to_string();
+        }
 
         self.build(rng, build_data);
     }
