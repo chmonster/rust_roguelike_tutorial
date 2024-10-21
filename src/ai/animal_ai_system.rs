@@ -1,6 +1,6 @@
 use crate::{
     /*particle_system::ParticleBuilder,*/ Carnivore, /*Confusion,*/ EntityMoved,
-    Herbivore, Item, Map, Position, RunState, Viewshed, WantsToMelee,
+    Herbivore, Item, Map, MyTurn, Position, RunState, Viewshed, WantsToMelee,
 };
 use rltk::Point;
 use specs::prelude::*;
@@ -21,13 +21,14 @@ impl<'a> System<'a> for AnimalAI {
         WriteStorage<'a, WantsToMelee>,
         WriteStorage<'a, EntityMoved>,
         WriteStorage<'a, Position>,
+        ReadStorage<'a, MyTurn>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
         let (
             mut map,
             player_entity,
-            runstate,
+            _runstate,
             entities,
             mut viewshed,
             herbivore,
@@ -36,23 +37,26 @@ impl<'a> System<'a> for AnimalAI {
             mut wants_to_melee,
             mut entity_moved,
             mut position,
+            turns,
         ) = data;
 
-        if *runstate != RunState::MonsterTurn {
-            return;
-        }
+        // if *runstate != RunState::MonsterTurn {
+        //     return;
+        // }
 
         // Herbivores run away a lot
-        for (entity, viewshed, _herbivore, pos) in
-            (&entities, &mut viewshed, &herbivore, &mut position).join()
+        for (entity, viewshed, _herbivore, pos, _turn) in
+            (&entities, &mut viewshed, &herbivore, &mut position, &turns).join()
         {
             let mut run_away_from: Vec<usize> = Vec::new();
             for other_tile in viewshed.visible_tiles.iter() {
                 let view_idx = map.xy_idx(other_tile.x, other_tile.y);
-                for other_entity in map.tile_content[view_idx].iter() {
-                    // They don't run away from items
-                    if item.get(*other_entity).is_none() {
-                        run_away_from.push(view_idx);
+                if view_idx > 1 && view_idx < map.tiles.len() {
+                    for other_entity in map.tile_content[view_idx].iter() {
+                        // They don't run away from items
+                        if item.get(*other_entity).is_none() {
+                            run_away_from.push(view_idx);
+                        }
                     }
                 }
             }
@@ -84,29 +88,32 @@ impl<'a> System<'a> for AnimalAI {
         }
 
         // Carnivores just want to eat everything
-        for (entity, viewshed, _carnivore, pos) in
-            (&entities, &mut viewshed, &carnivore, &mut position).join()
+        for (entity, viewshed, _carnivore, pos, _turn) in
+            (&entities, &mut viewshed, &carnivore, &mut position, &turns).join()
         {
             let mut run_towards: Vec<usize> = Vec::new();
             let mut attacked = false;
             for other_tile in viewshed.visible_tiles.iter() {
                 let view_idx = map.xy_idx(other_tile.x, other_tile.y);
-                for other_entity in map.tile_content[view_idx].iter() {
-                    if herbivore.get(*other_entity).is_some() || *other_entity == *player_entity {
-                        let distance = rltk::DistanceAlg::Pythagoras
-                            .distance2d(Point::new(pos.x, pos.y), *other_tile);
-                        if distance < 1.5 {
-                            wants_to_melee
-                                .insert(
-                                    entity,
-                                    WantsToMelee {
-                                        target: *other_entity,
-                                    },
-                                )
-                                .expect("Unable to insert attack");
-                            attacked = true;
-                        } else {
-                            run_towards.push(view_idx);
+                if view_idx > 1 && view_idx < map.tiles.len() {
+                    for other_entity in map.tile_content[view_idx].iter() {
+                        if herbivore.get(*other_entity).is_some() || *other_entity == *player_entity
+                        {
+                            let distance = rltk::DistanceAlg::Pythagoras
+                                .distance2d(Point::new(pos.x, pos.y), *other_tile);
+                            if distance < 1.5 {
+                                wants_to_melee
+                                    .insert(
+                                        entity,
+                                        WantsToMelee {
+                                            target: *other_entity,
+                                        },
+                                    )
+                                    .expect("Unable to insert attack");
+                                attacked = true;
+                            } else {
+                                run_towards.push(view_idx);
+                            }
                         }
                     }
                 }

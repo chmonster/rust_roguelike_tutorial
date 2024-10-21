@@ -374,6 +374,8 @@ pub fn spawn_named_mob(
         }
         eb = eb.with(attr);
 
+        eb = eb.with(Initiative { current: 2 });
+
         let mob_level = if mob_template.level.is_some() {
             mob_template.level.unwrap()
         } else {

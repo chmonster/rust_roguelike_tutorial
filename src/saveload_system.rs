@@ -124,7 +124,9 @@ pub fn save_game(ecs: &mut World) {
             Herbivore,
             OtherLevelPosition,
             DMSerializationHelper,
-            LightSource
+            LightSource,
+            Initiative,
+            MyTurn
         );
     }
 
@@ -214,7 +216,9 @@ pub fn load_game(ecs: &mut World) {
             Herbivore,
             OtherLevelPosition,
             DMSerializationHelper,
-            LightSource
+            LightSource,
+            Initiative,
+            MyTurn
         );
     }
 

@@ -1,10 +1,10 @@
-#![allow(unused)]
+//#![allow(unused)]
 
 use crate::{
-    particle_system::ParticleBuilder, Confusion, EntityMoved, GameLog, Map, Monster, Name,
+    particle_system::ParticleBuilder, Confusion, EntityMoved, GameLog, Map, Monster, MyTurn, Name,
     Position, Quips, RunState, Viewshed, WantsToMelee,
 };
-use rltk::{Point, RandomNumberGenerator};
+use rltk::Point; //{Point, RandomNumberGenerator};
 use specs::prelude::*;
 
 pub struct MonsterAI {}
@@ -22,6 +22,7 @@ impl<'a> System<'a> for MonsterAI {
         ReadStorage<'a, Name>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, WantsToMelee>,
+        ReadStorage<'a, MyTurn>,
         WriteStorage<'a, Confusion>,
         WriteExpect<'a, ParticleBuilder>,
         WriteStorage<'a, EntityMoved>,
@@ -42,6 +43,7 @@ impl<'a> System<'a> for MonsterAI {
             names,
             mut position,
             mut wants_to_melee,
+            turns,
             mut confused,
             mut particle_builder,
             mut entity_moved,
@@ -50,12 +52,12 @@ impl<'a> System<'a> for MonsterAI {
             mut gamelog,
         ) = data;
 
-        if *runstate != RunState::MonsterTurn {
+        if *runstate != RunState::Ticking {
             return;
         }
 
-        for (entity, mut viewshed, monster, mut pos) in
-            (&entities, &mut viewshed, &monster, &mut position).join()
+        for (entity, viewshed, _monster, pos, _turn) in
+            (&entities, &mut viewshed, &monster, &mut position, &turns).join()
         {
             let mut can_act = true;
 

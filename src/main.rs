@@ -70,8 +70,8 @@ extern crate lazy_static;
 pub enum RunState {
     AwaitingInput,
     PreRun,
-    PlayerTurn,
-    MonsterTurn,
+    //PlayerTurn,
+    //MonsterTurn,
     ShowInventory,
     ShowDropItem,
     ShowTargeting {
@@ -91,6 +91,7 @@ pub enum RunState {
     },
     MapGeneration,
     ShowCheatMenu,
+    Ticking,
 }
 
 pub struct State {
@@ -107,6 +108,8 @@ impl State {
         //rw.run_now(&self.ecs);
         let mut vis = VisibilitySystem {};
         vis.run_now(&self.ecs);
+        let mut initiative = ai::InitiativeSystem {};
+        initiative.run_now(&self.ecs);
         let mut mob = ai::MonsterAI {};
         mob.run_now(&self.ecs);
         let mut animal = ai::AnimalAI {};
@@ -152,96 +155,6 @@ impl State {
         }
     }
 
-    /*
-    fn entities_to_remove_on_level_change(&mut self) -> Vec<Entity> {
-        let entities = self.ecs.entities();
-        let player = self.ecs.read_storage::<Player>();
-        let backpack = self.ecs.read_storage::<InBackpack>();
-        let player_entity = self.ecs.fetch::<Entity>();
-        let equipped = self.ecs.read_storage::<Equipped>();
-
-        let mut to_delete: Vec<Entity> = Vec::new();
-        for entity in entities.join() {
-            let mut should_delete = true;
-
-            // Don't delete the player
-            let p = player.get(entity);
-            if let Some(_p) = p {
-                should_delete = false;
-            }
-
-            // Don't delete the player's equipment
-            let bp = backpack.get(entity);
-            if let Some(bp) = bp {
-                if bp.owner == *player_entity {
-                    should_delete = false;
-                }
-            }
-
-            // Don't delete equipped items
-            let eq = equipped.get(entity);
-            if let Some(eq) = eq {
-                if eq.owner == *player_entity {
-                    should_delete = false;
-                }
-            }
-
-            if should_delete {
-                to_delete.push(entity);
-            }
-        }
-
-        to_delete
-    }
-     */
-    /*
-    fn goto_next_level(&mut self) {
-        // Delete entities that aren't the player or his/her equipment
-        let to_delete = self.entities_to_remove_on_level_change();
-        for target in to_delete {
-            self.ecs
-                .delete_entity(target)
-                .expect("Unable to delete entity");
-        }
-
-        // Build a new map and place the player
-        let current_depth;
-        {
-            let worldmap_resource = self.ecs.fetch::<Map>();
-            current_depth = worldmap_resource.depth;
-        }
-        self.generate_world_map(current_depth + 1);
-
-        let mut gamelog = self.ecs.fetch_mut::<gamelog::GameLog>();
-        gamelog
-            .entries
-            .push("You descend to the next level.".to_string());
-    }
-
-    fn goto_previous_level(&mut self) {
-        // Delete entities that aren't the player or his/her equipment
-        let to_delete = self.entities_to_remove_on_level_change();
-        for target in to_delete {
-            self.ecs
-                .delete_entity(target)
-                .expect("Unable to delete entity");
-        }
-
-        // Build a new map and place the player
-        let current_depth;
-        {
-            let worldmap_resource = self.ecs.fetch::<Map>();
-            current_depth = worldmap_resource.depth;
-        }
-        self.generate_world_map(current_depth - 1);
-
-        // Notify the player and give them some health
-        let mut gamelog = self.ecs.fetch_mut::<gamelog::GameLog>();
-        gamelog
-            .entries
-            .push("You ascend to the previous level.".to_string());
-    }
-    */
     fn goto_level(&mut self, offset: i32) {
         freeze_level_entities(&mut self.ecs);
 
@@ -339,23 +252,24 @@ impl GameState for State {
             RunState::AwaitingInput => {
                 newrunstate = player_input(self, ctx);
             }
-            RunState::PlayerTurn => {
+            RunState::Ticking => {
                 self.run_systems();
                 self.ecs.maintain();
                 match *self.ecs.fetch::<RunState>() {
+                    RunState::AwaitingInput => newrunstate = RunState::AwaitingInput,
                     RunState::MagicMapReveal { .. } => {
                         newrunstate = RunState::MagicMapReveal { row: 0 }
                     }
-                    _ => newrunstate = RunState::MonsterTurn,
+                    _ => newrunstate = RunState::Ticking,
                 }
             }
 
-            RunState::MonsterTurn => {
+            /*RunState::MonsterTurn => {
                 self.run_systems();
                 self.ecs.maintain();
 
                 newrunstate = RunState::AwaitingInput;
-            }
+            }*/
             RunState::MagicMapReveal { row } => {
                 let mut map = self.ecs.fetch_mut::<Map>();
 
@@ -370,7 +284,7 @@ impl GameState for State {
                     map.revealed_tiles[idx] = true;
                 }
                 if row == map.height - 1 {
-                    newrunstate = RunState::MonsterTurn;
+                    newrunstate = RunState::Ticking;
                 } else {
                     newrunstate = RunState::MagicMapReveal { row: row + 1 };
                 }
@@ -401,7 +315,7 @@ impl GameState for State {
                                     },
                                 )
                                 .expect("Unable to insert intent");
-                            newrunstate = RunState::PlayerTurn;
+                            newrunstate = RunState::Ticking;
                         }
                     }
                 }
@@ -434,7 +348,7 @@ impl GameState for State {
                                 WantsToDropItem { item: item_entity },
                             )
                             .expect("Unable to insert intent");
-                        newrunstate = RunState::PlayerTurn;
+                        newrunstate = RunState::Ticking;
                     }
                 }
             }
@@ -452,7 +366,7 @@ impl GameState for State {
                                 WantsToRemoveItem { item: item_entity },
                             )
                             .expect("Unable to insert intent");
-                        newrunstate = RunState::PlayerTurn;
+                        newrunstate = RunState::Ticking;
                     }
                 }
             }
@@ -473,7 +387,7 @@ impl GameState for State {
                                 },
                             )
                             .expect("Unable to insert intent");
-                        newrunstate = RunState::PlayerTurn;
+                        newrunstate = RunState::Ticking;
                     }
                 }
             }
@@ -609,6 +523,8 @@ fn main() -> rltk::BError {
     gs.ecs.register::<OtherLevelPosition>();
     gs.ecs.register::<DMSerializationHelper>();
     gs.ecs.register::<LightSource>();
+    gs.ecs.register::<Initiative>();
+    gs.ecs.register::<MyTurn>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
