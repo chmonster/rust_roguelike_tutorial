@@ -138,6 +138,10 @@ impl State {
         bystander.run_now(&self.ecs);
         let mut lighting = lighting_system::LightingSystem {};
         lighting.run_now(&self.ecs);
+        let mut turnstatus = ai::TurnStatusSystem {};
+        turnstatus.run_now(&self.ecs);
+        let mut quipper = ai::QuipSystem {};
+        quipper.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -253,14 +257,16 @@ impl GameState for State {
                 newrunstate = player_input(self, ctx);
             }
             RunState::Ticking => {
-                self.run_systems();
-                self.ecs.maintain();
-                match *self.ecs.fetch::<RunState>() {
-                    RunState::AwaitingInput => newrunstate = RunState::AwaitingInput,
-                    RunState::MagicMapReveal { .. } => {
-                        newrunstate = RunState::MagicMapReveal { row: 0 }
+                while newrunstate == RunState::Ticking {
+                    self.run_systems();
+                    self.ecs.maintain();
+                    match *self.ecs.fetch::<RunState>() {
+                        RunState::AwaitingInput => newrunstate = RunState::AwaitingInput,
+                        RunState::MagicMapReveal { .. } => {
+                            newrunstate = RunState::MagicMapReveal { row: 0 }
+                        }
+                        _ => newrunstate = RunState::Ticking,
                     }
-                    _ => newrunstate = RunState::Ticking,
                 }
             }
 

@@ -1,5 +1,6 @@
 use crate::{
-    Bystander, EntityMoved, GameLog, Map, MyTurn, Name, Point, Position, Quips, RunState, Viewshed,
+    Bystander, EntityMoved, /*GameLog,*/ Map, MyTurn, /*Name, Point,*/ Position,
+    /*Quips,*/ RunState, Viewshed,
 };
 use specs::prelude::*;
 
@@ -16,10 +17,10 @@ impl<'a> System<'a> for BystanderAI {
         WriteStorage<'a, Position>,
         WriteStorage<'a, EntityMoved>,
         WriteExpect<'a, rltk::RandomNumberGenerator>,
-        ReadExpect<'a, Point>,
-        WriteExpect<'a, GameLog>,
-        WriteStorage<'a, Quips>,
-        ReadStorage<'a, Name>,
+        //ReadExpect<'a, Point>,
+        //WriteExpect<'a, GameLog>,
+        //WriteStorage<'a, Quips>,
+        //ReadStorage<'a, Name>,
         ReadStorage<'a, MyTurn>,
     );
 
@@ -33,10 +34,10 @@ impl<'a> System<'a> for BystanderAI {
             mut position,
             mut entity_moved,
             mut rng,
-            player_pos,
-            mut gamelog,
-            mut quips,
-            names,
+            //player_pos,
+            //mut gamelog,
+            //mut quips,
+            //names,
             turns,
         ) = data;
 
@@ -48,6 +49,7 @@ impl<'a> System<'a> for BystanderAI {
         for (entity, mut viewshed, _bystander, mut pos, _turn) in
             (&entities, &mut viewshed, &bystander, &mut position, &turns).join()
         {
+            /*
             // Possibly quip
             let quip = quips.get_mut(entity);
             if let Some(quip) = quip {
@@ -69,6 +71,7 @@ impl<'a> System<'a> for BystanderAI {
                     quip.available.remove(quip_index);
                 }
             }
+             */
 
             // Try to move randomly
             let mut x = pos.x;

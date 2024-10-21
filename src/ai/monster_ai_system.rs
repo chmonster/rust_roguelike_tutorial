@@ -1,8 +1,8 @@
 //#![allow(unused)]
 
 use crate::{
-    particle_system::ParticleBuilder, Confusion, EntityMoved, GameLog, Map, Monster, MyTurn, Name,
-    Position, Quips, RunState, Viewshed, WantsToMelee,
+    particle_system::ParticleBuilder, /*Confusion,*/ EntityMoved, /*GameLog,*/ Map,
+    Monster, MyTurn, /*Name,*/ Position, /*Quips,*/ RunState, Viewshed, WantsToMelee,
 };
 use rltk::Point; //{Point, RandomNumberGenerator};
 use specs::prelude::*;
@@ -19,16 +19,16 @@ impl<'a> System<'a> for MonsterAI {
         Entities<'a>,
         WriteStorage<'a, Viewshed>,
         ReadStorage<'a, Monster>,
-        ReadStorage<'a, Name>,
+        //ReadStorage<'a, Name>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, WantsToMelee>,
         ReadStorage<'a, MyTurn>,
-        WriteStorage<'a, Confusion>,
+        //WriteStorage<'a, Confusion>,
         WriteExpect<'a, ParticleBuilder>,
         WriteStorage<'a, EntityMoved>,
-        WriteStorage<'a, Quips>,
-        WriteExpect<'a, rltk::RandomNumberGenerator>,
-        WriteExpect<'a, GameLog>,
+        //WriteStorage<'a, Quips>,
+        //WriteExpect<'a, rltk::RandomNumberGenerator>,
+        //WriteExpect<'a, GameLog>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -40,16 +40,16 @@ impl<'a> System<'a> for MonsterAI {
             entities,
             mut viewshed,
             monster,
-            names,
+            //names,
             mut position,
             mut wants_to_melee,
             turns,
-            mut confused,
-            mut particle_builder,
+            //mut confused,
+            _particle_builder,
             mut entity_moved,
-            mut quips,
-            mut rng,
-            mut gamelog,
+            //mut quips,
+            //mut rng,
+            //mut gamelog,
         ) = data;
 
         if *runstate != RunState::Ticking {
@@ -59,8 +59,8 @@ impl<'a> System<'a> for MonsterAI {
         for (entity, viewshed, _monster, pos, _turn) in
             (&entities, &mut viewshed, &monster, &mut position, &turns).join()
         {
-            let mut can_act = true;
-
+            let /*mut*/ can_act = true;
+            /*
             // Possibly quip
             let quip = quips.get_mut(entity);
             if let Some(quip) = quip {
@@ -82,7 +82,9 @@ impl<'a> System<'a> for MonsterAI {
                     quip.available.remove(quip_index);
                 }
             }
+             */
 
+            /*
             let is_confused = confused.get_mut(entity);
             if let Some(i_am_confused) = is_confused {
                 i_am_confused.turns -= 1;
@@ -98,7 +100,7 @@ impl<'a> System<'a> for MonsterAI {
                     rltk::to_cp437('?'),
                     200.0,
                 );
-            }
+            } */
 
             if can_act {
                 let distance =
