@@ -1,4 +1,4 @@
-use super::{Data, RandomTable};
+use super::{Data, RandomTable, Reaction};
 use crate::components::*;
 use crate::gamesystem::*;
 use regex::Regex;
@@ -39,6 +39,7 @@ pub struct DataMaster {
     mob_index: HashMap<String, usize>,
     prop_index: HashMap<String, usize>,
     loot_index: HashMap<String, usize>,
+    faction_index: HashMap<String, HashMap<String, Reaction>>,
 }
 
 impl DataMaster {
@@ -50,11 +51,13 @@ impl DataMaster {
                 props: Vec::new(),
                 spawn_table: Vec::new(),
                 loot_tables: Vec::new(),
+                faction_table: Vec::new(),
             },
             item_index: HashMap::new(),
             mob_index: HashMap::new(),
             prop_index: HashMap::new(),
             loot_index: HashMap::new(),
+            faction_index: HashMap::new(),
         }
     }
 
@@ -104,6 +107,21 @@ impl DataMaster {
                     spawn.name
                 ));
             }
+        }
+
+        for faction in self.data.faction_table.iter() {
+            let mut reactions: HashMap<String, Reaction> = HashMap::new();
+            for other in faction.responses.iter() {
+                reactions.insert(
+                    other.0.clone(),
+                    match other.1.as_str() {
+                        "ignore" => Reaction::Ignore,
+                        "flee" => Reaction::Flee,
+                        _ => Reaction::Attack,
+                    },
+                );
+            }
+            self.faction_index.insert(faction.name.clone(), reactions);
         }
     }
 }
@@ -305,13 +323,35 @@ pub fn spawn_named_mob(
             name: mob_template.name.clone(),
         });
 
-        match mob_template.ai.as_ref() {
-            "melee" => eb = eb.with(Monster {}),
-            "bystander" => eb = eb.with(Bystander {}),
-            "vendor" => eb = eb.with(Vendor {}),
-            "carnivore" => eb = eb.with(Carnivore {}),
-            "herbivore" => eb = eb.with(Herbivore {}),
-            _ => {}
+        // match mob_template.ai.as_ref() {
+        //     "melee" => eb = eb.with(Monster {}),
+        //     "bystander" => eb = eb.with(Bystander {}),
+        //     "vendor" => eb = eb.with(Vendor {}),
+        //     "carnivore" => eb = eb.with(Carnivore {}),
+        //     "herbivore" => eb = eb.with(Herbivore {}),
+        //     _ => {}
+        // }
+        match mob_template.movement.as_ref() {
+            "random" => {
+                eb = eb.with(MoveMode {
+                    mode: Movement::Random,
+                })
+            }
+            _ => {
+                eb = eb.with(MoveMode {
+                    mode: Movement::Static,
+                })
+            }
+        }
+
+        if let Some(faction) = &mob_template.faction {
+            eb = eb.with(Faction {
+                name: faction.clone(),
+            });
+        } else {
+            eb = eb.with(Faction {
+                name: "Mindless".to_string(),
+            })
         }
 
         if mob_template.blocks_tile {
@@ -583,4 +623,18 @@ pub fn get_item_drop(
     }
 
     None
+}
+
+pub fn faction_reaction(my_faction: &str, their_faction: &str, data: &DataMaster) -> Reaction {
+    if data.faction_index.contains_key(my_faction) {
+        let mf = &data.faction_index[my_faction];
+        if mf.contains_key(their_faction) {
+            return mf[their_faction];
+        } else if mf.contains_key("Default") {
+            return mf["Default"];
+        } else {
+            return Reaction::Ignore;
+        }
+    }
+    Reaction::Ignore
 }

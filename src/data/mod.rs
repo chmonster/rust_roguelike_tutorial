@@ -11,6 +11,8 @@ mod spawn_table_structs;
 use spawn_table_structs::*;
 mod loot_structs;
 use loot_structs::*;
+mod faction_structs;
+pub use faction_structs::*;
 
 mod data_master;
 pub use data_master::*;
@@ -33,6 +35,7 @@ pub struct Data {
     pub props: Vec<Prop>,
     pub spawn_table: Vec<SpawnTableEntry>,
     pub loot_tables: Vec<LootTable>,
+    pub faction_table: Vec<FactionInfo>,
 }
 
 pub fn load_data() {

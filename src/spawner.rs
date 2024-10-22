@@ -1,8 +1,8 @@
 //#![allow(unused)]
 use super::{
-    data::*, Attribute, Attributes, HungerClock, HungerState, Initiative, LightSource, Map, Name,
-    Player, Pool, Pools, Position, RandomTable, Rect, Renderable, SerializeMe, Skill, Skills,
-    TileType, Viewshed,
+    data::*, Attribute, Attributes, Faction, HungerClock, HungerState, Initiative, LightSource,
+    Map, Name, Player, Pool, Pools, Position, RandomTable, Rect, Renderable, SerializeMe, Skill,
+    Skills, TileType, Viewshed,
 };
 
 use rltk::{/*console,*/ RandomNumberGenerator, RGB};
@@ -179,6 +179,9 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             level: 1,
         })
         .with(Initiative { current: 0 })
+        .with(Faction {
+            name: "Player".to_string(),
+        })
         .with(LightSource {
             color: rltk::RGB::from_f32(1.0, 1.0, 0.5),
             range: 8,

@@ -110,10 +110,12 @@ impl State {
         vis.run_now(&self.ecs);
         let mut initiative = ai::InitiativeSystem {};
         initiative.run_now(&self.ecs);
-        let mut mob = ai::MonsterAI {};
-        mob.run_now(&self.ecs);
-        let mut animal = ai::AnimalAI {};
-        animal.run_now(&self.ecs);
+        let mut adjacent = ai::AdjacentAI {};
+        adjacent.run_now(&self.ecs);
+        // let mut mob = ai::MonsterAI {};
+        // mob.run_now(&self.ecs);
+        // let mut animal = ai::AnimalAI {};
+        // animal.run_now(&self.ecs);
         let mut triggers = trigger_system::TriggerSystem {};
         triggers.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem {};
@@ -134,14 +136,21 @@ impl State {
         hunger.run_now(&self.ecs);
         let mut particles = particle_system::ParticleSpawnSystem {};
         particles.run_now(&self.ecs);
-        let mut bystander = ai::BystanderAI {};
-        bystander.run_now(&self.ecs);
+        let mut defaultmove = ai::DefaultMoveAI {};
+        defaultmove.run_now(&self.ecs);
+
         let mut lighting = lighting_system::LightingSystem {};
         lighting.run_now(&self.ecs);
         let mut turnstatus = ai::TurnStatusSystem {};
         turnstatus.run_now(&self.ecs);
         let mut quipper = ai::QuipSystem {};
         quipper.run_now(&self.ecs);
+        let mut visible = ai::VisibleAI {};
+        visible.run_now(&self.ecs);
+        let mut approach = ai::ApproachAI {};
+        approach.run_now(&self.ecs);
+        let mut flee = ai::FleeAI {};
+        flee.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -269,13 +278,6 @@ impl GameState for State {
                     }
                 }
             }
-
-            /*RunState::MonsterTurn => {
-                self.run_systems();
-                self.ecs.maintain();
-
-                newrunstate = RunState::AwaitingInput;
-            }*/
             RunState::MagicMapReveal { row } => {
                 let mut map = self.ecs.fetch_mut::<Map>();
 
@@ -531,6 +533,10 @@ fn main() -> rltk::BError {
     gs.ecs.register::<LightSource>();
     gs.ecs.register::<Initiative>();
     gs.ecs.register::<MyTurn>();
+    gs.ecs.register::<Faction>();
+    gs.ecs.register::<WantsToApproach>();
+    gs.ecs.register::<WantsToFlee>();
+    gs.ecs.register::<MoveMode>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
