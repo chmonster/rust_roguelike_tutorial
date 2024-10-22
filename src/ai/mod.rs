@@ -14,3 +14,5 @@ mod flee_ai_system;
 pub use flee_ai_system::FleeAI;
 mod default_ai_system;
 pub use default_ai_system::DefaultMoveAI;
+mod chase_ai_system;
+pub use chase_ai_system::ChaseAI;

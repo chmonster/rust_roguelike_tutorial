@@ -603,7 +603,7 @@
             },
             "blocks_tile": true,
             "vision_range": 4,
-            "movement": "static",
+            "movement": "random",
             "quips": [
                 "Great to see a new face here!",
                 "I hear there's going to be a good sermon on tea",
@@ -694,7 +694,7 @@
             },
             "blocks_tile": true,
             "vision_range": 4,
-            "movement": "static",
+            "movement": "random_waypoint",
             "quips": ["Why are you in my house?"],
             "attributes": {},
             "equipped": ["Cudgel", "Cloth Tunic", "Cloth Pants", "Slippers"],
@@ -710,7 +710,7 @@
             },
             "blocks_tile": true,
             "vision_range": 4,
-            "movement": "static",
+            "movement": "random_waypoint",
             "quips": ["Lovely day, eh?", "Nice weather", "Hello"],
             "attributes": {},
             "equipped": ["Cudgel", "Cloth Tunic", "Cloth Pants", "Slippers"],
@@ -727,7 +727,7 @@
             },
             "blocks_tile": true,
             "vision_range": 4,
-            "movement": "static",
+            "movement": "random_waypoint",
             "quips": [
                 "They're biting today!",
                 "I caught something, but it wasn't a fish!",
@@ -748,7 +748,7 @@
             },
             "blocks_tile": true,
             "vision_range": 4,
-            "movement": "static",
+            "movement": "random_waypoint",
             "quips": ["Arrr", "Grog!", "Booze!"],
             "attributes": {},
             "equipped": ["Cudgel", "Cloth Tunic", "Cloth Pants", "Slippers"],
@@ -959,7 +959,11 @@
             "blocks_tile": true,
             "vision_range": 4,
             "movement": "default",
-            "quips": ["Stand and deliver!", "Alright, hand it over"],
+            "quips": [
+                "Stand and deliver!",
+                "Alright, hand it over.",
+                "Give us your stuffs."
+            ],
             "attributes": {},
             "equipped": [
                 "Shortsword",
@@ -971,7 +975,7 @@
                 "range": 6,
                 "color": "#FFFF55"
             },
-            "faction": "Bandit"
+            "faction": "Bandits"
         },
         {
             "name": "Bat",

@@ -79,7 +79,7 @@ pub fn save_game(ecs: &mut World) {
             Renderable,
             Player,
             Viewshed,
-            Monster,
+            //Monster,
             Name,
             BlocksTile,
             //CombatStats,
@@ -112,16 +112,16 @@ pub fn save_game(ecs: &mut World) {
             SingleActivation,
             BlocksVisibility,
             Door,
-            Bystander,
-            Vendor,
+            //Bystander,
+            //Vendor,
             Quips,
             Attributes,
             Skills,
             Pools,
             NaturalAttackDefense,
             LootTable,
-            Carnivore,
-            Herbivore,
+            //Carnivore,
+            //Herbivore,
             OtherLevelPosition,
             DMSerializationHelper,
             LightSource,
@@ -130,7 +130,8 @@ pub fn save_game(ecs: &mut World) {
             Faction,
             WantsToApproach,
             WantsToFlee,
-            MoveMode
+            MoveMode,
+            Chasing
         );
     }
 
@@ -176,7 +177,7 @@ pub fn load_game(ecs: &mut World) {
             Renderable,
             Player,
             Viewshed,
-            Monster,
+            //Monster,
             Name,
             BlocksTile,
             SufferDamage,
@@ -208,16 +209,16 @@ pub fn load_game(ecs: &mut World) {
             SingleActivation,
             BlocksVisibility,
             Door,
-            Bystander,
-            Vendor,
+            //Bystander,
+            //Vendor,
             Quips,
             Attributes,
             Skills,
             Pools,
             NaturalAttackDefense,
             LootTable,
-            Carnivore,
-            Herbivore,
+            //Carnivore,
+            //Herbivore,
             OtherLevelPosition,
             DMSerializationHelper,
             LightSource,
@@ -226,7 +227,8 @@ pub fn load_game(ecs: &mut World) {
             Faction,
             WantsToApproach,
             WantsToFlee,
-            MoveMode
+            MoveMode,
+            Chasing
         );
     }
 

@@ -104,31 +104,42 @@ pub struct State {
 
 impl State {
     fn run_systems(&mut self) {
+        //TODO: why did the ordering of these matter?
         //let mut rw = RandomWalker {};
         //rw.run_now(&self.ecs);
+        let mut mapindex = MapIndexingSystem {};
+        mapindex.run_now(&self.ecs);
         let mut vis = VisibilitySystem {};
         vis.run_now(&self.ecs);
         let mut initiative = ai::InitiativeSystem {};
         initiative.run_now(&self.ecs);
+        let mut turnstatus = ai::TurnStatusSystem {};
+        turnstatus.run_now(&self.ecs);
+        let mut quipper = ai::QuipSystem {};
+        quipper.run_now(&self.ecs);
         let mut adjacent = ai::AdjacentAI {};
         adjacent.run_now(&self.ecs);
-        // let mut mob = ai::MonsterAI {};
-        // mob.run_now(&self.ecs);
-        // let mut animal = ai::AnimalAI {};
-        // animal.run_now(&self.ecs);
+        let mut visible = ai::VisibleAI {};
+        visible.run_now(&self.ecs);
+        let mut approach = ai::ApproachAI {};
+        approach.run_now(&self.ecs);
+        let mut flee = ai::FleeAI {};
+        flee.run_now(&self.ecs);
+        let mut chase = ai::ChaseAI {};
+        chase.run_now(&self.ecs);
+        let mut defaultmove = ai::DefaultMoveAI {};
+        defaultmove.run_now(&self.ecs);
         let mut triggers = trigger_system::TriggerSystem {};
         triggers.run_now(&self.ecs);
-        let mut mapindex = MapIndexingSystem {};
-        mapindex.run_now(&self.ecs);
         let mut melee = MeleeCombatSystem {};
         melee.run_now(&self.ecs);
         let mut damage = DamageSystem {};
         damage.run_now(&self.ecs);
         let mut pickup = ItemCollectionSystem {};
         pickup.run_now(&self.ecs);
-        let mut items = ItemUseSystem {};
-        items.run_now(&self.ecs);
-        let mut drop_items: ItemDropSystem = ItemDropSystem {};
+        let mut itemuse = ItemUseSystem {};
+        itemuse.run_now(&self.ecs);
+        let mut drop_items = ItemDropSystem {};
         drop_items.run_now(&self.ecs);
         let mut item_remove = ItemRemoveSystem {};
         item_remove.run_now(&self.ecs);
@@ -136,21 +147,8 @@ impl State {
         hunger.run_now(&self.ecs);
         let mut particles = particle_system::ParticleSpawnSystem {};
         particles.run_now(&self.ecs);
-        let mut defaultmove = ai::DefaultMoveAI {};
-        defaultmove.run_now(&self.ecs);
-
         let mut lighting = lighting_system::LightingSystem {};
         lighting.run_now(&self.ecs);
-        let mut turnstatus = ai::TurnStatusSystem {};
-        turnstatus.run_now(&self.ecs);
-        let mut quipper = ai::QuipSystem {};
-        quipper.run_now(&self.ecs);
-        let mut visible = ai::VisibleAI {};
-        visible.run_now(&self.ecs);
-        let mut approach = ai::ApproachAI {};
-        approach.run_now(&self.ecs);
-        let mut flee = ai::FleeAI {};
-        flee.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -483,7 +481,7 @@ fn main() -> rltk::BError {
 
     gs.ecs.register::<Position>();
     gs.ecs.register::<Renderable>();
-    gs.ecs.register::<Monster>();
+    //    gs.ecs.register::<Monster>();
     gs.ecs.register::<Player>();
     gs.ecs.register::<Viewshed>();
     gs.ecs.register::<Name>();
@@ -518,16 +516,16 @@ fn main() -> rltk::BError {
     gs.ecs.register::<SingleActivation>();
     gs.ecs.register::<BlocksVisibility>();
     gs.ecs.register::<Door>();
-    gs.ecs.register::<Bystander>();
-    gs.ecs.register::<Vendor>();
+    //    gs.ecs.register::<Bystander>();
+    //    gs.ecs.register::<Vendor>();
     gs.ecs.register::<Quips>();
     gs.ecs.register::<Attributes>();
     gs.ecs.register::<Skills>();
     gs.ecs.register::<Pools>();
     gs.ecs.register::<NaturalAttackDefense>();
     gs.ecs.register::<LootTable>();
-    gs.ecs.register::<Carnivore>();
-    gs.ecs.register::<Herbivore>();
+    //    gs.ecs.register::<Carnivore>();
+    //    gs.ecs.register::<Herbivore>();
     gs.ecs.register::<OtherLevelPosition>();
     gs.ecs.register::<DMSerializationHelper>();
     gs.ecs.register::<LightSource>();
@@ -537,6 +535,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<WantsToApproach>();
     gs.ecs.register::<WantsToFlee>();
     gs.ecs.register::<MoveMode>();
+    gs.ecs.register::<Chasing>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

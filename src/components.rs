@@ -1,12 +1,10 @@
 #![allow(deprecated)]
 use rltk::RGB;
 use serde::{Deserialize, Serialize};
-
 use specs::error::NoError; //deprecated
 use specs::prelude::*;
 use specs::saveload::{ConvertSaveload, Marker};
 use specs_derive::*;
-
 use std::collections::HashMap;
 
 #[derive(Component, ConvertSaveload, Clone)]
@@ -28,8 +26,8 @@ pub struct RandomMover {}
 #[derive(Component, Serialize, Deserialize, Clone)]
 pub struct Player {}
 
-#[derive(Component, Serialize, Deserialize, Clone)]
-pub struct Monster {}
+// #[derive(Component, Serialize, Deserialize, Clone)]
+// pub struct Monster {}
 
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct Name {
@@ -225,11 +223,11 @@ pub struct Door {
     pub open: bool,
 }
 
-#[derive(Component, Debug, Serialize, Deserialize, Clone)]
-pub struct Bystander {}
+// #[derive(Component, Debug, Serialize, Deserialize, Clone)]
+// pub struct Bystander {}
 
-#[derive(Component, Debug, Serialize, Deserialize, Clone)]
-pub struct Vendor {}
+// #[derive(Component, Debug, Serialize, Deserialize, Clone)]
+// pub struct Vendor {}
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Quips {
@@ -297,11 +295,11 @@ pub struct LootTable {
     pub table: String,
 }
 
-#[derive(Component, Debug, Serialize, Deserialize, Clone)]
-pub struct Carnivore {}
+// #[derive(Component, Debug, Serialize, Deserialize, Clone)]
+// pub struct Carnivore {}
 
-#[derive(Component, Debug, Serialize, Deserialize, Clone)]
-pub struct Herbivore {}
+// #[derive(Component, Debug, Serialize, Deserialize, Clone)]
+// pub struct Herbivore {}
 
 #[derive(Component, Serialize, Deserialize, Clone)]
 pub struct OtherLevelPosition {
@@ -347,9 +345,15 @@ pub struct WantsToFlee {
 pub enum Movement {
     Static,
     Random,
+    RandomWaypoint { path: Option<Vec<usize>> },
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct MoveMode {
     pub mode: Movement,
+}
+
+#[derive(Component, Debug, ConvertSaveload, Clone)]
+pub struct Chasing {
+    pub target: Entity,
 }
