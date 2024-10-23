@@ -51,17 +51,7 @@ mod spawner;
 pub mod trigger_system;
 pub use gamesystem::*;
 mod ai;
-/*
-mod animal_ai_system;
-mod bystander_ai_system;
-mod monster_ai_system;
-pub use animal_ai_system::AnimalAI;
-pub use bystander_ai_system::BystanderAI;
-pub use monster_ai_system::MonsterAI;
- */
-
 pub mod lighting_system;
-//use animal_ai_system::AnimalAI;
 
 #[macro_use]
 extern crate lazy_static;
@@ -263,6 +253,7 @@ impl GameState for State {
             RunState::AwaitingInput => {
                 newrunstate = player_input(self, ctx);
             }
+
             RunState::Ticking => {
                 while newrunstate == RunState::Ticking {
                     self.run_systems();
@@ -407,7 +398,7 @@ impl GameState for State {
                         }
                     }
                     gui::MainMenuResult::Selected { selected } => match selected {
-                        gui::MainMenuSelection::NewGame => newrunstate = RunState::PreRun,
+                        gui::MainMenuSelection::ResumeGame => newrunstate = RunState::PreRun,
                         gui::MainMenuSelection::LoadGame => {
                             saveload_system::load_game(&mut self.ecs);
                             newrunstate = RunState::AwaitingInput;
@@ -444,7 +435,7 @@ impl GameState for State {
                     gui::GameOverResult::QuitToMenu => {
                         self.game_over_cleanup();
                         newrunstate = RunState::MainMenu {
-                            menu_selection: gui::MainMenuSelection::NewGame,
+                            menu_selection: gui::MainMenuSelection::ResumeGame,
                         };
                     }
                 }
@@ -472,7 +463,7 @@ fn main() -> rltk::BError {
     let mut gs = State {
         ecs: World::new(),
         mapgen_next_state: Some(RunState::MainMenu {
-            menu_selection: gui::MainMenuSelection::NewGame,
+            menu_selection: gui::MainMenuSelection::ResumeGame,
         }),
         mapgen_index: 0,
         mapgen_history: Vec::new(),

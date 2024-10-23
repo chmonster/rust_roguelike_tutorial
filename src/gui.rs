@@ -13,7 +13,7 @@ pub const STATHEIGHT: u32 = 9;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum MainMenuSelection {
-    NewGame,
+    ResumeGame,
     LoadGame,
     Quit,
 }
@@ -909,19 +909,22 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
     let assets = gs.ecs.fetch::<RexAssets>();
     ctx.render_xp_sprite(&assets.menu, 0, 0);
 
-    let line1 = "Rust Roguelike Tutorial";
-    let line2 = "by chmonster";
-    let line3 = "Use Up/Down Arrows and Enter";
-    let line4 = "Begin New Game";
-    let line5 = "Load Game";
-    let line6 = "Quit";
+    let title = "Rust Roguelike Tutorial";
+    let byline = "by chmonster";
+    let directions = "Use Up/Down Arrows and Enter";
+    let opt_resume = "Resume Game";
+    let opt_load = "Load Game";
+    let opt_quit = "Quit";
 
     let menu_height = 10;
     let line_width = max(
-        line1.len(),
+        title.len(),
         max(
-            line2.len(),
-            max(line3.len(), max(line4.len(), max(line5.len(), line6.len()))),
+            byline.len(),
+            max(
+                directions.len(),
+                max(opt_resume.len(), max(opt_load.len(), opt_quit.len())),
+            ),
         ),
     );
     let menu_width = 4 + line_width + line_width % 2;
@@ -940,19 +943,19 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
         y_offset + 2,
         RGB::named(rltk::YELLOW),
         RGB::named(rltk::BLACK),
-        line1,
+        title,
     );
     ctx.print_color_centered(
         y_offset + 3,
         RGB::named(rltk::CYAN),
         RGB::named(rltk::BLACK),
-        line2,
+        byline,
     );
     ctx.print_color_centered(
         y_offset + 4,
         RGB::named(rltk::GRAY),
         RGB::named(rltk::BLACK),
-        line3,
+        directions,
     );
 
     let mut y = y_offset + 6;
@@ -960,10 +963,20 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
         menu_selection: selection,
     } = *runstate
     {
-        if selection == MainMenuSelection::NewGame {
-            ctx.print_color_centered(y, RGB::named(rltk::MAGENTA), RGB::named(rltk::BLACK), line4);
+        if selection == MainMenuSelection::ResumeGame {
+            ctx.print_color_centered(
+                y,
+                RGB::named(rltk::MAGENTA),
+                RGB::named(rltk::BLACK),
+                opt_resume,
+            );
         } else {
-            ctx.print_color_centered(y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), line4);
+            ctx.print_color_centered(
+                y,
+                RGB::named(rltk::WHITE),
+                RGB::named(rltk::BLACK),
+                opt_resume,
+            );
         }
         y += 1;
 
@@ -973,23 +986,33 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
                     y,
                     RGB::named(rltk::MAGENTA),
                     RGB::named(rltk::BLACK),
-                    line5,
+                    opt_load,
                 );
             } else {
                 ctx.print_color_centered(
                     y,
                     RGB::named(rltk::WHITE),
                     RGB::named(rltk::BLACK),
-                    line5,
+                    opt_load,
                 );
             }
             y += 1;
         }
 
         if selection == MainMenuSelection::Quit {
-            ctx.print_color_centered(y, RGB::named(rltk::MAGENTA), RGB::named(rltk::BLACK), line6);
+            ctx.print_color_centered(
+                y,
+                RGB::named(rltk::MAGENTA),
+                RGB::named(rltk::BLACK),
+                opt_quit,
+            );
         } else {
-            ctx.print_color_centered(y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), line6);
+            ctx.print_color_centered(
+                y,
+                RGB::named(rltk::WHITE),
+                RGB::named(rltk::BLACK),
+                opt_quit,
+            );
         }
 
         match ctx.key {
@@ -1007,12 +1030,12 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
                 VirtualKeyCode::Up => {
                     let mut newselection;
                     match selection {
-                        MainMenuSelection::NewGame => newselection = MainMenuSelection::Quit,
-                        MainMenuSelection::LoadGame => newselection = MainMenuSelection::NewGame,
+                        MainMenuSelection::ResumeGame => newselection = MainMenuSelection::Quit,
+                        MainMenuSelection::LoadGame => newselection = MainMenuSelection::ResumeGame,
                         MainMenuSelection::Quit => newselection = MainMenuSelection::LoadGame,
                     }
                     if newselection == MainMenuSelection::LoadGame && !save_exists {
-                        newselection = MainMenuSelection::NewGame;
+                        newselection = MainMenuSelection::ResumeGame;
                     }
                     return MainMenuResult::NoSelection {
                         selected: newselection,
@@ -1021,9 +1044,9 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
                 VirtualKeyCode::Down => {
                     let mut newselection;
                     match selection {
-                        MainMenuSelection::NewGame => newselection = MainMenuSelection::LoadGame,
+                        MainMenuSelection::ResumeGame => newselection = MainMenuSelection::LoadGame,
                         MainMenuSelection::LoadGame => newselection = MainMenuSelection::Quit,
-                        MainMenuSelection::Quit => newselection = MainMenuSelection::NewGame,
+                        MainMenuSelection::Quit => newselection = MainMenuSelection::ResumeGame,
                     }
                     if newselection == MainMenuSelection::LoadGame && !save_exists {
                         newselection = MainMenuSelection::Quit;
@@ -1047,7 +1070,7 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
     }
 
     MainMenuResult::NoSelection {
-        selected: MainMenuSelection::NewGame,
+        selected: MainMenuSelection::ResumeGame,
     }
 }
 
