@@ -912,7 +912,12 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
     let title = "Rust Roguelike Tutorial";
     let byline = "by chmonster";
     let directions = "Use Up/Down Arrows and Enter";
-    let opt_resume = "Resume Game";
+
+    let opt_resume = if gs.new_game {
+        "Start New Game"
+    } else {
+        "Resume Game"
+    };
     let opt_load = "Load Game";
     let opt_quit = "Quit";
 

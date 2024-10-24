@@ -90,13 +90,13 @@ pub struct State {
     mapgen_history: Vec<Map>,
     mapgen_index: usize,
     mapgen_timer: f32,
+    new_game: bool,
 }
 
 impl State {
     fn run_systems(&mut self) {
         //TODO: why did the ordering of these matter?
-        //let mut rw = RandomWalker {};
-        //rw.run_now(&self.ecs);
+
         let mut mapindex = MapIndexingSystem {};
         mapindex.run_now(&self.ecs);
         let mut vis = VisibilitySystem {};
@@ -198,6 +198,7 @@ impl State {
         self.ecs.insert(map::MasterDungeonMap::new());
 
         // Build a new map and place the player
+        self.new_game = true;
         self.generate_world_map(1, 0);
     }
 }
@@ -227,6 +228,7 @@ impl GameState for State {
             RunState::MapGeneration => {
                 if !SHOW_MAPGEN_VISUALIZER {
                     newrunstate = self.mapgen_next_state.unwrap();
+                    self.new_game = true;
                 } else {
                     ctx.cls();
                     if self.mapgen_index < self.mapgen_history.len() {
@@ -251,6 +253,7 @@ impl GameState for State {
             }
 
             RunState::AwaitingInput => {
+                self.new_game = false;
                 newrunstate = player_input(self, ctx);
             }
 
@@ -403,6 +406,7 @@ impl GameState for State {
                             saveload_system::load_game(&mut self.ecs);
                             newrunstate = RunState::AwaitingInput;
                             saveload_system::delete_save();
+                            self.new_game = false;
                         }
                         gui::MainMenuSelection::Quit => {
                             ::std::process::exit(0);
@@ -468,6 +472,7 @@ fn main() -> rltk::BError {
         mapgen_index: 0,
         mapgen_history: Vec::new(),
         mapgen_timer: 0.0,
+        new_game: true,
     };
 
     gs.ecs.register::<Position>();
