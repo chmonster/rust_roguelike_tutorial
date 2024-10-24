@@ -117,6 +117,9 @@ pub fn delete_the_dead(ecs: &mut World) {
                     }
                     Some(_) => {
                         let mut runstate = ecs.write_resource::<RunState>();
+                        if *runstate != RunState::GameOver {
+                            log.entries.push("You are dead, alas.".to_string());
+                        }
                         *runstate = RunState::GameOver;
                     }
                 }
