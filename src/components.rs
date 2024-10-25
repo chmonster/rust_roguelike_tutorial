@@ -71,8 +71,12 @@ impl SufferDamage {
     }
 }
 
-#[derive(Component, Serialize, Deserialize, Clone)]
-pub struct Item {}
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Item {
+    pub initiative_penalty: f32,
+    pub weight_lbs: f32,
+    pub base_value: f32,
+}
 
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct ProvidesHealing {
@@ -223,12 +227,6 @@ pub struct Door {
     pub open: bool,
 }
 
-// #[derive(Component, Debug, Serialize, Deserialize, Clone)]
-// pub struct Bystander {}
-
-// #[derive(Component, Debug, Serialize, Deserialize, Clone)]
-// pub struct Vendor {}
-
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Quips {
     pub available: Vec<String>,
@@ -273,6 +271,8 @@ pub struct Pools {
     pub mana: Pool,
     pub xp: i32,
     pub level: i32,
+    pub total_weight: f32,
+    pub total_initiative_penalty: f32,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -294,12 +294,6 @@ pub struct NaturalAttackDefense {
 pub struct LootTable {
     pub table: String,
 }
-
-// #[derive(Component, Debug, Serialize, Deserialize, Clone)]
-// pub struct Carnivore {}
-
-// #[derive(Component, Debug, Serialize, Deserialize, Clone)]
-// pub struct Herbivore {}
 
 #[derive(Component, Serialize, Deserialize, Clone)]
 pub struct OtherLevelPosition {
@@ -357,3 +351,6 @@ pub struct MoveMode {
 pub struct Chasing {
     pub target: Entity,
 }
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct EquipmentChanged {}

@@ -2,9 +2,9 @@
 
 use super::{
     gamelog::GameLog, particle_system::ParticleBuilder, AreaOfEffect, Confusion, Consumable,
-    Equippable, Equipped, HungerClock, HungerState, InBackpack, InflictsDamage, MagicMapper, Map,
-    Name, Pools, Position, ProvidesFood, ProvidesHealing, RunState, SufferDamage, WantsToDropItem,
-    WantsToPickupItem, WantsToRemoveItem, WantsToUseItem,
+    EquipmentChanged, Equippable, Equipped, HungerClock, HungerState, InBackpack, InflictsDamage,
+    MagicMapper, Map, Name, Pools, Position, ProvidesFood, ProvidesHealing, RunState, SufferDamage,
+    WantsToDropItem, WantsToPickupItem, WantsToRemoveItem, WantsToUseItem,
 };
 use specs::prelude::*;
 
@@ -19,11 +19,19 @@ impl<'a> System<'a> for ItemCollectionSystem {
         WriteStorage<'a, Position>,
         ReadStorage<'a, Name>,
         WriteStorage<'a, InBackpack>,
+        WriteStorage<'a, EquipmentChanged>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (player_entity, mut gamelog, mut wants_pickup, mut positions, names, mut backpack) =
-            data;
+        let (
+            player_entity,
+            mut gamelog,
+            mut wants_pickup,
+            mut positions,
+            names,
+            mut backpack,
+            mut dirty,
+        ) = data;
 
         for pickup in wants_pickup.join() {
             positions.remove(pickup.item);
@@ -35,6 +43,9 @@ impl<'a> System<'a> for ItemCollectionSystem {
                     },
                 )
                 .expect("Unable to insert backpack entry");
+            dirty
+                .insert(pickup.collected_by, EquipmentChanged {})
+                .expect("Unable to insert");
 
             if pickup.collected_by == *player_entity {
                 gamelog.entries.push(format!(
@@ -75,6 +86,7 @@ impl<'a> System<'a> for ItemUseSystem {
         WriteExpect<'a, ParticleBuilder>,
         ReadStorage<'a, Position>,
         WriteExpect<'a, RunState>,
+        WriteExpect<'a, EquipmentChanged>,
     );
 
     #[allow(clippy::cognitive_complexity)]
@@ -102,10 +114,13 @@ impl<'a> System<'a> for ItemUseSystem {
             mut particle_builder,
             positions,
             mut runstate,
+            mut dirty,
         ) = data;
 
         for (entity, useitem) in (&entities, &wants_use).join() {
             //targeted?
+            dirty.insert(entity, EquipmentChanged {});
+
             let mut used_item = true;
             let mut targets: Vec<Entity> = Vec::new();
 
@@ -119,9 +134,7 @@ impl<'a> System<'a> for ItemUseSystem {
                         None => {
                             // Single target in tile
                             let idx = map.xy_idx(target.x, target.y);
-                            // for mob in map.tile_content[idx].iter() {
-                            //     targets.push(*mob);
-                            //
+
                             crate::spatial::for_each_tile_content(idx, |mob| targets.push(mob));
                         }
                         Some(area_effect) => {
@@ -133,9 +146,7 @@ impl<'a> System<'a> for ItemUseSystem {
                             });
                             for tile_idx in blast_tiles.iter() {
                                 let idx = map.xy_idx(tile_idx.x, tile_idx.y);
-                                // for mob in map.tile_content[idx].iter() {
-                                //     targets.push(*mob);
-                                // }
+
                                 crate::spatial::for_each_tile_content(idx, |mob| targets.push(mob));
                                 particle_builder.request(
                                     tile_idx.x,
@@ -371,6 +382,7 @@ impl<'a> System<'a> for ItemDropSystem {
         ReadStorage<'a, Name>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, InBackpack>,
+        WriteStorage<'a, EquipmentChanged>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -382,6 +394,7 @@ impl<'a> System<'a> for ItemDropSystem {
             names,
             mut positions,
             mut backpack,
+            mut dirty,
         ) = data;
 
         for (entity, to_drop) in (&entities, &wants_drop).join() {
@@ -401,6 +414,9 @@ impl<'a> System<'a> for ItemDropSystem {
                 )
                 .expect("Unable to insert position");
             backpack.remove(to_drop.item);
+            dirty
+                .insert(entity, EquipmentChanged {})
+                .expect("Unable to insert");
 
             if entity == *player_entity {
                 gamelog.entries.push(format!(

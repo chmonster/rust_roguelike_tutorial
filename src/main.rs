@@ -102,6 +102,8 @@ impl State {
         mapindex.run_now(&self.ecs);
         let mut vis = VisibilitySystem {};
         vis.run_now(&self.ecs);
+        let mut encumbrance = ai::EncumbranceSystem {};
+        encumbrance.run_now(&self.ecs);
         let mut initiative = ai::InitiativeSystem {};
         initiative.run_now(&self.ecs);
         let mut turnstatus = ai::TurnStatusSystem {};
@@ -478,7 +480,6 @@ fn main() -> rltk::BError {
 
     gs.ecs.register::<Position>();
     gs.ecs.register::<Renderable>();
-    //    gs.ecs.register::<Monster>();
     gs.ecs.register::<Player>();
     gs.ecs.register::<Viewshed>();
     gs.ecs.register::<Name>();
@@ -513,16 +514,12 @@ fn main() -> rltk::BError {
     gs.ecs.register::<SingleActivation>();
     gs.ecs.register::<BlocksVisibility>();
     gs.ecs.register::<Door>();
-    //    gs.ecs.register::<Bystander>();
-    //    gs.ecs.register::<Vendor>();
     gs.ecs.register::<Quips>();
     gs.ecs.register::<Attributes>();
     gs.ecs.register::<Skills>();
     gs.ecs.register::<Pools>();
     gs.ecs.register::<NaturalAttackDefense>();
     gs.ecs.register::<LootTable>();
-    //    gs.ecs.register::<Carnivore>();
-    //    gs.ecs.register::<Herbivore>();
     gs.ecs.register::<OtherLevelPosition>();
     gs.ecs.register::<DMSerializationHelper>();
     gs.ecs.register::<LightSource>();
@@ -533,6 +530,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<WantsToFlee>();
     gs.ecs.register::<MoveMode>();
     gs.ecs.register::<Chasing>();
+    gs.ecs.register::<EquipmentChanged>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

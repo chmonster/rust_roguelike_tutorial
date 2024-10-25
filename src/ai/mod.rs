@@ -16,3 +16,5 @@ mod default_ai_system;
 pub use default_ai_system::DefaultMoveAI;
 mod chase_ai_system;
 pub use chase_ai_system::ChaseAI;
+mod encumbrance_system;
+pub use encumbrance_system::EncumbranceSystem;
