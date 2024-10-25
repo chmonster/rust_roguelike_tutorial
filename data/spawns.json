@@ -634,7 +634,9 @@
                 "Melee": 2
             },
             "equipped": ["Cudgel", "Cloth Tunic", "Cloth Pants", "Slippers"],
-            "faction": "Townsfolk"
+            "faction": "Townsfolk",
+            "gold": "2d6",
+            "vendor": ["food"]
         },
 
         {
@@ -650,7 +652,9 @@
             "movement": "static",
             "attributes": {},
             "equipped": ["Cudgel", "Cloth Tunic", "Cloth Pants", "Slippers"],
-            "faction": "Townsfolk"
+            "faction": "Townsfolk",
+            "gold": "1d6",
+            "vendor": ["junk"]
         },
 
         {
@@ -671,7 +675,8 @@
             ],
             "attributes": {},
             "equipped": ["Cudgel", "Cloth Tunic", "Cloth Pants", "Slippers"],
-            "faction": "Townsfolk"
+            "faction": "Townsfolk",
+            "gold": "1d4"
         },
         {
             "name": "Priest",
@@ -686,7 +691,8 @@
             "movement": "static",
             "attributes": {},
             "equipped": ["Cudgel", "Cloth Tunic", "Cloth Pants", "Slippers"],
-            "faction": "Townsfolk"
+            "faction": "Townsfolk",
+            "gold": "1d4"
         },
 
         {
@@ -707,7 +713,8 @@
             ],
             "attributes": {},
             "equipped": ["Cudgel", "Cloth Tunic", "Cloth Pants", "Slippers"],
-            "faction": "Townsfolk"
+            "faction": "Townsfolk",
+            "gold": "1d2"
         },
 
         {
@@ -723,7 +730,9 @@
             "movement": "static",
             "attributes": {},
             "equipped": ["Cudgel", "Cloth Tunic", "Cloth Pants", "Slippers"],
-            "faction": "Townsfolk"
+            "faction": "Townsfolk",
+            "gold": "2d6",
+            "vendor": ["armor", "weapon"]
         },
 
         {
@@ -739,7 +748,9 @@
             "movement": "static",
             "attributes": {},
             "equipped": ["Cudgel", "Cloth Tunic", "Cloth Pants", "Slippers"],
-            "faction": "Townsfolk"
+            "faction": "Townsfolk",
+            "gold": "2d6",
+            "vendor": ["clothes"]
         },
 
         {
@@ -755,7 +766,9 @@
             "movement": "static",
             "attributes": {},
             "equipped": ["Cudgel", "Cloth Tunic", "Cloth Pants", "Slippers"],
-            "faction": "Townsfolk"
+            "faction": "Townsfolk",
+            "gold": "2d6",
+            "vendor": ["alchemy"]
         },
 
         {
@@ -777,7 +790,8 @@
             ],
             "attributes": {},
             "equipped": ["Cudgel", "Cloth Tunic", "Cloth Pants", "Slippers"],
-            "faction": "Townsfolk"
+            "faction": "Townsfolk",
+            "gold": "1d2"
         },
 
         {
@@ -794,7 +808,8 @@
             "quips": ["Why are you in my house?"],
             "attributes": {},
             "equipped": ["Cudgel", "Cloth Tunic", "Cloth Pants", "Slippers"],
-            "faction": "Townsfolk"
+            "faction": "Townsfolk",
+            "gold": "1d2"
         },
         {
             "name": "Dock Worker",
@@ -810,7 +825,8 @@
             "quips": ["Lovely day, eh?", "Nice weather", "Hello"],
             "attributes": {},
             "equipped": ["Cudgel", "Cloth Tunic", "Cloth Pants", "Slippers"],
-            "faction": "Townsfolk"
+            "faction": "Townsfolk",
+            "gold": "1d2"
         },
 
         {
@@ -831,7 +847,8 @@
             ],
             "attributes": {},
             "equipped": ["Cudgel", "Cloth Tunic", "Cloth Pants", "Slippers"],
-            "faction": "Townsfolk"
+            "faction": "Townsfolk",
+            "gold": "1d2"
         },
 
         {
@@ -848,7 +865,8 @@
             "quips": ["Arrr", "Grog!", "Booze!"],
             "attributes": {},
             "equipped": ["Cudgel", "Cloth Tunic", "Cloth Pants", "Slippers"],
-            "faction": "Townsfolk"
+            "faction": "Townsfolk",
+            "gold": "2d4"
         },
 
         {
@@ -865,7 +883,8 @@
             "quips": ["Hic", "Need... more... booze!", "Spare a copper?"],
             "attributes": {},
             "equipped": ["Cudgel", "Cloth Tunic", "Cloth Pants", "Slippers"],
-            "faction": "Townsfolk"
+            "faction": "Townsfolk",
+            "gold": "1"
         },
         {
             "name": "Orc",
@@ -885,7 +904,8 @@
                 "New boot leather!",
                 "Orc eating well tonight."
             ],
-            "faction": "Cave Goblins"
+            "faction": "Cave Goblins",
+            "gold": "1d8"
         },
 
         {
@@ -912,7 +932,8 @@
                 "Kill the intruder!",
                 "I want its shoes!"
             ],
-            "faction": "Cave Goblins"
+            "faction": "Cave Goblins",
+            "gold": "1d6"
         },
 
         {
@@ -935,7 +956,8 @@
                 "Melee": 0,
                 "Defense": 0
             },
-            "faction": "Cave Goblins"
+            "faction": "Cave Goblins",
+            "gold": "1d4"
         },
 
         {
@@ -1071,7 +1093,8 @@
                 "range": 6,
                 "color": "#FFFF55"
             },
-            "faction": "Bandits"
+            "faction": "Bandits",
+            "gold": "1d6"
         },
         {
             "name": "Bat",

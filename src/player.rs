@@ -3,7 +3,7 @@
 use super::{
     BlocksTile, BlocksVisibility, /*Bystander,*/ Door, EntityMoved, GameLog, HungerClock, HungerState,
     Item, Map, /*Monster,*/ Player, Pools, Position, Renderable, RunState, State, TileType, /*Vendor,*/
-    Viewshed, WantsToMelee, WantsToPickupItem, Name, Faction, data::Reaction
+    Viewshed, WantsToMelee, WantsToPickupItem, Name, Faction, data::Reaction, Vendor, VendorMode
 };
 use rltk::{console, Point, Rltk, VirtualKeyCode, BEvent};
 use rltk::prelude::INPUT;
@@ -26,6 +26,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
     let mut blocks_movement = ecs.write_storage::<BlocksTile>();
     let mut renderables = ecs.write_storage::<Renderable>();
     let factions = ecs.read_storage::<Faction>();
+    let vendors = ecs.read_storage::<Vendor>();
 
     let mut result = RunState::AwaitingInput;
 
@@ -46,8 +47,12 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
         let destination_idx = map.xy_idx(pos.x + delta_x, pos.y + delta_y);
 
         result = crate::spatial::for_each_tile_content_with_gamemode(destination_idx, |potential_target| {
+            
+            if let Some(_vendor) = vendors.get(potential_target) {
+                return Some(RunState::ShowVendor{ vendor: potential_target, mode : VendorMode::Sell });
+            }
+            
             //handle bystanders: swap positions instead of attacking
-
             let mut hostile = true;
             if combat_stats.get(potential_target).is_some() {
                 if let Some(faction) = factions.get(potential_target) {

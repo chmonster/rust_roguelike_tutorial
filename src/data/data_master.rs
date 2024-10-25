@@ -438,10 +438,23 @@ pub fn spawn_named_mob(
             },
             total_weight: 0.0,
             total_initiative_penalty: 0.0,
+            gold: if let Some(gold) = &mob_template.gold {
+                let mut rng = rltk::RandomNumberGenerator::new();
+                let (n, d, b) = parse_dice_string(gold);
+                (rng.roll_dice(n, d) + b) as f32
+            } else {
+                0.0
+            },
         };
         eb = eb.with(pools);
 
         eb = eb.with(EquipmentChanged {});
+
+        if let Some(vendor) = &mob_template.vendor {
+            eb = eb.with(Vendor {
+                categories: vendor.clone(),
+            });
+        }
 
         let mut skills = Skills {
             skills: HashMap::new(),
@@ -642,4 +655,18 @@ pub fn faction_reaction(my_faction: &str, their_faction: &str, data: &DataMaster
         }
     }
     Reaction::Ignore
+}
+
+pub fn get_vendor_items(categories: &[String], data: &DataMaster) -> Vec<(String, f32)> {
+    let mut result: Vec<(String, f32)> = Vec::new();
+
+    for item in data.data.items.iter() {
+        if let Some(cat) = &item.vendor_category {
+            if categories.contains(cat) && item.base_value.is_some() {
+                result.push((item.name.clone(), item.base_value.unwrap()));
+            }
+        }
+    }
+
+    result
 }

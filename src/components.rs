@@ -273,6 +273,7 @@ pub struct Pools {
     pub level: i32,
     pub total_weight: f32,
     pub total_initiative_penalty: f32,
+    pub gold: f32,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -354,3 +355,8 @@ pub struct Chasing {
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct EquipmentChanged {}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Vendor {
+    pub categories: Vec<String>,
+}

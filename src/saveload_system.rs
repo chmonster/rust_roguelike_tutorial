@@ -128,7 +128,8 @@ pub fn save_game(ecs: &mut World) {
             WantsToFlee,
             MoveMode,
             Chasing,
-            EquipmentChanged
+            EquipmentChanged,
+            Vendor
         );
     }
 
@@ -222,7 +223,8 @@ pub fn load_game(ecs: &mut World) {
             WantsToFlee,
             MoveMode,
             Chasing,
-            EquipmentChanged
+            EquipmentChanged,
+            Vendor
         );
     }
 
