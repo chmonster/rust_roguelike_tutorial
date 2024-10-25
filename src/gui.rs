@@ -218,8 +218,6 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         RGB::named(rltk::BLACK),
     );
 
-    //format!("Level:  {}", player_pools.level);
-    //ctx.print_color(50, 3, white, black, &xp);
     let xp_level_start = (player_pools.level - 1) * 1000;
     ctx.draw_bar_horizontal(
         64,
@@ -238,10 +236,32 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     draw_attribute("Quickness:", &attr.quickness, 5, ctx);
     draw_attribute("Fitness:", &attr.fitness, 6, ctx);
     draw_attribute("Intelligence:", &attr.intelligence, 7, ctx);
-    //draw_attribute("Armor Class:", &attr.fitness, 7, ctx);
+
+    // Initiative and weight
+    ctx.print_color(
+        50,
+        STATHEIGHT + 2,
+        white,
+        black,
+        format!(
+            "{:.0} lbs ({} lbs max)",
+            player_pools.total_weight,
+            (attr.might.base + attr.might.modifiers) * 15
+        ),
+    );
+    ctx.print_color(
+        50,
+        STATHEIGHT + 3,
+        white,
+        black,
+        format!(
+            "Initiative Penalty: {:.0}",
+            player_pools.total_initiative_penalty
+        ),
+    );
 
     // Equipped
-    let mut equipment_y = STATHEIGHT + 2;
+    let mut equipment_y = STATHEIGHT + 6;
     let equipped = ecs.read_storage::<Equipped>();
     let name = ecs.read_storage::<Name>();
     for (equipped_by, item_name) in (&equipped, &name).join() {

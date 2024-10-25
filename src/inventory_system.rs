@@ -86,7 +86,7 @@ impl<'a> System<'a> for ItemUseSystem {
         WriteExpect<'a, ParticleBuilder>,
         ReadStorage<'a, Position>,
         WriteExpect<'a, RunState>,
-        WriteExpect<'a, EquipmentChanged>,
+        WriteStorage<'a, EquipmentChanged>,
     );
 
     #[allow(clippy::cognitive_complexity)]
