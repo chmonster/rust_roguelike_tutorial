@@ -52,6 +52,7 @@ pub mod trigger_system;
 pub use gamesystem::*;
 mod ai;
 pub mod lighting_system;
+mod spatial;
 
 #[macro_use]
 extern crate lazy_static;

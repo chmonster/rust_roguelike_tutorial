@@ -44,20 +44,20 @@ impl<'a> System<'a> for TriggerSystem {
         // Iterate the entities that moved and their final position
         for (entity, mut _entity_moved, pos) in (&entities, &mut entity_moved, &position).join() {
             let idx = map.xy_idx(pos.x, pos.y);
-            for entity_id in map.tile_content[idx].iter() {
-                if entity != *entity_id {
+            crate::spatial::for_each_tile_content(idx, |entity_id| {
+                if entity != entity_id {
                     // Do not bother to check yourself for being a trap!
-                    let maybe_trigger = entry_trigger.get(*entity_id);
+                    let maybe_trigger = entry_trigger.get(entity_id);
                     match maybe_trigger {
                         None => {}
                         Some(_trigger) => {
                             // We triggered it
-                            let name = names.get(*entity_id);
+                            let name = names.get(entity_id);
                             if let Some(name) = name {
                                 log.entries.push(format!("{} triggers!", &name.name));
                             }
                             // If the trap is damage inflicting, do it
-                            let damage = inflicts_damage.get(*entity_id);
+                            let damage = inflicts_damage.get(entity_id);
                             if let Some(damage) = damage {
                                 particle_builder.request(
                                     pos.x,
@@ -75,10 +75,10 @@ impl<'a> System<'a> for TriggerSystem {
                                 );
                             }
 
-                            hidden.remove(*entity_id); // The trap is no longer hidden
+                            hidden.remove(entity_id); // The trap is no longer hidden
 
                             // If the trap is damage inflicting, do it
-                            let damage = inflicts_damage.get(*entity_id);
+                            let damage = inflicts_damage.get(entity_id);
                             if let Some(damage) = damage {
                                 particle_builder.request(
                                     pos.x,
@@ -96,14 +96,14 @@ impl<'a> System<'a> for TriggerSystem {
                                 );
                             }
                             // If it is single activation, it needs to be removed
-                            let sa = single_activation.get(*entity_id);
+                            let sa = single_activation.get(entity_id);
                             if let Some(_sa) = sa {
-                                remove_entities.push(*entity_id);
+                                remove_entities.push(entity_id);
                             }
                         }
                     }
                 }
-            }
+            });
         }
 
         // Remove any single activation traps
