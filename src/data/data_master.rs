@@ -578,6 +578,18 @@ pub fn spawn_named_prop(
         if let Some(door_open) = prop_template.door_open {
             eb = eb.with(Door { open: door_open });
         }
+        if let Some(light) = &prop_template.light {
+            eb = eb.with(LightSource {
+                range: light.range,
+                color: rltk::RGB::from_hex(&light.color).expect("Bad color"),
+            });
+            eb = eb.with(Viewshed {
+                range: light.range,
+                dirty: true,
+                visible_tiles: Vec::new(),
+            });
+        }
+
         if let Some(entry_trigger) = &prop_template.entry_trigger {
             eb = eb.with(EntryTrigger {});
             for effect in entry_trigger.effects.iter() {

@@ -1,6 +1,6 @@
 {
     "spawn_table": [
-        { "name": "Goblin", "weight": 10, "min_depth": 3, "max_depth": 100 },
+        { "name": "Goblin", "weight": 10, "min_depth": 3, "max_depth": 4 },
         { "name": "Rat", "weight": 15, "min_depth": 1, "max_depth": 2 },
         { "name": "Deer", "weight": 15, "min_depth": 2, "max_depth": 2 },
         { "name": "Bandit", "weight": 9, "min_depth": 2, "max_depth": 2 },
@@ -10,9 +10,8 @@
         {
             "name": "Orc",
             "weight": 1,
-            "min_depth": 3,
-            "max_depth": 100,
-            "add_map_depth_to_weight": true
+            "min_depth": 4,
+            "max_depth": 100
         },
         {
             "name": "Health Potion",
@@ -75,7 +74,32 @@
             "weight": 3,
             "min_depth": 3,
             "max_depth": 100
-        }
+        },
+        {
+            "name": "Leather Armor",
+            "weight": 1,
+            "min_depth": 2,
+            "max_depth": 100
+        },
+        {
+            "name": "Leather Boots",
+            "weight": 1,
+            "min_depth": 2,
+            "max_depth": 100
+        },
+        {
+            "name": "Leather Pants",
+            "weight": 1,
+            "min_depth": 2,
+            "max_depth": 100
+        },
+        {
+            "name": "Chainmail Armor",
+            "weight": 1,
+            "min_depth": 4,
+            "max_depth": 100
+        },
+        { "name": "Chain Coif", "weight": 1, "min_depth": 4, "max_depth": 100 }
     ],
 
     "faction_table": [
@@ -595,7 +619,23 @@
             "initiative_penalty": 0.5,
             "vendor_category": "clothes"
         },
-
+        {
+            "name": "Leather Pants",
+            "renderable": {
+                "glyph": "[",
+                "fg": "#00FF00",
+                "bg": "#000000",
+                "order": 2
+            },
+            "wearable": {
+                "slot": "Legs",
+                "armor_class": 0.5
+            },
+            "weight_lbs": 4.0,
+            "base_value": 8.0,
+            "initiative_penalty": 0.3,
+            "vendor_category": "clothes"
+        },
         {
             "name": "Leather Boots",
             "renderable": {
@@ -612,6 +652,41 @@
             "base_value": 5.0,
             "initiative_penalty": 0.25,
             "vendor_category": "clothes"
+        },
+        {
+            "name": "Chainmail Armor",
+            "renderable": {
+                "glyph": "[",
+                "fg": "#00FF00",
+                "bg": "#000000",
+                "order": 2
+            },
+            "wearable": {
+                "slot": "Torso",
+                "armor_class": 2.0
+            },
+            "weight_lbs": 20.0,
+            "base_value": 50.0,
+            "initiative_penalty": 1.0,
+            "vendor_category": "armor"
+        },
+
+        {
+            "name": "Chain Coif",
+            "renderable": {
+                "glyph": "[",
+                "fg": "#00FF00",
+                "bg": "#000000",
+                "order": 2
+            },
+            "wearable": {
+                "slot": "Head",
+                "armor_class": 1.0
+            },
+            "weight_lbs": 5.0,
+            "base_value": 20.0,
+            "initiative_penalty": 0.5,
+            "vendor_category": "armor"
         }
     ],
 
@@ -1168,6 +1243,28 @@
                 "color": "#550000"
             },
             "faction": "Mindless"
+        },
+        {
+            "name": "Orc Leader",
+            "renderable": {
+                "glyph": "O",
+                "fg": "#FF0000",
+                "bg": "#000000",
+                "order": 1
+            },
+            "blocks_tile": true,
+            "vision_range": 8,
+            "movement": "static",
+            "attributes": {},
+            "faction": "Cave Goblins",
+            "gold": "3d8",
+            "equipped": [
+                "Battleaxe",
+                "Tower Shield",
+                "Leather Armor",
+                "Leather Boots"
+            ],
+            "level": 2
         }
     ],
 
@@ -1197,6 +1294,11 @@
                 "order": 2
             },
             "hidden": true,
+            "light": {
+                "range": 6,
+                "color": "#FFFF55"
+            },
+
             "entry_trigger": {
                 "effects": {
                     "damage": "6"
@@ -1375,6 +1477,26 @@
                 "order": 2
             },
             "hidden": false
+        },
+
+        {
+            "name": "Watch Fire",
+            "renderable": {
+                "glyph": "☼",
+                "fg": "#FFFF55",
+                "bg": "#000000",
+                "order": 2
+            },
+            "hidden": false,
+            "light": {
+                "range": 6,
+                "color": "#FFFF55"
+            },
+            "entry_trigger": {
+                "effects": {
+                    "damage": "6"
+                }
+            }
         }
     ]
 }
