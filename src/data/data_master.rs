@@ -445,6 +445,7 @@ pub fn spawn_named_mob(
             } else {
                 0.0
             },
+            god_mode: false,
         };
         eb = eb.with(pools);
 
