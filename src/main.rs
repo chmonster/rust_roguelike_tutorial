@@ -362,7 +362,8 @@ impl GameState for State {
                         let player = self.ecs.fetch::<Entity>();
                         let mut pools = self.ecs.write_storage::<Pools>();
                         let player_pools = pools.get_mut(*player).unwrap();
-                        player_pools.god_mode = true;
+                        //player_pools.god_mode = true;
+                        player_pools.god_mode = !player_pools.god_mode;
                         newrunstate = RunState::AwaitingInput;
                     }
                 }

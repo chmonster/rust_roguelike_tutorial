@@ -188,12 +188,16 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let hb1: i32 = player_pools.hit_points.max / 3;
     let chp = player_pools.hit_points.current;
 
-    let health_color = match chp {
-        chp if chp < 1 => rltk::BLACK,
-        chp if chp < hb1 => rltk::RED,
-        chp if chp < hb2 => rltk::ORANGE,
-        chp if chp < hb3 => rltk::GREEN,
-        _ => rltk::GREEN,
+    let health_color = if player_pools.god_mode {
+        rltk::WHITE
+    } else {
+        match chp {
+            chp if chp < 1 => rltk::BLACK,
+            chp if chp < hb1 => rltk::RED,
+            chp if chp < hb2 => rltk::ORANGE,
+            chp if chp < hb3 => rltk::GREEN,
+            _ => rltk::GREEN,
+        }
     };
 
     let health = format!(
@@ -321,29 +325,39 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     // Status
     let hunger = ecs.read_storage::<HungerClock>();
     let hc = hunger.get(*player_entity).unwrap();
-    match hc.state {
-        HungerState::WellFed => ctx.print_color(
+    if player_pools.god_mode {
+        ctx.print_color(
             VIEWWIDTH + 2,
             VIEWHEIGHT,
-            RGB::named(rltk::GREEN),
+            RGB::named(rltk::WHITE),
             RGB::named(rltk::BLACK),
-            "Well Fed",
-        ),
-        HungerState::Normal => {}
-        HungerState::Hungry => ctx.print_color(
-            VIEWWIDTH + 2,
-            VIEWHEIGHT,
-            RGB::named(rltk::ORANGE),
-            RGB::named(rltk::BLACK),
-            "Hungry",
-        ),
-        HungerState::Starving => ctx.print_color(
-            VIEWWIDTH + 2,
-            VIEWHEIGHT,
-            RGB::named(rltk::RED),
-            RGB::named(rltk::BLACK),
-            "Starving",
-        ),
+            "God Mode",
+        )
+    } else {
+        match hc.state {
+            HungerState::WellFed => ctx.print_color(
+                VIEWWIDTH + 2,
+                VIEWHEIGHT,
+                RGB::named(rltk::GREEN),
+                RGB::named(rltk::BLACK),
+                "Well Fed",
+            ),
+            HungerState::Normal => {}
+            HungerState::Hungry => ctx.print_color(
+                VIEWWIDTH + 2,
+                VIEWHEIGHT,
+                RGB::named(rltk::ORANGE),
+                RGB::named(rltk::BLACK),
+                "Hungry",
+            ),
+            HungerState::Starving => ctx.print_color(
+                VIEWWIDTH + 2,
+                VIEWHEIGHT,
+                RGB::named(rltk::RED),
+                RGB::named(rltk::BLACK),
+                "Starving",
+            ),
+        }
     }
 
     // Draw the log
@@ -1245,7 +1259,7 @@ pub fn show_cheat_mode(_gs: &mut State, ctx: &mut Rltk) -> CheatMenuResult {
         RGB::named(rltk::BLACK),
         rltk::to_cp437(')'),
     );
-    ctx.print(21, y, "God Mode (No Death)");
+    ctx.print(21, y, "Toggle God Mode (No Death)");
 
     match ctx.key {
         None => CheatMenuResult::NoResponse,

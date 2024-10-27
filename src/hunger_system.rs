@@ -1,4 +1,4 @@
-use super::{gamelog::GameLog, HungerClock, HungerState, MyTurn, RunState, SufferDamage};
+use super::{gamelog::GameLog, HungerClock, HungerState, MyTurn, Pools, RunState, SufferDamage};
 use specs::prelude::*;
 
 pub struct HungerSystem {}
@@ -13,6 +13,7 @@ impl<'a> System<'a> for HungerSystem {
         WriteStorage<'a, SufferDamage>,
         WriteExpect<'a, GameLog>,
         ReadStorage<'a, MyTurn>,
+        ReadStorage<'a, Pools>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -24,10 +25,14 @@ impl<'a> System<'a> for HungerSystem {
             mut inflict_damage,
             mut log,
             turns,
+            pools,
         ) = data;
 
         for (entity, clock, _myturn) in (&entities, &mut hunger_clock, &turns).join() {
-            clock.duration -= 1;
+            if !pools.get(*player_entity).unwrap().god_mode {
+                clock.duration -= 1;
+            }
+
             if clock.duration < 1 {
                 match clock.state {
                     HungerState::WellFed => {
