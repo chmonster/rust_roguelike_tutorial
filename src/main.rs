@@ -81,6 +81,7 @@ pub enum RunState {
     SaveGame,
     NextLevel,
     PreviousLevel,
+    TownPortal,
     ShowRemoveItem,
     GameOver,
     MagicMapReveal {
@@ -259,6 +260,18 @@ impl GameState for State {
                 }
             }
 
+            RunState::TownPortal => {
+                // Spawn the portal
+                spawner::spawn_town_portal(&mut self.ecs);
+
+                // Transition
+                let map_depth = self.ecs.fetch::<Map>().depth;
+                let destination_offset = 0 - (map_depth - 1);
+                self.goto_level(destination_offset);
+                self.mapgen_next_state = Some(RunState::PreRun);
+                newrunstate = RunState::MapGeneration;
+            }
+
             RunState::PreRun => {
                 self.run_systems();
                 self.ecs.maintain();
@@ -279,6 +292,8 @@ impl GameState for State {
                         RunState::MagicMapReveal { .. } => {
                             newrunstate = RunState::MagicMapReveal { row: 0 }
                         }
+                        RunState::TownPortal => newrunstate = RunState::TownPortal,
+
                         _ => newrunstate = RunState::Ticking,
                     }
                 }
@@ -618,6 +633,8 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Chasing>();
     gs.ecs.register::<EquipmentChanged>();
     gs.ecs.register::<Vendor>();
+    gs.ecs.register::<TownPortal>();
+    gs.ecs.register::<TeleportTo>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

@@ -4,7 +4,7 @@ use super::{
     gamelog::GameLog, particle_system::ParticleBuilder, AreaOfEffect, Confusion, Consumable,
     EquipmentChanged, Equippable, Equipped, HungerClock, HungerState, InBackpack, InflictsDamage,
     MagicMapper, Map, Name, Pools, Position, ProvidesFood, ProvidesHealing, RunState, SufferDamage,
-    WantsToDropItem, WantsToPickupItem, WantsToRemoveItem, WantsToUseItem,
+    TownPortal, WantsToDropItem, WantsToPickupItem, WantsToRemoveItem, WantsToUseItem,
 };
 use specs::prelude::*;
 
@@ -80,6 +80,7 @@ impl<'a> System<'a> for ItemUseSystem {
         ReadStorage<'a, AreaOfEffect>,
         WriteStorage<'a, Confusion>,
         ReadStorage<'a, MagicMapper>,
+        ReadStorage<'a, TownPortal>,
         ReadStorage<'a, Equippable>,
         WriteStorage<'a, Equipped>,
         WriteStorage<'a, InBackpack>,
@@ -108,6 +109,7 @@ impl<'a> System<'a> for ItemUseSystem {
             aoe,
             mut confused,
             magic_mapper,
+            town_portal,
             equippable,
             mut equipped,
             mut backpack,
@@ -281,7 +283,7 @@ impl<'a> System<'a> for ItemUseSystem {
                 }
             }
 
-            // It it is edible, eat it!
+            // It it is edible, eat it
             let item_edible = provides_food.get(useitem.item);
             match item_edible {
                 None => {}
@@ -346,6 +348,21 @@ impl<'a> System<'a> for ItemUseSystem {
                         .entries
                         .push("The map is revealed to you!".to_string());
                     *runstate = RunState::MagicMapReveal { row: 0 };
+                }
+            }
+
+            // If its a town portal...
+            if let Some(_townportal) = town_portal.get(useitem.item) {
+                if map.depth == 1 {
+                    gamelog
+                        .entries
+                        .push("You are already in town, so the scroll does nothing.".to_string());
+                } else {
+                    used_item = true;
+                    gamelog
+                        .entries
+                        .push("You are telported back to town!".to_string());
+                    *runstate = RunState::TownPortal;
                 }
             }
 

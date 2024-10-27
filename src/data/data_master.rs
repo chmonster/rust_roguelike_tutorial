@@ -254,6 +254,8 @@ pub fn spawn_named_item(
                         })
                     }
                     "magic_mapping" => eb = eb.with(MagicMapper {}),
+                    "town_portal" => eb = eb.with(TownPortal {}),
+
                     "food" => eb = eb.with(ProvidesFood {}),
                     _ => {
                         rltk::console::log(format!(
