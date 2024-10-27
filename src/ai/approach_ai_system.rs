@@ -1,4 +1,4 @@
-use crate::{EntityMoved, Map, MyTurn, Position, Viewshed, WantsToApproach};
+use crate::{ApplyMove, /*EntityMoved,*/ Map, MyTurn, Position, /*Viewshed,*/ WantsToApproach,};
 use specs::prelude::*;
 
 pub struct ApproachAI {}
@@ -10,9 +10,10 @@ impl<'a> System<'a> for ApproachAI {
         WriteStorage<'a, WantsToApproach>,
         WriteStorage<'a, Position>,
         WriteExpect<'a, Map>,
-        WriteStorage<'a, Viewshed>,
-        WriteStorage<'a, EntityMoved>,
+        //WriteStorage<'a, Viewshed>,
+        //WriteStorage<'a, EntityMoved>,
         Entities<'a>,
+        WriteStorage<'a, ApplyMove>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -21,17 +22,18 @@ impl<'a> System<'a> for ApproachAI {
             mut want_approach,
             mut positions,
             map,
-            mut viewsheds,
-            mut entity_moved,
+            //mut viewsheds,
+            //mut entity_moved,
             entities,
+            mut apply_move,
         ) = data;
 
         let mut turn_done: Vec<Entity> = Vec::new();
-        for (entity, pos, approach, viewshed, _myturn) in (
+        for (entity, pos, approach, /*viewshed,*/ _myturn) in (
             &entities,
             &mut positions,
             &want_approach,
-            &mut viewsheds,
+            //&mut viewsheds,
             &turns,
         )
             .join()
@@ -43,7 +45,7 @@ impl<'a> System<'a> for ApproachAI {
                 &*map,
             );
             if path.success && path.steps.len() > 1 {
-                let idx = map.xy_idx(pos.x, pos.y);
+                /*let idx = map.xy_idx(pos.x, pos.y);
                 pos.x = path.steps[1] as i32 % map.width;
                 pos.y = path.steps[1] as i32 / map.width;
                 entity_moved
@@ -51,7 +53,15 @@ impl<'a> System<'a> for ApproachAI {
                     .expect("Unable to insert marker");
                 let new_idx = map.xy_idx(pos.x, pos.y);
                 crate::spatial::move_entity(entity, idx, new_idx);
-                viewshed.dirty = true;
+                viewshed.dirty = true;*/
+                apply_move
+                    .insert(
+                        entity,
+                        ApplyMove {
+                            dest_idx: path.steps[1],
+                        },
+                    )
+                    .expect("Unable to insert");
             }
         }
 

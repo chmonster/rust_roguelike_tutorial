@@ -131,7 +131,9 @@ pub fn save_game(ecs: &mut World) {
             EquipmentChanged,
             Vendor,
             TownPortal,
-            TeleportTo
+            TeleportTo,
+            ApplyMove,
+            ApplyTeleport
         );
     }
 
@@ -177,7 +179,6 @@ pub fn load_game(ecs: &mut World) {
             Renderable,
             Player,
             Viewshed,
-            //Monster,
             Name,
             BlocksTile,
             SufferDamage,
@@ -228,7 +229,9 @@ pub fn load_game(ecs: &mut World) {
             EquipmentChanged,
             Vendor,
             TownPortal,
-            TeleportTo
+            TeleportTo,
+            ApplyMove,
+            ApplyTeleport
         );
     }
 

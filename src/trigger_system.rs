@@ -1,6 +1,6 @@
 use super::{
-    gamelog::GameLog, particle_system::ParticleBuilder, EntityMoved, EntryTrigger, Hidden,
-    InflictsDamage, Map, Name, Position, SingleActivation, SufferDamage,
+    gamelog::GameLog, particle_system::ParticleBuilder, ApplyTeleport, EntityMoved, EntryTrigger,
+    Hidden, InflictsDamage, Map, Name, Position, SingleActivation, SufferDamage, TeleportTo,
 };
 use specs::prelude::*;
 
@@ -21,6 +21,9 @@ impl<'a> System<'a> for TriggerSystem {
         WriteExpect<'a, ParticleBuilder>,
         WriteStorage<'a, SufferDamage>,
         ReadStorage<'a, SingleActivation>,
+        ReadStorage<'a, TeleportTo>,
+        WriteStorage<'a, ApplyTeleport>,
+        ReadExpect<'a, Entity>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -37,6 +40,9 @@ impl<'a> System<'a> for TriggerSystem {
             mut particle_builder,
             mut inflict_damage,
             single_activation,
+            teleporters,
+            mut apply_teleport,
+            player_entity,
         ) = data;
 
         let mut remove_entities: Vec<Entity> = Vec::new();
@@ -94,6 +100,21 @@ impl<'a> System<'a> for TriggerSystem {
                                     damage.damage,
                                     false,
                                 );
+                            }
+                            // If its a teleporter, then do that
+                            if let Some(teleport) = teleporters.get(entity_id) {
+                                if entity == *player_entity || !teleport.player_only {
+                                    apply_teleport
+                                        .insert(
+                                            entity,
+                                            ApplyTeleport {
+                                                dest_x: teleport.x,
+                                                dest_y: teleport.y,
+                                                dest_depth: teleport.depth,
+                                            },
+                                        )
+                                        .expect("Unable to insert");
+                                }
                             }
                             // If it is single activation, it needs to be removed
                             let sa = single_activation.get(entity_id);
