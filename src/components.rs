@@ -401,3 +401,8 @@ pub struct MagicItem {
 pub struct ObfuscatedName {
     pub name: String,
 }
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct IdentifiedItem {
+    pub name: String,
+}

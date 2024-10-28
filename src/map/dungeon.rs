@@ -12,6 +12,7 @@ pub struct MasterDungeonMap {
     maps: HashMap<i32, Map>,
     pub identified_items: HashSet<String>,
     pub scroll_mappings: HashMap<String, String>,
+    pub potion_mappings: HashMap<String, String>,
 }
 
 impl MasterDungeonMap {
@@ -20,6 +21,7 @@ impl MasterDungeonMap {
             maps: HashMap::new(),
             identified_items: HashSet::new(),
             scroll_mappings: HashMap::new(),
+            potion_mappings: HashMap::new(),
         };
 
         let mut rng = rltk::RandomNumberGenerator::new();
@@ -27,6 +29,13 @@ impl MasterDungeonMap {
             let masked_name = make_scroll_name(&mut rng);
             dm.scroll_mappings
                 .insert(scroll_tag.to_string(), masked_name);
+        }
+
+        let mut used_potion_names: HashSet<String> = HashSet::new();
+        for potion_tag in crate::data::get_potion_tags().iter() {
+            let masked_name = make_potion_name(&mut rng, &mut used_potion_names);
+            dm.potion_mappings
+                .insert(potion_tag.to_string(), masked_name);
         }
 
         dm
@@ -255,4 +264,37 @@ fn make_scroll_name(rng: &mut rltk::RandomNumberGenerator) -> String {
     name2.push_str(&name.clone());
 
     name2
+}
+
+const POTION_COLORS: &[&str] = &[
+    "Red", "Orange", "Yellow", "Green", "Brown", "Indigo", "Violet", "Clear",
+];
+const POTION_ADJECTIVES: &[&str] = &[
+    "Swirling",
+    "Effervescent",
+    "Slimy",
+    "Oiley",
+    "Viscous",
+    "Smelly",
+    "Glowing",
+    "Chunky",
+];
+
+fn make_potion_name(
+    rng: &mut rltk::RandomNumberGenerator,
+    used_names: &mut HashSet<String>,
+) -> String {
+    loop {
+        let mut name: String = POTION_ADJECTIVES
+            [rng.roll_dice(1, POTION_ADJECTIVES.len() as i32) as usize - 1]
+            .to_string();
+        name += " ";
+        name += POTION_COLORS[rng.roll_dice(1, POTION_COLORS.len() as i32) as usize - 1];
+        name += " Potion";
+
+        if !used_names.contains(&name) {
+            used_names.insert(name.clone());
+            return name;
+        }
+    }
 }

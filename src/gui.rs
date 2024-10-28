@@ -431,10 +431,7 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
     use rltk::to_cp437;
 
     let (min_x, _max_x, min_y, _max_y) = camera::get_screen_bounds(ecs, ctx);
-    //let (screen_width, _screen_height) = ctx.get_char_size();
-
     let map = ecs.fetch::<Map>();
-    //let names = ecs.read_storage::<Name>();
     let positions = ecs.read_storage::<Position>();
     let hidden = ecs.read_storage::<Hidden>();
     let attributes = ecs.read_storage::<Attributes>();

@@ -155,7 +155,9 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
         for item in target_item.iter()
         {
             if item.is_some() {
-                item_string.push_str(&names.get(item.expect("target_item not found")).unwrap().name);
+                //item_string.push_str(&names.get(item.expect("target_item not found")).unwrap().name);
+                item_string.push_str(&super::gui::get_item_display_name(ecs, item.unwrap()));
+                
                 item_string.push_str(", ")
             }
         }
@@ -246,7 +248,6 @@ pub fn try_previous_level(ecs: &mut World) -> bool {
 
 
 pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
-
 
     let mut input = INPUT.lock();
     

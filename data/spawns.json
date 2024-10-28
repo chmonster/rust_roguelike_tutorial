@@ -43,7 +43,7 @@
         { "name": "Shield", "weight": 3, "min_depth": 2, "max_depth": 100 },
         {
             "name": "Longsword",
-            "weight": 1,
+            "weight": 2,
             "min_depth": 4,
             "max_depth": 100,
             "add_map_depth_to_weight": true
@@ -128,6 +128,12 @@
             "name": "Town Portal Scroll",
             "weight": 4,
             "min_depth": 0,
+            "max_depth": 100
+        },
+        {
+            "name": "Longsword +1",
+            "weight": 1,
+            "min_depth": 3,
             "max_depth": 100
         }
     ],
@@ -218,7 +224,7 @@
             "name": "Health Potion",
             "renderable": {
                 "glyph": "!",
-                "fg": "#FF00FF",
+                "fg": "#AAAAFF",
                 "bg": "#000000",
                 "order": 2
             },
@@ -235,7 +241,7 @@
             "name": "Magic Missile Scroll",
             "renderable": {
                 "glyph": ")",
-                "fg": "#00FFFF",
+                "fg": "#AAAAFF",
                 "bg": "#000000",
                 "order": 2
             },
@@ -255,7 +261,7 @@
             "name": "Fireball Scroll",
             "renderable": {
                 "glyph": ")",
-                "fg": "#FFA500",
+                "fg": "#AAAAFF",
                 "bg": "#000000",
                 "order": 2
             },
@@ -276,7 +282,7 @@
             "name": "Confusion Scroll",
             "renderable": {
                 "glyph": ")",
-                "fg": "#FFAAAA",
+                "fg": "#AAAAFF",
                 "bg": "#000000",
                 "order": 2
             },
@@ -826,6 +832,27 @@
             "base_value": 100.0,
             "initiative_penalty": 2,
             "vendor_category": "weapon"
+        },
+
+        {
+            "name": "Longsword +1",
+            "renderable": {
+                "glyph": "/",
+                "fg": "#FFAAFF",
+                "bg": "#000000",
+                "order": 2
+            },
+            "weapon": {
+                "range": "melee",
+                "attribute": "might",
+                "base_damage": "1d8+1",
+                "hit_bonus": 1
+            },
+            "weight_lbs": 2.0,
+            "base_value": 100.0,
+            "initiative_penalty": 1,
+            "vendor_category": "weapon",
+            "magic": { "class": "common", "naming": "Unidentified Longsword" }
         }
     ],
 
