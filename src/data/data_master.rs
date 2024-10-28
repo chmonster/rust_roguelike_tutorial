@@ -203,7 +203,10 @@ pub fn spawn_named_item(
 ) -> Option<Entity> {
     if data.item_index.contains_key(key) {
         let item_template = &data.data.items[data.item_index[key]];
-
+        let scroll_names = ecs
+            .fetch::<crate::map::MasterDungeonMap>()
+            .scroll_mappings
+            .clone();
         let mut eb = ecs.create_entity().marked::<SimpleMarker<SerializeMe>>();
         // Spawn in the specified location
         eb = spawn_position(pos, eb, key, data);
@@ -230,6 +233,16 @@ pub fn spawn_named_item(
                 _ => MagicItemClass::Common,
             };
             eb = eb.with(MagicItem { class });
+
+            #[allow(clippy::single_match)] // To stop Clippy whining until we add more
+            match magic.naming.as_str() {
+                "scroll" => {
+                    eb = eb.with(ObfuscatedName {
+                        name: scroll_names[&item_template.name].clone(),
+                    });
+                }
+                _ => {}
+            }
         }
 
         if let Some(consumable) = &item_template.consumable {
@@ -688,6 +701,21 @@ pub fn get_vendor_items(categories: &[String], data: &DataMaster) -> Vec<(String
         if let Some(cat) = &item.vendor_category {
             if categories.contains(cat) && item.base_value.is_some() {
                 result.push((item.name.clone(), item.base_value.unwrap()));
+            }
+        }
+    }
+
+    result
+}
+
+pub fn get_scroll_tags() -> Vec<String> {
+    let data = &super::DATA.lock().unwrap();
+    let mut result = Vec::new();
+
+    for item in data.data.items.iter() {
+        if let Some(magic) = &item.magic {
+            if &magic.naming == "scroll" {
+                result.push(item.name.clone());
             }
         }
     }

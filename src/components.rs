@@ -396,3 +396,8 @@ pub enum MagicItemClass {
 pub struct MagicItem {
     pub class: MagicItemClass,
 }
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct ObfuscatedName {
+    pub name: String,
+}

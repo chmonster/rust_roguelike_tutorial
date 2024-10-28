@@ -134,7 +134,8 @@ pub fn save_game(ecs: &mut World) {
             TeleportTo,
             ApplyMove,
             ApplyTeleport,
-            MagicItem
+            MagicItem,
+            ObfuscatedName
         );
     }
 
@@ -233,7 +234,8 @@ pub fn load_game(ecs: &mut World) {
             TeleportTo,
             ApplyMove,
             ApplyTeleport,
-            MagicItem
+            MagicItem,
+            ObfuscatedName
         );
     }
 

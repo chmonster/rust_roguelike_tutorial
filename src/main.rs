@@ -660,6 +660,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<ApplyMove>();
     gs.ecs.register::<ApplyTeleport>();
     gs.ecs.register::<MagicItem>();
+    gs.ecs.register::<ObfuscatedName>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
