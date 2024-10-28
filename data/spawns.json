@@ -210,7 +210,8 @@
             },
             "weight_lbs": 0.5,
             "base_value": 20.0,
-            "vendor_category": "alchemy"
+            "vendor_category": "alchemy",
+            "magic": { "class": "common" }
         },
 
         {
@@ -226,7 +227,8 @@
             },
             "weight_lbs": 0.5,
             "base_value": 50.0,
-            "vendor_category": "alchemy"
+            "vendor_category": "alchemy",
+            "magic": { "class": "common" }
         },
 
         {
@@ -240,12 +242,13 @@
             "consumable": {
                 "effects": {
                     "ranged": "6",
-                    "damage": "20"
+                    "damage": "10"
                 }
             },
             "weight_lbs": 0.5,
             "base_value": 50.0,
-            "vendor_category": "alchemy"
+            "vendor_category": "alchemy",
+            "magic": { "class": "common" }
         },
 
         {
@@ -265,7 +268,8 @@
             },
             "weight_lbs": 0.5,
             "base_value": 100.0,
-            "vendor_category": "alchemy"
+            "vendor_category": "alchemy",
+            "magic": { "class": "common" }
         },
 
         {
@@ -284,7 +288,8 @@
             },
             "weight_lbs": 0.5,
             "base_value": 75.0,
-            "vendor_category": "alchemy"
+            "vendor_category": "alchemy",
+            "magic": { "class": "common" }
         },
 
         {
@@ -302,7 +307,8 @@
             },
             "weight_lbs": 0.5,
             "base_value": 50.0,
-            "vendor_category": "alchemy"
+            "vendor_category": "alchemy",
+            "magic": { "class": "common" }
         },
 
         {

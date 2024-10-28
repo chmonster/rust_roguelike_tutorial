@@ -384,3 +384,15 @@ pub struct ApplyTeleport {
     pub dest_y: i32,
     pub dest_depth: i32,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Hash)]
+pub enum MagicItemClass {
+    Common,
+    Rare,
+    Legendary,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct MagicItem {
+    pub class: MagicItemClass,
+}

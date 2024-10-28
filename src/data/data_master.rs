@@ -223,6 +223,15 @@ pub fn spawn_named_item(
             base_value: item_template.base_value.unwrap_or(0.0),
         });
 
+        if let Some(magic) = &item_template.magic {
+            let class = match magic.class.as_str() {
+                "rare" => MagicItemClass::Rare,
+                "legendary" => MagicItemClass::Legendary,
+                _ => MagicItemClass::Common,
+            };
+            eb = eb.with(MagicItem { class });
+        }
+
         if let Some(consumable) = &item_template.consumable {
             eb = eb.with(crate::components::Consumable {});
             for effect in consumable.effects.iter() {
