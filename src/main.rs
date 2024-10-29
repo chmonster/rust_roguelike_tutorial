@@ -36,8 +36,8 @@ use damage_system::DamageSystem;
 mod gamelog;
 mod gui;
 use gamelog::GameLog;
-mod inventory_system;
-use inventory_system::{
+mod inventory;
+use inventory::{
     ItemCollectionSystem, ItemDropSystem, ItemIdentificationSystem, ItemRemoveSystem, ItemUseSystem,
 };
 pub mod random_table;
