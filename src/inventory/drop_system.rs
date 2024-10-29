@@ -1,8 +1,8 @@
 use specs::prelude::*;
 
 use super::{
-    identification_system::obfuscate_name, EquipmentChanged, GameLog, InBackpack, MagicItem,
-    MasterDungeonMap, Name, ObfuscatedName, Position, WantsToDropItem,
+    obfuscate_name, EquipmentChanged, GameLog, InBackpack, MagicItem, MasterDungeonMap, Name,
+    ObfuscatedName, Position, WantsToDropItem,
 };
 
 pub struct ItemDropSystem {}
