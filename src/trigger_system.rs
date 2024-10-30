@@ -1,6 +1,9 @@
 use super::{
-    gamelog::GameLog, particle_system::ParticleBuilder, ApplyTeleport, EntityMoved, EntryTrigger,
-    Hidden, InflictsDamage, Map, Name, Position, SingleActivation, SufferDamage, TeleportTo,
+    effects::{add_effect, EffectType, Targets},
+    gamelog::GameLog,
+    particle_system::ParticleBuilder,
+    ApplyTeleport, EntityMoved, EntryTrigger, Hidden, InflictsDamage, Map, Name, Position,
+    SingleActivation, SufferDamage, TeleportTo,
 };
 use specs::prelude::*;
 
@@ -73,11 +76,18 @@ impl<'a> System<'a> for TriggerSystem {
                                     rltk::to_cp437('‼'),
                                     200.0,
                                 );
-                                SufferDamage::new_damage(
-                                    &mut inflict_damage,
-                                    entity,
-                                    damage.damage,
-                                    false,
+                                // SufferDamage::new_damage(
+                                //     &mut inflict_damage,
+                                //     entity,
+                                //     damage.damage,
+                                //     false,
+                                // );
+                                add_effect(
+                                    None,
+                                    EffectType::Damage {
+                                        amount: damage.damage,
+                                    },
+                                    Targets::Single { target: entity },
                                 );
                             }
 

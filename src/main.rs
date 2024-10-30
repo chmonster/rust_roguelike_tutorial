@@ -38,7 +38,8 @@ mod gui;
 use gamelog::GameLog;
 mod inventory;
 use inventory::{
-    ItemCollectionSystem, ItemDropSystem, ItemIdentificationSystem, ItemRemoveSystem, ItemUseSystem,
+    ItemCollectionSystem, ItemDropSystem, ItemEquipOnUse, ItemIdentificationSystem,
+    ItemRemoveSystem, ItemUseSystem,
 };
 pub mod random_table;
 use random_table::RandomTable;
@@ -53,6 +54,8 @@ mod spawner;
 pub mod trigger_system;
 pub use gamesystem::*;
 mod ai;
+mod effects;
+
 pub mod lighting_system;
 pub mod movement_system;
 mod spatial;
@@ -149,6 +152,9 @@ impl State {
         damage.run_now(&self.ecs);
         let mut pickup = ItemCollectionSystem {};
         pickup.run_now(&self.ecs);
+        let mut itemequip = ItemEquipOnUse {};
+        itemequip.run_now(&self.ecs);
+
         let mut itemuse = ItemUseSystem {};
         itemuse.run_now(&self.ecs);
         let mut item_id = ItemIdentificationSystem {};
@@ -159,6 +165,8 @@ impl State {
         item_remove.run_now(&self.ecs);
         let mut hunger = hunger_system::HungerSystem {};
         hunger.run_now(&self.ecs);
+        effects::run_effects_queue(&mut self.ecs);
+
         let mut particles = particle_system::ParticleSpawnSystem {};
         particles.run_now(&self.ecs);
         let mut lighting = lighting_system::LightingSystem {};
