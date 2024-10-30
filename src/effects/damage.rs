@@ -1,5 +1,5 @@
 use super::*;
-use crate::components::{Attributes, Player, Pools};
+use crate::components::{Attributes, Confusion, Player, Pools};
 use crate::gamelog::GameLog;
 use crate::gamesystem::{mana_at_level, player_hp_at_level};
 
@@ -30,6 +30,26 @@ pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
                     );
                 }
             }
+        }
+    }
+}
+
+pub fn heal_damage(ecs: &mut World, heal: &EffectSpawner, target: Entity) {
+    let mut pools = ecs.write_storage::<Pools>();
+    if let Some(pool) = pools.get_mut(target) {
+        if let EffectType::Healing { amount } = heal.effect_type {
+            pool.hit_points.current =
+                i32::min(pool.hit_points.max, pool.hit_points.current + amount);
+            add_effect(
+                None,
+                EffectType::Particle {
+                    glyph: rltk::to_cp437('‼'),
+                    fg: rltk::RGB::named(rltk::GREEN),
+                    bg: rltk::RGB::named(rltk::BLACK),
+                    lifespan: 200.0,
+                },
+                Targets::Single { target },
+            );
         }
     }
 }
@@ -104,5 +124,13 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
                 }
             }
         }
+    }
+}
+
+pub fn add_confusion(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
+    if let EffectType::Confusion { turns } = &effect.effect_type {
+        ecs.write_storage::<Confusion>()
+            .insert(target, Confusion { turns: *turns })
+            .expect("Unable to insert status");
     }
 }

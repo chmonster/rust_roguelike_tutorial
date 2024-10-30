@@ -1,3 +1,4 @@
+#[allow(unused_imports)]
 use super::{
     particle_system::ParticleBuilder, AreaOfEffect, Confusion, Consumable, EquipmentChanged,
     Equippable, Equipped, GameLog, HungerClock, HungerState, IdentifiedItem, InBackpack,

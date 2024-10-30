@@ -4,9 +4,12 @@ use std::collections::VecDeque;
 use std::sync::Mutex;
 
 mod damage;
+mod movement;
 mod particles;
 pub mod targeting;
+mod triggers;
 pub use targeting::*;
+mod hunger;
 
 lazy_static! {
     pub static ref EFFECT_QUEUE: Mutex<VecDeque<EffectSpawner>> = Mutex::new(VecDeque::new());
@@ -25,6 +28,25 @@ pub enum EffectType {
         lifespan: f32,
     },
     EntityDeath,
+    ItemUse {
+        item: Entity,
+    },
+    WellFed,
+    Healing {
+        amount: i32,
+    },
+    Confusion {
+        turns: i32,
+    },
+    TriggerFire {
+        trigger: Entity,
+    },
+    TeleportTo {
+        x: i32,
+        y: i32,
+        depth: i32,
+        player_only: bool,
+    },
 }
 
 #[allow(dead_code)]
@@ -63,20 +85,33 @@ pub fn run_effects_queue(ecs: &mut World) {
 }
 
 fn target_applicator(ecs: &mut World, effect: &EffectSpawner) {
-    match &effect.targets {
-        Targets::Tile { tile_idx } => affect_tile(ecs, effect, *tile_idx),
-        Targets::Tiles { tiles } => tiles
-            .iter()
-            .for_each(|tile_idx| affect_tile(ecs, effect, *tile_idx)),
-        Targets::Single { target } => affect_entity(ecs, effect, *target),
-        Targets::TargetList { targets } => targets
-            .iter()
-            .for_each(|entity| affect_entity(ecs, effect, *entity)),
+    if let EffectType::ItemUse { item } = effect.effect_type {
+        triggers::item_trigger(effect.creator, item, &effect.targets, ecs);
+    } else if let EffectType::TriggerFire { trigger } = effect.effect_type {
+        triggers::prop_trigger(effect.creator, trigger, &effect.targets, ecs);
+    } else {
+        match &effect.targets {
+            Targets::Tile { tile_idx } => affect_tile(ecs, effect, *tile_idx),
+            Targets::Tiles { tiles } => tiles
+                .iter()
+                .for_each(|tile_idx| affect_tile(ecs, effect, *tile_idx)),
+            Targets::Single { target } => affect_entity(ecs, effect, *target),
+            Targets::TargetList { targets } => targets
+                .iter()
+                .for_each(|entity| affect_entity(ecs, effect, *entity)),
+        }
     }
 }
 
 fn tile_effect_hits_entities(effect: &EffectType) -> bool {
-    matches!(effect, EffectType::Damage { .. })
+    matches!(
+        effect,
+        EffectType::Damage { .. }
+            | EffectType::WellFed
+            | EffectType::Confusion { .. }
+            | EffectType::Healing { .. }
+            | EffectType::TeleportTo { .. }
+    )
 }
 
 fn affect_tile(ecs: &mut World, effect: &EffectSpawner, tile_idx: i32) {
@@ -111,6 +146,11 @@ fn affect_entity(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
                 particles::particle_to_tile(ecs, pos, effect)
             }
         }
+        EffectType::WellFed => hunger::well_fed(ecs, effect, target),
+        EffectType::Healing { .. } => damage::heal_damage(ecs, effect, target),
+        EffectType::Confusion { .. } => damage::add_confusion(ecs, effect, target),
+        EffectType::TeleportTo { .. } => movement::apply_teleport(ecs, effect, target),
+
         _ => {}
     }
 }
