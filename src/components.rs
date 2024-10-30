@@ -73,6 +73,20 @@ impl SufferDamage {
 }
  */
 
+#[derive(Component, Serialize, Deserialize, Clone)]
+pub struct SpawnParticleLine {
+    pub glyph: rltk::FontCharType,
+    pub color: RGB,
+    pub lifetime_ms: f32,
+}
+
+#[derive(Component, Serialize, Deserialize, Clone)]
+pub struct SpawnParticleBurst {
+    pub glyph: rltk::FontCharType,
+    pub color: RGB,
+    pub lifetime_ms: f32,
+}
+
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Item {
     pub initiative_penalty: f32,

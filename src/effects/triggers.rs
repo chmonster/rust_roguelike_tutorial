@@ -1,8 +1,9 @@
-use super::{add_effect, EffectType, Targets};
+use super::{add_effect, targeting, EffectType, Targets};
 use crate::{
     components::{
         Confusion, Consumable, Hidden, InflictsDamage, MagicMapper, Name, ProvidesFood,
-        ProvidesHealing, SingleActivation, TeleportTo, TownPortal,
+        ProvidesHealing, SingleActivation, SpawnParticleBurst, SpawnParticleLine, TeleportTo,
+        TownPortal,
     },
     gamelog::GameLog,
     Map, RunState,
@@ -28,6 +29,44 @@ fn event_trigger(
 ) -> bool {
     let mut did_something = false;
     let mut gamelog = ecs.fetch_mut::<GameLog>();
+
+    // Simple particle spawn
+    if let Some(part) = ecs.read_storage::<SpawnParticleBurst>().get(entity) {
+        add_effect(
+            creator,
+            EffectType::Particle {
+                glyph: part.glyph,
+                fg: part.color,
+                bg: rltk::RGB::named(rltk::BLACK),
+                lifespan: part.lifetime_ms,
+            },
+            targets.clone(),
+        );
+    }
+
+    // Line particle spawn
+    if let Some(part) = ecs.read_storage::<SpawnParticleLine>().get(entity) {
+        if let Some(start_pos) = targeting::find_item_position(ecs, entity) {
+            match targets {
+                Targets::Tile { tile_idx } => spawn_line_particles(ecs, start_pos, *tile_idx, part),
+                Targets::Tiles { tiles } => tiles
+                    .iter()
+                    .for_each(|tile_idx| spawn_line_particles(ecs, start_pos, *tile_idx, part)),
+                Targets::Single { target } => {
+                    if let Some(end_pos) = targeting::entity_position(ecs, *target) {
+                        spawn_line_particles(ecs, start_pos, end_pos, part);
+                    }
+                }
+                Targets::TargetList { targets } => {
+                    targets.iter().for_each(|target| {
+                        if let Some(end_pos) = targeting::entity_position(ecs, *target) {
+                            spawn_line_particles(ecs, start_pos, end_pos, part);
+                        }
+                    });
+                }
+            }
+        }
+    }
 
     // Providing food
     if ecs.read_storage::<ProvidesFood>().get(entity).is_some() {
@@ -133,5 +172,26 @@ pub fn prop_trigger(creator: Option<Entity>, trigger: Entity, targets: &Targets,
             .is_some()
     {
         ecs.entities().delete(trigger).expect("Delete Failed");
+    }
+}
+
+fn spawn_line_particles(ecs: &World, start: i32, end: i32, part: &SpawnParticleLine) {
+    let map = ecs.fetch::<Map>();
+    let start_pt = rltk::Point::new(start % map.width, end / map.width);
+    let end_pt = rltk::Point::new(end % map.width, end / map.width);
+    let line = rltk::line2d(rltk::LineAlg::Bresenham, start_pt, end_pt);
+    for pt in line.iter() {
+        add_effect(
+            None,
+            EffectType::Particle {
+                glyph: part.glyph,
+                fg: part.color,
+                bg: rltk::RGB::named(rltk::BLACK),
+                lifespan: part.lifetime_ms,
+            },
+            Targets::Tile {
+                tile_idx: map.xy_idx(pt.x, pt.y) as i32,
+            },
+        );
     }
 }

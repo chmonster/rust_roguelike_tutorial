@@ -133,7 +133,9 @@ pub fn save_game(ecs: &mut World) {
             ApplyTeleport,
             MagicItem,
             ObfuscatedName,
-            IdentifiedItem
+            IdentifiedItem,
+            SpawnParticleBurst,
+            SpawnParticleLine
         );
     }
 
@@ -233,7 +235,9 @@ pub fn load_game(ecs: &mut World) {
             ApplyTeleport,
             MagicItem,
             ObfuscatedName,
-            IdentifiedItem
+            IdentifiedItem,
+            SpawnParticleBurst,
+            SpawnParticleLine
         );
     }
 

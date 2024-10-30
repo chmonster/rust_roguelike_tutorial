@@ -684,6 +684,8 @@ fn main() -> rltk::BError {
     gs.ecs.register::<MagicItem>();
     gs.ecs.register::<ObfuscatedName>();
     gs.ecs.register::<IdentifiedItem>();
+    gs.ecs.register::<SpawnParticleBurst>();
+    gs.ecs.register::<SpawnParticleLine>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

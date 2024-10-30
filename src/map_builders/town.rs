@@ -241,6 +241,7 @@ impl TownBuilder {
         // Place items
         let mut to_place: Vec<&str> = vec![
             "Priest",
+            "Altar",
             "Parishioner",
             "Parishioner",
             "Chair",
