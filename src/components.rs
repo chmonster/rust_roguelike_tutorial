@@ -49,6 +49,7 @@ pub struct WantsToMelee {
     pub target: Entity,
 }
 
+/*
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct SufferDamage {
     pub amount: Vec<(i32, bool)>,
@@ -70,6 +71,7 @@ impl SufferDamage {
         }
     }
 }
+ */
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Item {
