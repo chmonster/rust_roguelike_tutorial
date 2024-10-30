@@ -53,7 +53,6 @@ mod spawner;
 pub mod trigger_system;
 pub use gamesystem::*;
 mod ai;
-pub mod effects;
 pub mod lighting_system;
 pub mod movement_system;
 mod spatial;
@@ -114,7 +113,7 @@ pub struct State {
 
 impl State {
     fn run_systems(&mut self) {
-        //TODO: justify the ordering of these calls
+        //TODO: why did the ordering of these matter?
 
         let mut mapindex = MapIndexingSystem {};
         mapindex.run_now(&self.ecs);
@@ -160,7 +159,6 @@ impl State {
         item_remove.run_now(&self.ecs);
         let mut hunger = hunger_system::HungerSystem {};
         hunger.run_now(&self.ecs);
-        effects::run_effects_queue(&mut self.ecs);
         let mut particles = particle_system::ParticleSpawnSystem {};
         particles.run_now(&self.ecs);
         let mut lighting = lighting_system::LightingSystem {};
