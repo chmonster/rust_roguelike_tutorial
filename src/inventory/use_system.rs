@@ -1,10 +1,10 @@
 use specs::prelude::*;
 
 use super::{
-    AreaOfEffect, Confusion, Consumable, EquipmentChanged, Equippable, Equipped, GameLog,
-    HungerClock, HungerState, IdentifiedItem, InBackpack, InflictsDamage, MagicMapper, Map, Name,
-    ParticleBuilder, Pools, Position, ProvidesFood, ProvidesHealing, RunState, SufferDamage,
-    TownPortal, WantsToUseItem,
+    AreaOfEffect, Confusion, Consumable, EquipmentChanged, /*Equippable, Equipped,*/ GameLog,
+    HungerClock, HungerState, IdentifiedItem, /*InBackpack,*/ InflictsDamage, MagicMapper,
+    Map, Name, ParticleBuilder, Pools, Position, ProvidesFood, ProvidesHealing, RunState,
+    SufferDamage, TownPortal, WantsToUseItem,
 };
 
 pub struct ItemUseSystem {}
@@ -29,9 +29,9 @@ impl<'a> System<'a> for ItemUseSystem {
         WriteStorage<'a, Confusion>,
         ReadStorage<'a, MagicMapper>,
         ReadStorage<'a, TownPortal>,
-        ReadStorage<'a, Equippable>,
-        WriteStorage<'a, Equipped>,
-        WriteStorage<'a, InBackpack>,
+        //ReadStorage<'a, Equippable>,
+        //WriteStorage<'a, Equipped>,
+        //WriteStorage<'a, InBackpack>,
         WriteExpect<'a, ParticleBuilder>,
         ReadStorage<'a, Position>,
         WriteExpect<'a, RunState>,
@@ -59,9 +59,9 @@ impl<'a> System<'a> for ItemUseSystem {
             mut confused,
             magic_mapper,
             town_portal,
-            equippable,
-            mut equipped,
-            mut backpack,
+            //equippable,
+            //mut equipped,
+            //mut backpack,
             mut particle_builder,
             positions,
             mut runstate,
@@ -129,7 +129,7 @@ impl<'a> System<'a> for ItemUseSystem {
             }
 
             // If it is equippable, then we want to equip it - and unequip whatever else was in that slot
-            let item_equippable = equippable.get(useitem.item);
+            /*let item_equippable = equippable.get(useitem.item);
             match item_equippable {
                 None => {}
                 Some(can_equip) => {
@@ -175,6 +175,7 @@ impl<'a> System<'a> for ItemUseSystem {
                     }
                 }
             }
+            */
 
             // If it inflicts damage, apply it to the target cell
             let item_damages = inflict_damage.get(useitem.item);
