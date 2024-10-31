@@ -2,8 +2,8 @@ use super::{add_effect, targeting, EffectType, Targets};
 use crate::{
     components::{
         Confusion, Consumable, Hidden, InflictsDamage, MagicMapper, Name, ProvidesFood,
-        ProvidesHealing, SingleActivation, SpawnParticleBurst, SpawnParticleLine, TeleportTo,
-        TownPortal,
+        ProvidesHealing, ProvidesIdentification, ProvidesRemoveCurse, SingleActivation,
+        SpawnParticleBurst, SpawnParticleLine, TeleportTo, TownPortal,
     },
     gamelog::GameLog,
     Map, RunState,
@@ -87,6 +87,29 @@ fn event_trigger(
         *runstate = RunState::MagicMapReveal { row: 0 };
         did_something = true;
     }
+
+    // Remove Curse
+    if ecs
+        .read_storage::<ProvidesRemoveCurse>()
+        .get(entity)
+        .is_some()
+    {
+        let mut runstate = ecs.fetch_mut::<RunState>();
+        *runstate = RunState::ShowRemoveCurse;
+        did_something = true;
+    }
+
+    // Identify Item
+    if ecs
+        .read_storage::<ProvidesIdentification>()
+        .get(entity)
+        .is_some()
+    {
+        let mut runstate = ecs.fetch_mut::<RunState>();
+        *runstate = RunState::ShowIdentify;
+        did_something = true;
+    }
+
     // Town Portal
     if ecs.read_storage::<TownPortal>().get(entity).is_some() {
         let map = ecs.fetch::<Map>();

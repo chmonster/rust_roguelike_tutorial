@@ -1,10 +1,10 @@
 #[allow(unused_imports)]
 use super::{
-    particle_system::ParticleBuilder, AreaOfEffect, Confusion, Consumable, EquipmentChanged,
-    Equippable, Equipped, GameLog, HungerClock, HungerState, IdentifiedItem, InBackpack,
-    InflictsDamage, Item, MagicItem, MagicMapper, Map, MasterDungeonMap, Name, ObfuscatedName,
-    Pools, Position, ProvidesFood, ProvidesHealing, RunState, TownPortal, WantsToDropItem,
-    WantsToPickupItem, WantsToRemoveItem, WantsToUseItem,
+    particle_system::ParticleBuilder, AreaOfEffect, Confusion, Consumable, CursedItem,
+    EquipmentChanged, Equippable, Equipped, GameLog, HungerClock, HungerState, IdentifiedItem,
+    InBackpack, InflictsDamage, Item, MagicItem, MagicMapper, Map, MasterDungeonMap, Name,
+    ObfuscatedName, Pools, Position, ProvidesFood, ProvidesHealing, RunState, TownPortal,
+    WantsToDropItem, WantsToPickupItem, WantsToRemoveItem, WantsToUseItem,
 };
 use specs::prelude::*;
 
