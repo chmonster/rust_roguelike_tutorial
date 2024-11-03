@@ -1,14 +1,18 @@
 [package]
 name = "rust_roguelike"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 
 [dependencies]
 rltk = { version = "~0.8", features = ["serde"] }
 specs = { version = "0.20.0", features = ["serde"] }
 specs-derive = "0.4.1"
-serde = { version = "1.0.210", features = ["derive"] }
+serde = { version = "1.0.214", features = ["derive"] }
 serde_json = "1.0.129"
 itertools = "0.13.0"
 lazy_static = "1.4.0"
-regex = "1.11.0"
+regex = "1.11.1"
+
+[dependencies.web-sys]
+version = "~0.3"
+features = ["Window", "Storage"]

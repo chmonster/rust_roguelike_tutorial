@@ -3,7 +3,6 @@
 use super::{map::*, spawner, Map, Position, Rect, TileType, SHOW_MAPGEN_VISUALIZER};
 
 mod simple_map;
-
 use simple_map::SimpleMapBuilder;
 mod rubble_map;
 use rubble_map::RubbleMapBuilder;

@@ -49,7 +49,7 @@ pub mod rex_assets;
 use rex_assets::RexAssets;
 mod gamesystem;
 pub mod map_builders;
-pub mod saveload_system;
+pub mod saveload;
 mod spawner;
 pub mod trigger_system;
 pub use gamesystem::*;
@@ -585,9 +585,9 @@ impl GameState for State {
                     gui::MainMenuResult::Selected { selected } => match selected {
                         gui::MainMenuSelection::ResumeGame => newrunstate = RunState::PreRun,
                         gui::MainMenuSelection::LoadGame => {
-                            saveload_system::load_game(&mut self.ecs);
+                            saveload::load_game(&mut self.ecs);
                             newrunstate = RunState::AwaitingInput;
-                            saveload_system::delete_save();
+                            saveload::delete_save();
                             self.new_game = false;
                         }
                         gui::MainMenuSelection::Quit => {
@@ -598,7 +598,7 @@ impl GameState for State {
             }
 
             RunState::SaveGame => {
-                saveload_system::save_game(&mut self.ecs);
+                saveload::save_game(&mut self.ecs);
                 newrunstate = RunState::MainMenu {
                     menu_selection: gui::MainMenuSelection::Quit,
                 };

@@ -988,7 +988,7 @@ pub fn game_over(ctx: &mut Rltk) -> GameOverResult {
 pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
     let (screen_width, screen_height) = ctx.get_char_size();
 
-    let save_exists = super::saveload_system::does_save_exist();
+    let save_exists = super::saveload::does_save_exist();
     let runstate = gs.ecs.fetch::<RunState>();
 
     let assets = gs.ecs.fetch::<RexAssets>();

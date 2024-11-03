@@ -2,12 +2,13 @@
 #![allow(unused_macros)]
 #![allow(unused_imports)]
 
-use super::components::*;
+use crate::components::*;
 use specs::error::NoError;
 use specs::prelude::*;
 use specs::saveload::{
     DeserializeComponents, MarkedBuilder, SerializeComponents, SimpleMarker, SimpleMarkerAllocator,
 };
+
 use std::fs;
 use std::fs::File;
 use std::path::Path;
@@ -40,13 +41,47 @@ macro_rules! deserialize_individually {
       )*
   };
 }
+/*
+#[cfg(target_arch = "wasm32")]
+pub struct LocalStorageWriter {
+    buffer: Vec<u8>,
+    storage: web_sys::Storage,
+}
+
+#[cfg(target_arch = "wasm32")]
+impl LocalStorageWriter {
+    fn new() {
+        LocalStorageWriter {
+            buffer: vec![],
+            storage: web_sys::window().unwrap().local_storage().unwrap().unwrap(),
+        }
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+impl std::io::Write for LocalStorageWriter {
+    fn write(&mut self, buf: &[u8]) -> IOResult<usize> {
+        self.buffer.append(&mut buf.to_vec());
+        Ok(buf.len())
+    }
+
+    fn flush(&mut self) -> IOResult<()> {
+        let encoded = base64::encode(&self.buffer);
+        print!("{}", encoded);
+        self.buffer.clear();
+        self.storage
+            .insert("savegame", &encoded)
+            .map_err(|_| Error::new(ErrorKind::Other, "Failed to write to local storage"))
+    }
+}
+ */
 
 #[cfg(not(target_arch = "wasm32"))]
 pub fn save_game(ecs: &mut World) {
     // Create helpers
-    let mapcopy = ecs.get_mut::<super::map::Map>().unwrap().clone();
+    let mapcopy = ecs.get_mut::<crate::map::Map>().unwrap().clone();
     let dungeon_master = ecs
-        .get_mut::<super::map::MasterDungeonMap>()
+        .get_mut::<crate::map::MasterDungeonMap>()
         .unwrap()
         .clone();
     let savehelper = ecs
@@ -148,7 +183,8 @@ pub fn save_game(ecs: &mut World) {
 }
 
 #[cfg(target_arch = "wasm32")]
-pub fn save_game(_ecs: &mut World) {}
+#[allow(unused_variables)]
+pub fn save_game(ecs: &mut World) {}
 
 pub fn does_save_exist() -> bool {
     Path::new("./savegame.json").exists()
@@ -258,14 +294,14 @@ pub fn load_game(ecs: &mut World) {
         let player = ecs.read_storage::<Player>();
         let position = ecs.read_storage::<Position>();
         for (e, h) in (&entities, &helper).join() {
-            let mut worldmap = ecs.write_resource::<super::map::Map>();
+            let mut worldmap = ecs.write_resource::<crate::map::Map>();
             *worldmap = h.map.clone();
             //worldmap.tile_content = vec![Vec::new(); (worldmap.width * worldmap.height) as usize];
             crate::spatial::set_size((worldmap.height * worldmap.width) as usize);
             deleteme = Some(e);
         }
         for (e, h) in (&entities, &helper2).join() {
-            let mut dungeonmaster = ecs.write_resource::<super::map::MasterDungeonMap>();
+            let mut dungeonmaster = ecs.write_resource::<crate::map::MasterDungeonMap>();
             *dungeonmaster = h.map.clone();
             deleteme2 = Some(e);
         }
