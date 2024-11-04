@@ -664,7 +664,6 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Name>();
     gs.ecs.register::<BlocksTile>();
     gs.ecs.register::<WantsToMelee>();
-    //gs.ecs.register::<SufferDamage>();
     gs.ecs.register::<Item>();
     gs.ecs.register::<ProvidesHealing>();
     gs.ecs.register::<InBackpack>();
@@ -723,6 +722,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<CursedItem>();
     gs.ecs.register::<ProvidesRemoveCurse>();
     gs.ecs.register::<ProvidesIdentification>();
+    gs.ecs.register::<AttributeBonus>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

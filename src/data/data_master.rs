@@ -314,53 +314,13 @@ pub fn spawn_named_item(
         }
 
         if let Some(consumable) = &item_template.consumable {
-            eb = eb.with(crate::components::Consumable {});
+            let max_charges = consumable.charges.unwrap_or(1);
+            eb = eb.with(crate::components::Consumable {
+                max_charges,
+                charges: max_charges,
+            });
             apply_effects!(consumable.effects, eb);
         }
-
-        /*if let Some(consumable) = &item_template.consumable {
-            eb = eb.with(crate::components::Consumable {});
-            for effect in consumable.effects.iter() {
-                let effect_name = effect.0.as_str();
-                match effect_name {
-                    "provides_healing" => {
-                        eb = eb.with(ProvidesHealing {
-                            heal_amount: effect.1.parse::<i32>().unwrap(),
-                        })
-                    }
-                    "ranged" => {
-                        eb = eb.with(Ranged {
-                            range: effect.1.parse::<i32>().unwrap(),
-                        })
-                    }
-                    "damage" => {
-                        eb = eb.with(InflictsDamage {
-                            damage: effect.1.parse::<i32>().unwrap(),
-                        })
-                    }
-                    "area_of_effect" => {
-                        eb = eb.with(AreaOfEffect {
-                            radius: effect.1.parse::<i32>().unwrap(),
-                        })
-                    }
-                    "confusion" => {
-                        eb = eb.with(Confusion {
-                            turns: effect.1.parse::<i32>().unwrap(),
-                        })
-                    }
-                    "magic_mapping" => eb = eb.with(MagicMapper {}),
-                    "town_portal" => eb = eb.with(TownPortal {}),
-
-                    "food" => eb = eb.with(ProvidesFood {}),
-                    _ => {
-                        rltk::console::log(format!(
-                            "Warning: consumable effect {} not implemented.",
-                            effect_name
-                        ));
-                    }
-                }
-            }
-        }*/
 
         if let Some(weapon) = &item_template.weapon {
             eb = eb.with(Equippable {
@@ -379,6 +339,15 @@ pub fn spawn_named_item(
                 _ => wpn.attribute = WeaponAttribute::Might,
             }
             eb = eb.with(wpn);
+        }
+
+        if let Some(ab) = &item_template.attributes {
+            eb = eb.with(AttributeBonus {
+                might: ab.might,
+                fitness: ab.fitness,
+                quickness: ab.quickness,
+                intelligence: ab.intelligence,
+            });
         }
 
         if let Some(wearable) = &item_template.wearable {

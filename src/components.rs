@@ -127,7 +127,10 @@ pub struct WantsToRemoveItem {
 }
 
 #[derive(Component, Serialize, Deserialize, Clone)]
-pub struct Consumable {}
+pub struct Consumable {
+    pub max_charges: i32,
+    pub charges: i32,
+}
 
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct Ranged {
@@ -431,3 +434,11 @@ pub struct ProvidesRemoveCurse {}
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct ProvidesIdentification {}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct AttributeBonus {
+    pub might: Option<i32>,
+    pub fitness: Option<i32>,
+    pub quickness: Option<i32>,
+    pub intelligence: Option<i32>,
+}

@@ -13,6 +13,7 @@ pub struct Item {
     pub base_value: Option<f32>,
     pub vendor_category: Option<String>,
     pub magic: Option<MagicItem>,
+    pub attributes: Option<ItemAttributeBonus>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -20,6 +21,14 @@ pub struct MagicItem {
     pub class: String,
     pub naming: String,
     pub cursed: Option<bool>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct ItemAttributeBonus {
+    pub might: Option<i32>,
+    pub fitness: Option<i32>,
+    pub quickness: Option<i32>,
+    pub intelligence: Option<i32>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -33,6 +42,7 @@ pub struct Renderable {
 #[derive(Deserialize, Debug)]
 pub struct Consumable {
     pub effects: HashMap<String, String>,
+    pub charges: Option<i32>,
 }
 
 #[derive(Deserialize, Debug)]
