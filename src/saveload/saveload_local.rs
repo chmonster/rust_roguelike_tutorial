@@ -174,7 +174,9 @@ pub fn save_game(ecs: &mut World) {
             CursedItem,
             ProvidesRemoveCurse,
             ProvidesIdentification,
-            AttributeBonus
+            AttributeBonus,
+            Duration,
+            StatusEffect
         );
     }
 
@@ -281,7 +283,9 @@ pub fn load_game(ecs: &mut World) {
             CursedItem,
             ProvidesRemoveCurse,
             ProvidesIdentification,
-            AttributeBonus
+            AttributeBonus,
+            Duration,
+            StatusEffect
         );
     }
 

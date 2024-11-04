@@ -1,9 +1,9 @@
 //#![allow(unused)]
 use super::{
-    data::*, Attribute, Attributes, EntryTrigger, EquipmentChanged, Faction, HungerClock,
-    HungerState, Initiative, LightSource, Map, MasterDungeonMap, Name, OtherLevelPosition, Player,
-    Pool, Pools, Position, RandomTable, Rect, Renderable, SerializeMe, SingleActivation, Skill,
-    Skills, TeleportTo, TileType, Viewshed,
+    data::*, Attribute, AttributeBonus, Attributes, Duration, EntryTrigger, EquipmentChanged,
+    Faction, HungerClock, HungerState, Initiative, LightSource, Map, MasterDungeonMap, Name,
+    OtherLevelPosition, Player, Pool, Pools, Position, RandomTable, Rect, Renderable, SerializeMe,
+    SingleActivation, Skill, Skills, StatusEffect, TeleportTo, TileType, Viewshed,
 };
 
 use rltk::{/*console,*/ RandomNumberGenerator, RGB};
@@ -238,6 +238,23 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         "Town Portal Scroll",
         SpawnType::Carried { by: player },
     );
+
+    //starting conditions
+    // Starting hangover
+    ecs.create_entity()
+        .with(StatusEffect { target: player })
+        .with(Duration { turns: 10 })
+        .with(Name {
+            name: "Hangover".to_string(),
+        })
+        .with(AttributeBonus {
+            might: Some(-1),
+            fitness: None,
+            quickness: Some(-1),
+            intelligence: Some(-1),
+        })
+        .marked::<SimpleMarker<SerializeMe>>()
+        .build();
 
     player
 }

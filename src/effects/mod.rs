@@ -1,4 +1,4 @@
-use crate::map::Map;
+use crate::{map::Map, AttributeBonus};
 use specs::prelude::*;
 use std::collections::VecDeque;
 use std::sync::Mutex;
@@ -46,6 +46,11 @@ pub enum EffectType {
         y: i32,
         depth: i32,
         player_only: bool,
+    },
+    AttributeEffect {
+        bonus: AttributeBonus,
+        name: String,
+        duration: i32,
     },
 }
 
@@ -111,6 +116,7 @@ fn tile_effect_hits_entities(effect: &EffectType) -> bool {
             | EffectType::Confusion { .. }
             | EffectType::Healing { .. }
             | EffectType::TeleportTo { .. }
+            | EffectType::AttributeEffect { .. }
     )
 }
 
@@ -150,6 +156,7 @@ fn affect_entity(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
         EffectType::Healing { .. } => damage::heal_damage(ecs, effect, target),
         EffectType::Confusion { .. } => damage::add_confusion(ecs, effect, target),
         EffectType::TeleportTo { .. } => movement::apply_teleport(ecs, effect, target),
+        EffectType::AttributeEffect { .. } => damage::attribute_effect(ecs, effect, target),
 
         _ => {}
     }

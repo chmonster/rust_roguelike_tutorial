@@ -146,9 +146,17 @@ pub struct AreaOfEffect {
     pub radius: i32,
 }
 
-#[derive(Component, ConvertSaveload, Clone)]
-pub struct Confusion {
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Confusion {}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Duration {
     pub turns: i32,
+}
+
+#[derive(Component, Debug, ConvertSaveload, Clone)]
+pub struct StatusEffect {
+    pub target: Entity,
 }
 
 #[derive(PartialEq, Copy, Clone, Serialize, Deserialize)]

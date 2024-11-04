@@ -1,9 +1,10 @@
 //#![allow(unused)]
 use super::{
     camera, camera::VIEWHEIGHT, camera::VIEWWIDTH, Attribute, Attributes, Consumable, CursedItem,
-    Equipped, GameLog, Hidden, HungerClock, HungerState, InBackpack, Item, MagicItem,
+    Duration, Equipped, GameLog, Hidden, HungerClock, HungerState, InBackpack, Item, MagicItem,
     MagicItemClass, Map, MasterDungeonMap, Name, ObfuscatedName, /*Player,*/ Pools, Position,
-    RexAssets, RunState, State, Vendor, VendorMode, Viewshed, SCREENHEIGHT, SCREENWIDTH,
+    RexAssets, RunState, State, StatusEffect, Vendor, VendorMode, Viewshed, SCREENHEIGHT,
+    SCREENWIDTH,
 };
 use rltk::{/*console,*/ Point, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
@@ -331,42 +332,70 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
             index += 1;
         }
     }
+
     // Status
+    let mut status_y = VIEWHEIGHT;
     let hunger = ecs.read_storage::<HungerClock>();
     let hc = hunger.get(*player_entity).unwrap();
-    if player_pools.god_mode {
-        ctx.print_color(
-            VIEWWIDTH + 2,
-            VIEWHEIGHT,
-            RGB::named(rltk::WHITE),
-            RGB::named(rltk::BLACK),
-            "God Mode",
-        )
-    } else {
-        match hc.state {
-            HungerState::WellFed => ctx.print_color(
+
+    match hc.state {
+        HungerState::WellFed => {
+            ctx.print_color(
                 VIEWWIDTH + 2,
-                VIEWHEIGHT,
+                status_y,
                 RGB::named(rltk::GREEN),
                 RGB::named(rltk::BLACK),
                 "Well Fed",
-            ),
-            HungerState::Normal => {}
-            HungerState::Hungry => ctx.print_color(
+            );
+            status_y -= 1;
+        }
+        HungerState::Normal => {}
+        HungerState::Hungry => {
+            ctx.print_color(
                 VIEWWIDTH + 2,
-                VIEWHEIGHT,
+                status_y,
                 RGB::named(rltk::ORANGE),
                 RGB::named(rltk::BLACK),
                 "Hungry",
-            ),
-            HungerState::Starving => ctx.print_color(
+            );
+            status_y -= 1;
+        }
+        HungerState::Starving => {
+            ctx.print_color(
                 VIEWWIDTH + 2,
-                VIEWHEIGHT,
+                status_y,
                 RGB::named(rltk::RED),
                 RGB::named(rltk::BLACK),
                 "Starving",
-            ),
+            );
+            status_y -= 1;
         }
+    }
+
+    let statuses = ecs.read_storage::<StatusEffect>();
+    let durations = ecs.read_storage::<Duration>();
+    let names = ecs.read_storage::<Name>();
+    for (status, duration, name) in (&statuses, &durations, &names).join() {
+        if status.target == *player_entity {
+            ctx.print_color(
+                VIEWWIDTH + 2,
+                status_y,
+                RGB::named(rltk::RED),
+                RGB::named(rltk::BLACK),
+                format!("{} ({})", name.name, duration.turns),
+            );
+            status_y -= 1;
+        }
+    }
+    if player_pools.god_mode {
+        ctx.print_color(
+            VIEWWIDTH + 2,
+            status_y,
+            RGB::named(rltk::WHITE),
+            RGB::named(rltk::BLACK),
+            "God Mode",
+        );
+        //status_y -= 1;
     }
 
     // Draw the log
@@ -498,6 +527,16 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
             let stat = pools.get(entity);
             if let Some(stat) = stat {
                 tip.add(format!("Level: {}", stat.level));
+            }
+
+            // Status effects
+            let statuses = ecs.read_storage::<StatusEffect>();
+            let durations = ecs.read_storage::<Duration>();
+            let names = ecs.read_storage::<Name>();
+            for (status, duration, name) in (&statuses, &durations, &names).join() {
+                if status.target == entity {
+                    tip.add(format!("{} ({})", name.name, duration.turns));
+                }
             }
 
             #[cfg(debug_assertions)]

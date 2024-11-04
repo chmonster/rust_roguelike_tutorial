@@ -723,6 +723,8 @@ fn main() -> rltk::BError {
     gs.ecs.register::<ProvidesRemoveCurse>();
     gs.ecs.register::<ProvidesIdentification>();
     gs.ecs.register::<AttributeBonus>();
+    gs.ecs.register::<Duration>();
+    gs.ecs.register::<StatusEffect>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

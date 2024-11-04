@@ -273,7 +273,7 @@ const POTION_ADJECTIVES: &[&str] = &[
     "Swirling",
     "Effervescent",
     "Slimy",
-    "Oiley",
+    "Oily",
     "Viscous",
     "Smelly",
     "Glowing",

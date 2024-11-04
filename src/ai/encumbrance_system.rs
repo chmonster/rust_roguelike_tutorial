@@ -1,6 +1,6 @@
 use crate::{
     gamelog::GameLog, gamesystem::attr_bonus, AttributeBonus, Attributes, EquipmentChanged,
-    Equipped, InBackpack, Item, Pools,
+    Equipped, InBackpack, Item, Pools, StatusEffect,
 };
 use specs::prelude::*;
 use std::collections::HashMap;
@@ -20,6 +20,7 @@ impl<'a> System<'a> for EncumbranceSystem {
         ReadExpect<'a, Entity>,
         WriteExpect<'a, GameLog>,
         ReadStorage<'a, AttributeBonus>,
+        ReadStorage<'a, StatusEffect>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -34,6 +35,7 @@ impl<'a> System<'a> for EncumbranceSystem {
             player,
             mut gamelog,
             attrbonus,
+            statuses,
         ) = data;
 
         if equip_dirty.is_empty() {
@@ -68,7 +70,6 @@ impl<'a> System<'a> for EncumbranceSystem {
         // Remove all dirty statements
         equip_dirty.clear();
 
-        // Total up equipped items
         for (item, equipped, entity) in (&items, &wielded, &entities).join() {
             if to_update.contains_key(&equipped.owner) {
                 let totals = to_update.get_mut(&equipped.owner).unwrap();
@@ -89,6 +90,17 @@ impl<'a> System<'a> for EncumbranceSystem {
                 let totals = to_update.get_mut(&carried.owner).unwrap();
                 totals.weight += item.weight_lbs;
                 totals.initiative += item.initiative_penalty;
+            }
+        }
+
+        // Total up status effect modifiers
+        for (status, attr) in (&statuses, &attrbonus).join() {
+            if to_update.contains_key(&status.target) {
+                let totals = to_update.get_mut(&status.target).unwrap();
+                totals.might += attr.might.unwrap_or(0);
+                totals.fitness += attr.fitness.unwrap_or(0);
+                totals.quickness += attr.quickness.unwrap_or(0);
+                totals.intelligence += attr.intelligence.unwrap_or(0);
             }
         }
 

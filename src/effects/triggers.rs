@@ -1,9 +1,9 @@
 use super::{add_effect, targeting, EffectType, Targets};
 use crate::{
     components::{
-        Confusion, Consumable, Hidden, InflictsDamage, MagicMapper, Name, ProvidesFood,
-        ProvidesHealing, ProvidesIdentification, ProvidesRemoveCurse, SingleActivation,
-        SpawnParticleBurst, SpawnParticleLine, TeleportTo, TownPortal,
+        AttributeBonus, Confusion, Consumable, Duration, Hidden, InflictsDamage, MagicMapper, Name,
+        ProvidesFood, ProvidesHealing, ProvidesIdentification, ProvidesRemoveCurse,
+        SingleActivation, SpawnParticleBurst, SpawnParticleLine, TeleportTo, TownPortal,
     },
     gamelog::GameLog,
     Map, RunState,
@@ -172,14 +172,16 @@ fn event_trigger(
 
     // Confusion
     if let Some(confusion) = ecs.read_storage::<Confusion>().get(entity) {
-        add_effect(
-            creator,
-            EffectType::Confusion {
-                turns: confusion.turns,
-            },
-            targets.clone(),
-        );
-        did_something = true;
+        if let Some(duration) = ecs.read_storage::<Duration>().get(entity) {
+            add_effect(
+                creator,
+                EffectType::Confusion {
+                    turns: duration.turns,
+                },
+                targets.clone(),
+            );
+            did_something = true;
+        }
     }
 
     // Teleport
@@ -196,6 +198,21 @@ fn event_trigger(
         );
         did_something = true;
     }
+
+    // Attribute Modifiers
+    if let Some(attr) = ecs.read_storage::<AttributeBonus>().get(entity) {
+        add_effect(
+            creator,
+            EffectType::AttributeEffect {
+                bonus: attr.clone(),
+                duration: 10,
+                name: ecs.read_storage::<Name>().get(entity).unwrap().name.clone(),
+            },
+            targets.clone(),
+        );
+        did_something = true;
+    }
+
     did_something
 }
 

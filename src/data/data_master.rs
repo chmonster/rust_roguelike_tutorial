@@ -221,7 +221,8 @@ macro_rules! apply_effects {
                     })
                 }
                 "confusion" => {
-                    $eb = $eb.with(Confusion {
+                    $eb = $eb.with(Confusion {});
+                    $eb = $eb.with(Duration {
                         turns: effect.1.parse::<i32>().unwrap(),
                     })
                 }
