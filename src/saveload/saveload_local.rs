@@ -178,7 +178,8 @@ pub fn save_game(ecs: &mut World) {
             Duration,
             StatusEffect,
             KnownSpells,
-            SpellTemplate
+            SpellTemplate,
+            WantsToCastSpell
         );
     }
 
@@ -289,7 +290,8 @@ pub fn load_game(ecs: &mut World) {
             Duration,
             StatusEffect,
             KnownSpells,
-            SpellTemplate
+            SpellTemplate,
+            WantsToCastSpell
         );
     }
 

@@ -32,15 +32,15 @@ use map_indexing_system::MapIndexingSystem;
 mod melee_combat_system;
 use melee_combat_system::MeleeCombatSystem;
 mod damage_system;
-//use damage_system::DamageSystem;
 mod gamelog;
 mod gui;
 use gamelog::GameLog;
 mod inventory;
 use inventory::{
     ItemCollectionSystem, ItemDropSystem, ItemEquipOnUse, ItemIdentificationSystem,
-    ItemRemoveSystem, ItemUseSystem,
+    ItemRemoveSystem, ItemUseSystem, SpellUseSystem,
 };
+//crate::inventory::SpellUseSystem;
 pub mod random_table;
 use random_table::RandomTable;
 pub mod hunger_system;
@@ -159,6 +159,8 @@ impl State {
 
         let mut itemuse = ItemUseSystem {};
         itemuse.run_now(&self.ecs);
+        let mut spelluse = SpellUseSystem {};
+        spelluse.run_now(&self.ecs);
         let mut item_id = ItemIdentificationSystem {};
         item_id.run_now(&self.ecs);
         let mut drop_items = ItemDropSystem {};
@@ -482,17 +484,32 @@ impl GameState for State {
                     gui::ItemMenuResult::Cancel => newrunstate = RunState::AwaitingInput,
                     gui::ItemMenuResult::NoResponse => {}
                     gui::ItemMenuResult::Selected => {
-                        let mut intent = self.ecs.write_storage::<WantsToUseItem>();
-                        intent
-                            .insert(
-                                *self.ecs.fetch::<Entity>(),
-                                WantsToUseItem {
-                                    item,
-                                    target: result.1,
-                                },
-                            )
-                            .expect("Unable to insert intent");
-                        newrunstate = RunState::Ticking;
+                        if self.ecs.read_storage::<SpellTemplate>().get(item).is_some() {
+                            let mut intent = self.ecs.write_storage::<WantsToCastSpell>();
+                            intent
+                                .insert(
+                                    *self.ecs.fetch::<Entity>(),
+                                    WantsToCastSpell {
+                                        spell: item,
+                                        target: result.1,
+                                    },
+                                )
+                                .expect("Unable to insert intent");
+                            newrunstate = RunState::Ticking;
+                        } else {
+                            //use item
+                            let mut intent = self.ecs.write_storage::<WantsToUseItem>();
+                            intent
+                                .insert(
+                                    *self.ecs.fetch::<Entity>(),
+                                    WantsToUseItem {
+                                        item,
+                                        target: result.1,
+                                    },
+                                )
+                                .expect("Unable to insert intent");
+                            newrunstate = RunState::Ticking;
+                        }
                     }
                 }
             }
@@ -727,6 +744,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<StatusEffect>();
     gs.ecs.register::<KnownSpells>();
     gs.ecs.register::<SpellTemplate>();
+    gs.ecs.register::<WantsToCastSpell>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

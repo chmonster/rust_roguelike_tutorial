@@ -91,7 +91,6 @@ pub fn spawn_region(
 /// Spawns a named entity (name in tuple.1) at the location in (tuple.0)
 pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String), _map_depth: i32) {
     let map = ecs.fetch::<Map>();
-    //let width = map.width as usize;
     let (x, y) = map.idx_xy(*spawn.0);
     std::mem::drop(map);
 
@@ -241,15 +240,15 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         "Old Boots",
         SpawnType::Equipped { by: player },
     );
-    spawn_named_entity(
+    /*spawn_named_entity(
         &DATA.lock().unwrap(),
         ecs,
         "Town Portal Scroll",
         SpawnType::Carried { by: player },
-    );
+    );*/
 
     //starting conditions
-    // Starting hangover
+    // hangover
     ecs.create_entity()
         .with(StatusEffect { target: player })
         .with(Duration { turns: 10 })

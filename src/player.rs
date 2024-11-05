@@ -1,9 +1,9 @@
 #![allow(unused)]
 
 use super::{
-    BlocksTile, BlocksVisibility, /*Bystander,*/ Door, EntityMoved, GameLog, HungerClock, HungerState,
-    Item, Map, /*Monster,*/ Player, Pools, Position, Renderable, RunState, State, TileType, /*Vendor,*/
-    Viewshed, WantsToMelee, WantsToPickupItem, Name, Faction, data::Reaction, Vendor, VendorMode
+    BlocksTile, BlocksVisibility,  Door, EntityMoved, GameLog, HungerClock, HungerState,
+    Item, Map,  Player, Pools, Position, Renderable, RunState, State, TileType, 
+    Viewshed, WantsToMelee, WantsToPickupItem, Name, Faction, data::Reaction, Vendor, VendorMode, WantsToCastSpell
 };
 use rltk::{console, Point, Rltk, VirtualKeyCode, BEvent};
 use rltk::prelude::INPUT;
@@ -349,6 +349,8 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
 
 fn use_hotkey(gs: &mut State, key: i32) -> RunState {
     use super::{Consumable, InBackpack, WantsToUseItem, KnownSpells};
+    use super::data::find_spell_entity;
+
 
     let consumables = gs.ecs.read_storage::<Consumable>();
     let backpack = gs.ecs.read_storage::<InBackpack>();
@@ -388,12 +390,23 @@ fn use_hotkey(gs: &mut State, key: i32) -> RunState {
             )
             .expect("Unable to insert intent");
         return RunState::Ticking;
-    } else if (key as usize) < carried_consumables.len() + known_spells.len() {
+    } else if (key as usize) < (carried_consumables.len() + known_spells.len()) {
         let spell_key = (key as usize) - carried_consumables.len();
         let pools = gs.ecs.read_storage::<Pools>();
         let player_pools = pools.get(*player_entity).unwrap();
         if player_pools.mana.current >= known_spells[spell_key].mana_cost {
-            // TODO: Cast the Spell
+            if let Some(spell_entity) = find_spell_entity(&gs.ecs, &known_spells[spell_key].display_name) {
+                use crate::components::Ranged;
+                if let Some(ranged) = gs.ecs.read_storage::<Ranged>().get(spell_entity) {
+                    return RunState::ShowTargeting{ range: ranged.range, item: spell_entity };
+                };
+                let mut intent = gs.ecs.write_storage::<WantsToCastSpell>();
+                intent.insert(
+                    *player_entity,
+                    WantsToCastSpell{ spell: spell_entity, target: None }
+                ).expect("Unable to insert intent");
+                return RunState::Ticking;
+            }
         } else {
             let mut gamelog = gs.ecs.fetch_mut::<GameLog>();
             gamelog.entries.push("You don't have enough mana to cast that.".to_string());

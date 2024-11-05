@@ -466,3 +466,9 @@ pub struct KnownSpells {
 pub struct SpellTemplate {
     pub mana_cost: i32,
 }
+
+#[derive(Component, Debug, ConvertSaveload, Clone)]
+pub struct WantsToCastSpell {
+    pub spell: Entity,
+    pub target: Option<rltk::Point>,
+}

@@ -181,13 +181,19 @@
         },
         {
             "name": "Wand of Confusion",
-            "weight": 1,
+            "weight": 4,
             "min_depth": 0,
             "max_depth": 100
         },
         {
             "name": "Wand of Magic Missile",
-            "weight": 1,
+            "weight": 4,
+            "min_depth": 0,
+            "max_depth": 100
+        },
+        {
+            "name": "Wand of Fireball",
+            "weight": 2,
             "min_depth": 0,
             "max_depth": 100
         }
@@ -2058,6 +2064,7 @@
     "spells": [
         {
             "name": "Zap",
+            "mana_cost": 1,
             "effects": {
                 "ranged": "6",
                 "damage": "5",

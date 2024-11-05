@@ -4,14 +4,14 @@ use super::{
     EquipmentChanged, Equippable, Equipped, GameLog, HungerClock, HungerState, IdentifiedItem,
     InBackpack, InflictsDamage, Item, MagicItem, MagicMapper, Map, MasterDungeonMap, Name,
     ObfuscatedName, Pools, Position, ProvidesFood, ProvidesHealing, RunState, TownPortal,
-    WantsToDropItem, WantsToPickupItem, WantsToRemoveItem, WantsToUseItem,
+    WantsToCastSpell, WantsToDropItem, WantsToPickupItem, WantsToRemoveItem, WantsToUseItem,
 };
 use specs::prelude::*;
 
 mod collection_system;
 pub use collection_system::ItemCollectionSystem;
 mod use_system;
-pub use use_system::ItemUseSystem;
+pub use use_system::{ItemUseSystem, SpellUseSystem};
 mod drop_system;
 pub use drop_system::ItemDropSystem;
 mod remove_system;

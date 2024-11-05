@@ -2,8 +2,9 @@ use super::{add_effect, targeting, EffectType, Targets};
 use crate::{
     components::{
         AttributeBonus, Confusion, Consumable, Duration, Hidden, InflictsDamage, MagicMapper, Name,
-        ProvidesFood, ProvidesHealing, ProvidesIdentification, ProvidesRemoveCurse,
-        SingleActivation, SpawnParticleBurst, SpawnParticleLine, TeleportTo, TownPortal,
+        Pools, ProvidesFood, ProvidesHealing, ProvidesIdentification, ProvidesRemoveCurse,
+        SingleActivation, SpawnParticleBurst, SpawnParticleLine, SpellTemplate, TeleportTo,
+        TownPortal,
     },
     gamelog::GameLog,
     Map, RunState,
@@ -32,7 +33,8 @@ pub fn item_trigger(creator: Option<Entity>, item: Entity, targets: &Targets, ec
     // If it was a consumable, then it gets deleted
     if did_something {
         if let Some(c) = ecs.read_storage::<Consumable>().get(item) {
-            if c.max_charges == 0 {
+            rltk::console::log(format!("{}", c.max_charges));
+            if c.max_charges < 2 {
                 ecs.entities().delete(item).expect("Delete Failed");
             }
         }
@@ -65,7 +67,7 @@ fn event_trigger(
 
     // Line particle spawn
     if let Some(part) = ecs.read_storage::<SpawnParticleLine>().get(entity) {
-        if let Some(start_pos) = targeting::find_item_position(ecs, entity) {
+        if let Some(start_pos) = targeting::find_item_position(ecs, entity, creator) {
             match targets {
                 Targets::Tile { tile_idx } => spawn_line_particles(ecs, start_pos, *tile_idx, part),
                 Targets::Tiles { tiles } => tiles
@@ -253,4 +255,18 @@ fn spawn_line_particles(ecs: &World, start: i32, end: i32, part: &SpawnParticleL
             },
         );
     }
+}
+
+pub fn spell_trigger(creator: Option<Entity>, spell: Entity, targets: &Targets, ecs: &mut World) {
+    if let Some(template) = ecs.read_storage::<SpellTemplate>().get(spell) {
+        let mut pools = ecs.write_storage::<Pools>();
+        if let Some(caster) = creator {
+            if let Some(pool) = pools.get_mut(caster) {
+                if template.mana_cost <= pool.mana.current {
+                    pool.mana.current -= template.mana_cost;
+                }
+            }
+        }
+    }
+    event_trigger(creator, spell, targets, ecs);
 }
