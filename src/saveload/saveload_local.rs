@@ -176,7 +176,8 @@ pub fn save_game(ecs: &mut World) {
             ProvidesIdentification,
             AttributeBonus,
             Duration,
-            StatusEffect
+            StatusEffect,
+            KnownSpells
         );
     }
 
@@ -285,7 +286,8 @@ pub fn load_game(ecs: &mut World) {
             ProvidesIdentification,
             AttributeBonus,
             Duration,
-            StatusEffect
+            StatusEffect,
+            KnownSpells
         );
     }
 

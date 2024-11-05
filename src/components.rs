@@ -450,3 +450,14 @@ pub struct AttributeBonus {
     pub quickness: Option<i32>,
     pub intelligence: Option<i32>,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct KnownSpell {
+    pub display_name: String,
+    pub mana_cost: i32,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct KnownSpells {
+    pub spells: Vec<KnownSpell>,
+}

@@ -1,9 +1,9 @@
 //#![allow(unused)]
 use super::{
     camera, camera::VIEWHEIGHT, camera::VIEWWIDTH, Attribute, Attributes, Consumable, CursedItem,
-    Duration, Equipped, GameLog, Hidden, HungerClock, HungerState, InBackpack, Item, MagicItem,
-    MagicItemClass, Map, MasterDungeonMap, Name, ObfuscatedName, /*Player,*/ Pools, Position,
-    RexAssets, RunState, State, StatusEffect, Vendor, VendorMode, Viewshed, SCREENHEIGHT,
+    Duration, Equipped, GameLog, Hidden, HungerClock, HungerState, InBackpack, Item, KnownSpells,
+    MagicItem, MagicItemClass, Map, MasterDungeonMap, Name, ObfuscatedName, /*Player,*/ Pools,
+    Position, RexAssets, RunState, State, StatusEffect, Vendor, VendorMode, Viewshed, SCREENHEIGHT,
     SCREENWIDTH,
 };
 use rltk::{/*console,*/ Point, Rltk, VirtualKeyCode, RGB};
@@ -331,6 +331,31 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
             consumable_y += 1;
             index += 1;
         }
+    }
+
+    // Spells
+    consumable_y += 1;
+    let blue = RGB::named(rltk::CYAN);
+    let known_spells_storage = ecs.read_storage::<KnownSpells>();
+    let known_spells = &known_spells_storage.get(*player_entity).unwrap().spells;
+    //let mut index = 1;
+    for spell in known_spells.iter() {
+        ctx.print_color(
+            VIEWWIDTH + 2,
+            consumable_y,
+            blue,
+            black,
+            format!("{}{}", &keymarker, index),
+        );
+        ctx.print_color(
+            VIEWWIDTH + keymarker.len() as u32 + 4,
+            consumable_y,
+            blue,
+            black,
+            format!("{} ({})", spell.display_name, spell.mana_cost),
+        );
+        index += 1;
+        consumable_y += 1;
     }
 
     // Status
