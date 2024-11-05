@@ -151,7 +151,7 @@
         },
         {
             "name": "Longsword -1",
-            "weight": 2,
+            "weight": 1,
             "min_depth": 1,
             "max_depth": 100
         },
@@ -174,7 +174,19 @@
             "max_depth": 100
         },
         {
-            "name": "Rod of Fireballs",
+            "name": "Gauntlets of Flea Power",
+            "weight": 1,
+            "min_depth": 0,
+            "max_depth": 100
+        },
+        {
+            "name": "Wand of Confusion",
+            "weight": 1,
+            "min_depth": 0,
+            "max_depth": 100
+        },
+        {
+            "name": "Wand of Magic Missile",
             "weight": 1,
             "min_depth": 0,
             "max_depth": 100
@@ -280,7 +292,7 @@
         },
 
         {
-            "name": "Rod of Fireballs",
+            "name": "Wand of Fireball",
             "renderable": {
                 "glyph": "/",
                 "fg": "#FFAAAA",
@@ -294,12 +306,54 @@
                     "area_of_effect": "3",
                     "particle": "▓;#FFA500;200.0"
                 },
-                "charges": 5
+                "charges": 3
             },
             "weight_lbs": 0.5,
             "base_value": 500.0,
             "vendor_category": "alchemy",
-            "magic": { "class": "common", "naming": "Unidentified Rod" }
+            "magic": { "class": "common", "naming": "Unidentified Wand" }
+        },
+        {
+            "name": "Wand of Magic Missile",
+            "renderable": {
+                "glyph": "/",
+                "fg": "#FFAAAA",
+                "bg": "#000000",
+                "order": 2
+            },
+            "consumable": {
+                "effects": {
+                    "ranged": "6",
+                    "damage": "10",
+                    "particle_line": "*;#00FFFF;200.0"
+                },
+                "charges": 5
+            },
+            "weight_lbs": 0.5,
+            "base_value": 400.0,
+            "vendor_category": "alchemy",
+            "magic": { "class": "common", "naming": "Unidentified Wand" }
+        },
+        {
+            "name": "Wand of Confusion",
+            "renderable": {
+                "glyph": "/",
+                "fg": "#FFAAAA",
+                "bg": "#000000",
+                "order": 2
+            },
+            "consumable": {
+                "effects": {
+                    "ranged": "6",
+                    "confusion": "4",
+                    "particle_line": "?;#FF00FF;200.0"
+                },
+                "charges": 5
+            },
+            "weight_lbs": 0.5,
+            "base_value": 300.0,
+            "vendor_category": "alchemy",
+            "magic": { "class": "common", "naming": "Unidentified Wand" }
         },
 
         {
@@ -320,9 +374,32 @@
             "initiative_penalty": 0.0,
             "vendor_category": "armor",
             "magic": { "class": "common", "naming": "Unidentified Gauntlets" },
-            "attributes": { "might": 5 }
+            "attributes": { "might": 3 }
         },
-
+        {
+            "name": "Gauntlets of Flea Power",
+            "renderable": {
+                "glyph": "[",
+                "fg": "#00FF00",
+                "bg": "#000000",
+                "order": 2
+            },
+            "wearable": {
+                "slot": "Hands",
+                "armor_class": 0.1,
+                "might": 5
+            },
+            "weight_lbs": 1.0,
+            "base_value": 300.0,
+            "initiative_penalty": 0.0,
+            "vendor_category": "armor",
+            "magic": {
+                "class": "common",
+                "naming": "Unidentified Gauntlets",
+                "cursed": true
+            },
+            "attributes": { "might": -2 }
+        },
         {
             "name": "Identify Scroll",
             "renderable": {
