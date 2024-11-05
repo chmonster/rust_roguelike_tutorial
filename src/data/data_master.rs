@@ -40,6 +40,7 @@ pub struct DataMaster {
     prop_index: HashMap<String, usize>,
     loot_index: HashMap<String, usize>,
     faction_index: HashMap<String, HashMap<String, Reaction>>,
+    spell_index: HashMap<String, usize>,
 }
 
 impl DataMaster {
@@ -52,12 +53,15 @@ impl DataMaster {
                 spawn_table: Vec::new(),
                 loot_tables: Vec::new(),
                 faction_table: Vec::new(),
+                spells: Vec::new(),
             },
+
             item_index: HashMap::new(),
             mob_index: HashMap::new(),
             prop_index: HashMap::new(),
             loot_index: HashMap::new(),
             faction_index: HashMap::new(),
+            spell_index: HashMap::new(),
         }
     }
 
@@ -122,6 +126,10 @@ impl DataMaster {
                 );
             }
             self.faction_index.insert(faction.name.clone(), reactions);
+        }
+
+        for (i, spell) in self.data.spells.iter().enumerate() {
+            self.spell_index.insert(spell.name.clone(), i);
         }
     }
 }
@@ -657,26 +665,50 @@ pub fn spawn_named_prop(
             });
         }
 
-        // if let Some(entry_trigger) = &prop_template.entry_trigger {
-        //     eb = eb.with(EntryTrigger {});
-        //     for effect in entry_trigger.effects.iter() {
-        //         match effect.0.as_str() {
-        //             "damage" => {
-        //                 eb = eb.with(InflictsDamage {
-        //                     damage: effect.1.parse::<i32>().unwrap(),
-        //                 })
-        //             }
-        //             "single_activation" => eb = eb.with(SingleActivation {}),
-        //             _ => {}
-        //         }
-        //     }
-        // }
         if let Some(entry_trigger) = &prop_template.entry_trigger {
             eb = eb.with(EntryTrigger {});
             apply_effects!(entry_trigger.effects, eb);
         }
 
         return Some(eb.build());
+    }
+    None
+}
+
+pub fn spawn_named_spell(data: &DataMaster, ecs: &mut World, key: &str) -> Option<Entity> {
+    if data.spell_index.contains_key(key) {
+        let spell_template = &data.data.spells[data.spell_index[key]];
+
+        let mut eb = ecs.create_entity().marked::<SimpleMarker<SerializeMe>>();
+        eb = eb.with(SpellTemplate {
+            mana_cost: spell_template.mana_cost,
+        });
+        eb = eb.with(Name {
+            name: spell_template.name.clone(),
+        });
+        apply_effects!(spell_template.effects, eb);
+
+        return Some(eb.build());
+    }
+    None
+}
+
+pub fn spawn_all_spells(ecs: &mut World) {
+    let data = &super::DATA.lock().unwrap();
+    for spell in data.data.spells.iter() {
+        spawn_named_spell(data, ecs, &spell.name);
+    }
+}
+
+pub fn find_spell_entity(ecs: &World, name: &str) -> Option<Entity> {
+    let names = ecs.read_storage::<Name>();
+    let spell_templates = ecs.read_storage::<SpellTemplate>();
+    let entities = ecs.entities();
+
+    for (entity, sname, _template) in (&entities, &names, &spell_templates).join() {
+        if name == sname.name {
+            return Some(entity);
+        }
     }
     None
 }

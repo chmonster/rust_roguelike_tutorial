@@ -461,3 +461,8 @@ pub struct KnownSpell {
 pub struct KnownSpells {
     pub spells: Vec<KnownSpell>,
 }
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct SpellTemplate {
+    pub mana_cost: i32,
+}

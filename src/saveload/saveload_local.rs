@@ -177,7 +177,8 @@ pub fn save_game(ecs: &mut World) {
             AttributeBonus,
             Duration,
             StatusEffect,
-            KnownSpells
+            KnownSpells,
+            SpellTemplate
         );
     }
 
@@ -287,7 +288,8 @@ pub fn load_game(ecs: &mut World) {
             AttributeBonus,
             Duration,
             StatusEffect,
-            KnownSpells
+            KnownSpells,
+            SpellTemplate
         );
     }
 

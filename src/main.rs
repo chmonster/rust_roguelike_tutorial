@@ -726,6 +726,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Duration>();
     gs.ecs.register::<StatusEffect>();
     gs.ecs.register::<KnownSpells>();
+    gs.ecs.register::<SpellTemplate>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

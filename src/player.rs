@@ -278,7 +278,7 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
             _ => None,
         };
         if let Some(key) = key {
-            return use_consumable_hotkey(gs, key - 1);
+            return use_hotkey(gs, key - 1);
         }
     }
 
@@ -347,12 +347,16 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
     RunState::Ticking
 }
 
-fn use_consumable_hotkey(gs: &mut State, key: i32) -> RunState {
-    use super::{Consumable, InBackpack, WantsToUseItem};
+fn use_hotkey(gs: &mut State, key: i32) -> RunState {
+    use super::{Consumable, InBackpack, WantsToUseItem, KnownSpells};
 
     let consumables = gs.ecs.read_storage::<Consumable>();
     let backpack = gs.ecs.read_storage::<InBackpack>();
+    
     let player_entity = gs.ecs.fetch::<Entity>();
+    let known_spells_storage = gs.ecs.read_storage::<KnownSpells>();
+    let known_spells = &known_spells_storage.get(*player_entity).unwrap().spells;
+
     let entities = gs.ecs.entities();
     let mut carried_consumables = Vec::new();
     for (entity, carried_by, _consumable) in (&entities, &backpack, &consumables).join() {
@@ -384,7 +388,20 @@ fn use_consumable_hotkey(gs: &mut State, key: i32) -> RunState {
             )
             .expect("Unable to insert intent");
         return RunState::Ticking;
+    } else if (key as usize) < carried_consumables.len() + known_spells.len() {
+        let spell_key = (key as usize) - carried_consumables.len();
+        let pools = gs.ecs.read_storage::<Pools>();
+        let player_pools = pools.get(*player_entity).unwrap();
+        if player_pools.mana.current >= known_spells[spell_key].mana_cost {
+            // TODO: Cast the Spell
+        } else {
+            let mut gamelog = gs.ecs.fetch_mut::<GameLog>();
+            gamelog.entries.push("You don't have enough mana to cast that.".to_string());
+        }
+
     }
+
+
     RunState::Ticking
 }
 

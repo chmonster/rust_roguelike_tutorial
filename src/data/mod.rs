@@ -13,6 +13,8 @@ mod loot_structs;
 use loot_structs::*;
 mod faction_structs;
 pub use faction_structs::*;
+mod spell_structs;
+pub use spell_structs::*;
 
 mod data_master;
 pub use data_master::*;
@@ -36,6 +38,7 @@ pub struct Data {
     pub spawn_table: Vec<SpawnTableEntry>,
     pub loot_tables: Vec<LootTable>,
     pub faction_table: Vec<FactionInfo>,
+    pub spells: Vec<Spell>,
 }
 
 pub fn load_data() {
@@ -51,7 +54,4 @@ pub fn load_data() {
     let decoder: Data = serde_json::from_str(raw_string).expect("Unable to parse JSON");
 
     DATA.lock().unwrap().load(decoder);
-
-    //let decoder: Data = serde_json::from_str(raw_string).expect("Unable to parse JSON");
-    //rltk::console::log(format!("{:?}", decoder));
 }

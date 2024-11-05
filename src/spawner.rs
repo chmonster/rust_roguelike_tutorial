@@ -113,6 +113,8 @@ pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String), _map_depth: i32)
 
 /// Spawns the player and returns his/her entity object.
 pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
+    spawn_all_spells(ecs);
+
     let mut skills = Skills {
         skills: HashMap::new(),
     };
