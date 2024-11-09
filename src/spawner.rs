@@ -1,10 +1,9 @@
 //#![allow(unused)]
 use super::{
     data::*, Attribute, AttributeBonus, Attributes, Duration, EntryTrigger, EquipmentChanged,
-    Faction, HungerClock, HungerState, Initiative, KnownSpell, KnownSpells, LightSource, Map,
-    MasterDungeonMap, Name, OtherLevelPosition, Player, Pool, Pools, Position, RandomTable, Rect,
-    Renderable, SerializeMe, SingleActivation, Skill, Skills, StatusEffect, TeleportTo, TileType,
-    Viewshed,
+    Faction, HungerClock, HungerState, Initiative, KnownSpells, LightSource, Map, MasterDungeonMap,
+    Name, OtherLevelPosition, Player, Pool, Pools, Position, RandomTable, Rect, Renderable,
+    SerializeMe, SingleActivation, Skill, Skills, StatusEffect, TeleportTo, TileType, Viewshed,
 };
 
 use rltk::{/*console,*/ RandomNumberGenerator, RGB};
@@ -186,10 +185,11 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             god_mode: false,
         })
         .with(KnownSpells {
-            spells: vec![KnownSpell {
-                display_name: "Zap".to_string(),
-                mana_cost: 1,
-            }],
+            // spells: vec![KnownSpell {
+            //     display_name: "Zap".to_string(),
+            //     mana_cost: 1,
+            // }]
+            spells: Vec::new(),
         })
         .with(Initiative { current: 0 })
         .with(Faction {

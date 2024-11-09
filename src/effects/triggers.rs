@@ -1,10 +1,10 @@
 use super::{add_effect, targeting, EffectType, Targets};
 use crate::{
     components::{
-        AttributeBonus, Confusion, Consumable, Duration, Hidden, InflictsDamage, MagicMapper, Name,
-        Pools, ProvidesFood, ProvidesHealing, ProvidesIdentification, ProvidesMana,
-        ProvidesRemoveCurse, SingleActivation, SpawnParticleBurst, SpawnParticleLine,
-        SpellTemplate, TeleportTo, TownPortal,
+        AttributeBonus, Confusion, Consumable, DamageOverTime, Duration, Hidden, InflictsDamage,
+        KnownSpell, KnownSpells, MagicMapper, Name, Pools, ProvidesFood, ProvidesHealing,
+        ProvidesIdentification, ProvidesMana, ProvidesRemoveCurse, SingleActivation, Slow,
+        SpawnParticleBurst, SpawnParticleLine, SpellTemplate, TeachesSpell, TeleportTo, TownPortal,
     },
     gamelog::GameLog,
     Map, RunState,
@@ -198,6 +198,30 @@ fn event_trigger(
         }
     }
 
+    // Slow
+    if let Some(slow) = ecs.read_storage::<Slow>().get(entity) {
+        add_effect(
+            creator,
+            EffectType::Slow {
+                initiative_penalty: slow.initiative_penalty,
+            },
+            targets.clone(),
+        );
+        did_something = true;
+    }
+
+    // Damage Over Time
+    if let Some(damage) = ecs.read_storage::<DamageOverTime>().get(entity) {
+        add_effect(
+            creator,
+            EffectType::DamageOverTime {
+                damage: damage.damage,
+            },
+            targets.clone(),
+        );
+        did_something = true;
+    }
+
     // Teleport
     if let Some(teleport) = ecs.read_storage::<TeleportTo>().get(entity) {
         add_effect(
@@ -210,6 +234,29 @@ fn event_trigger(
             },
             targets.clone(),
         );
+        did_something = true;
+    }
+
+    // Learn spells
+    if let Some(spell) = ecs.read_storage::<TeachesSpell>().get(entity) {
+        if let Some(known) = ecs.write_storage::<KnownSpells>().get_mut(creator.unwrap()) {
+            if let Some(spell_entity) = crate::data::find_spell_entity(ecs, &spell.spell) {
+                if let Some(spell_info) = ecs.read_storage::<SpellTemplate>().get(spell_entity) {
+                    let mut already_known = false;
+                    known.spells.iter().for_each(|s| {
+                        if s.display_name == spell.spell {
+                            already_known = true
+                        }
+                    });
+                    if !already_known {
+                        known.spells.push(KnownSpell {
+                            display_name: spell.spell.clone(),
+                            mana_cost: spell_info.mana_cost,
+                        });
+                    }
+                }
+            }
+        }
         did_something = true;
     }
 

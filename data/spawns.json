@@ -198,8 +198,44 @@
             "max_depth": 100
         },
         {
+            "name": "Beginner's Magic",
+            "weight": 4,
+            "min_depth": 0,
+            "max_depth": 100
+        },
+        {
             "name": "Wand of Fireball",
             "weight": 2,
+            "min_depth": 0,
+            "max_depth": 100
+        },
+        {
+            "name": "Poison Potion",
+            "weight": 3,
+            "min_depth": 0,
+            "max_depth": 100
+        },
+        {
+            "name": "Slow Potion",
+            "weight": 3,
+            "min_depth": 0,
+            "max_depth": 100
+        },
+        {
+            "name": "Haste Potion",
+            "weight": 3,
+            "min_depth": 0,
+            "max_depth": 100
+        },
+        {
+            "name": "Web Scroll",
+            "weight": 2,
+            "min_depth": 0,
+            "max_depth": 100
+        },
+        {
+            "name": "Wand of Venom",
+            "weight": 1,
             "min_depth": 0,
             "max_depth": 100
         }
@@ -268,6 +304,149 @@
     ],
 
     "items": [
+        {
+            "name": "Arachnophilia 101",
+            "renderable": {
+                "glyph": "¶",
+                "fg": "#FF00FF",
+                "bg": "#000000",
+                "order": 2
+            },
+            "consumable": {
+                "effects": { "teach_spell": "Web" }
+            },
+            "weight_lbs": 0.5,
+            "base_value": 50.0,
+            "vendor_category": "alchemy"
+        },
+
+        {
+            "name": "Venom 101",
+            "renderable": {
+                "glyph": "¶",
+                "fg": "#FF00FF",
+                "bg": "#000000",
+                "order": 2
+            },
+            "consumable": {
+                "effects": { "teach_spell": "Venom" }
+            },
+            "weight_lbs": 0.5,
+            "base_value": 50.0,
+            "vendor_category": "alchemy"
+        },
+
+        {
+            "name": "Web Scroll",
+            "renderable": {
+                "glyph": ")",
+                "fg": "#FFAAAA",
+                "bg": "#000000",
+                "order": 2
+            },
+            "consumable": {
+                "effects": {
+                    "ranged": "6",
+                    "slow": "10.0",
+                    "area_of_effect": "3",
+                    "particle_line": "☼;#FFFFFF;200.0"
+                }
+            },
+            "weight_lbs": 0.5,
+            "base_value": 500.0,
+            "vendor_category": "alchemy",
+            "magic": { "class": "common", "naming": "scroll" }
+        },
+
+        {
+            "name": "Wand of Venom",
+            "renderable": {
+                "glyph": "/",
+                "fg": "#FFAAAA",
+                "bg": "#000000",
+                "order": 2
+            },
+            "consumable": {
+                "effects": {
+                    "ranged": "6",
+                    "damage_over_time": "1",
+                    "particle_line": "▓;#00FF00;200.0"
+                },
+                "charges": 5
+            },
+            "weight_lbs": 0.5,
+            "base_value": 500.0,
+            "vendor_category": "alchemy",
+            "magic": { "class": "common", "naming": "Unidentified Wand" }
+        },
+
+        {
+            "name": "Poison Potion",
+            "renderable": {
+                "glyph": "!",
+                "fg": "#FF00FF",
+                "bg": "#000000",
+                "order": 2
+            },
+            "consumable": {
+                "effects": { "damage_over_time": "2" }
+            },
+            "weight_lbs": 0.5,
+            "base_value": 50.0,
+            "vendor_category": "alchemy",
+            "magic": { "class": "common", "naming": "potion" }
+        },
+
+        {
+            "name": "Slow Potion",
+            "renderable": {
+                "glyph": "!",
+                "fg": "#FF00FF",
+                "bg": "#000000",
+                "order": 2
+            },
+            "consumable": {
+                "effects": { "slow": "2.0" }
+            },
+            "weight_lbs": 0.5,
+            "base_value": 50.0,
+            "vendor_category": "alchemy",
+            "magic": { "class": "common", "naming": "potion" }
+        },
+
+        {
+            "name": "Haste Potion",
+            "renderable": {
+                "glyph": "!",
+                "fg": "#FF00FF",
+                "bg": "#000000",
+                "order": 2
+            },
+            "consumable": {
+                "effects": { "slow": "-2.0" }
+            },
+            "weight_lbs": 0.5,
+            "base_value": 100.0,
+            "vendor_category": "alchemy",
+            "magic": { "class": "common", "naming": "potion" }
+        },
+
+        {
+            "name": "Beginner's Magic",
+            "renderable": {
+                "glyph": "¶",
+                "fg": "#FF00FF",
+                "bg": "#000000",
+                "order": 2
+            },
+            "consumable": {
+                "effects": { "teach_spell": "Zap" }
+            },
+            "weight_lbs": 0.5,
+            "base_value": 50.0,
+            "vendor_category": "alchemy"
+        },
+
         {
             "name": "Mana Potion",
             "renderable": {
@@ -2092,6 +2271,26 @@
                 "ranged": "6",
                 "damage": "5",
                 "particle_line": "▓;#00FFFF;200.0"
+            }
+        },
+        {
+            "name": "Web",
+            "mana_cost": 2,
+            "effects": {
+                "ranged": "6",
+                "slow": "10",
+                "area_of_effect": "3",
+                "particle_line": "☼;#FFFFFF;400.0"
+            }
+        },
+
+        {
+            "name": "Venom",
+            "mana_cost": 2,
+            "effects": {
+                "ranged": "6",
+                "damage_over_time": "4",
+                "particle_line": "▓;#00FF00;400.0"
             }
         }
     ]

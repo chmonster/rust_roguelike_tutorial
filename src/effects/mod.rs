@@ -42,7 +42,12 @@ pub enum EffectType {
     Mana {
         amount: i32,
     },
-
+    Slow {
+        initiative_penalty: f32,
+    },
+    DamageOverTime {
+        damage: i32,
+    },
     Confusion {
         turns: i32,
     },
@@ -128,6 +133,8 @@ fn tile_effect_hits_entities(effect: &EffectType) -> bool {
             | EffectType::Mana { .. }
             | EffectType::TeleportTo { .. }
             | EffectType::AttributeEffect { .. }
+            | EffectType::Slow { .. }
+            | EffectType::DamageOverTime { .. }
     )
 }
 
@@ -170,6 +177,8 @@ fn affect_entity(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
         EffectType::Confusion { .. } => damage::add_confusion(ecs, effect, target),
         EffectType::TeleportTo { .. } => movement::apply_teleport(ecs, effect, target),
         EffectType::AttributeEffect { .. } => damage::attribute_effect(ecs, effect, target),
+        EffectType::Slow { .. } => damage::slow(ecs, effect, target),
+        EffectType::DamageOverTime { .. } => damage::damage_over_time(ecs, effect, target),
 
         _ => {}
     }

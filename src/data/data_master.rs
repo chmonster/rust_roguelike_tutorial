@@ -218,6 +218,11 @@ macro_rules! apply_effects {
                         mana_amount: effect.1.parse::<i32>().unwrap(),
                     })
                 }
+                "teach_spell" => {
+                    $eb = $eb.with(TeachesSpell {
+                        spell: effect.1.to_string(),
+                    })
+                }
 
                 "ranged" => {
                     $eb = $eb.with(Ranged {
@@ -248,6 +253,16 @@ macro_rules! apply_effects {
                 "particle" => $eb = $eb.with(parse_particle(&effect.1)),
                 "remove_curse" => $eb = $eb.with(ProvidesRemoveCurse {}),
                 "identify" => $eb = $eb.with(ProvidesIdentification {}),
+                "slow" => {
+                    $eb = $eb.with(Slow {
+                        initiative_penalty: effect.1.parse::<f32>().unwrap(),
+                    })
+                }
+                "damage_over_time" => {
+                    $eb = $eb.with(DamageOverTime {
+                        damage: effect.1.parse::<i32>().unwrap(),
+                    })
+                }
 
                 _ => rltk::console::log(format!(
                     "Warning: consumable effect {} not implemented.",
