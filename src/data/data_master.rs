@@ -213,6 +213,12 @@ macro_rules! apply_effects {
                         heal_amount: effect.1.parse::<i32>().unwrap(),
                     })
                 }
+                "provides_mana" => {
+                    $eb = $eb.with(ProvidesMana {
+                        mana_amount: effect.1.parse::<i32>().unwrap(),
+                    })
+                }
+
                 "ranged" => {
                     $eb = $eb.with(Ranged {
                         range: effect.1.parse::<i32>().unwrap(),

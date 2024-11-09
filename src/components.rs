@@ -472,3 +472,8 @@ pub struct WantsToCastSpell {
     pub spell: Entity,
     pub target: Option<rltk::Point>,
 }
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct ProvidesMana {
+    pub mana_amount: i32,
+}

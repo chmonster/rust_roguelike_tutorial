@@ -20,6 +20,12 @@
             "max_depth": 100
         },
         {
+            "name": "Mana Potion",
+            "weight": 6,
+            "min_depth": 2,
+            "max_depth": 100
+        },
+        {
             "name": "Strength Potion",
             "weight": 4,
             "min_depth": 2,
@@ -262,6 +268,23 @@
     ],
 
     "items": [
+        {
+            "name": "Mana Potion",
+            "renderable": {
+                "glyph": "!",
+                "fg": "#FF00FF",
+                "bg": "#000000",
+                "order": 2
+            },
+            "consumable": {
+                "effects": { "provides_mana": "4" }
+            },
+            "weight_lbs": 0.5,
+            "base_value": 50.0,
+            "vendor_category": "alchemy",
+            "magic": { "class": "common", "naming": "potion" }
+        },
+
         {
             "name": "Strength Potion",
             "renderable": {

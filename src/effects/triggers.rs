@@ -2,9 +2,9 @@ use super::{add_effect, targeting, EffectType, Targets};
 use crate::{
     components::{
         AttributeBonus, Confusion, Consumable, Duration, Hidden, InflictsDamage, MagicMapper, Name,
-        Pools, ProvidesFood, ProvidesHealing, ProvidesIdentification, ProvidesRemoveCurse,
-        SingleActivation, SpawnParticleBurst, SpawnParticleLine, SpellTemplate, TeleportTo,
-        TownPortal,
+        Pools, ProvidesFood, ProvidesHealing, ProvidesIdentification, ProvidesMana,
+        ProvidesRemoveCurse, SingleActivation, SpawnParticleBurst, SpawnParticleLine,
+        SpellTemplate, TeleportTo, TownPortal,
     },
     gamelog::GameLog,
     Map, RunState,
@@ -154,6 +154,18 @@ fn event_trigger(
             creator,
             EffectType::Healing {
                 amount: heal.heal_amount,
+            },
+            targets.clone(),
+        );
+        did_something = true;
+    }
+
+    // Mana
+    if let Some(mana) = ecs.read_storage::<ProvidesMana>().get(entity) {
+        add_effect(
+            creator,
+            EffectType::Mana {
+                amount: mana.mana_amount,
             },
             targets.clone(),
         );
