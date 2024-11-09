@@ -31,9 +31,6 @@ impl<'a> System<'a> for MeleeCombatSystem {
         ReadStorage<'a, Name>,
         ReadStorage<'a, Attributes>,
         ReadStorage<'a, Skills>,
-        //WriteStorage<'a, SufferDamage>,
-        //WriteExpect<'a, ParticleBuilder>,
-        //ReadStorage<'a, Position>,
         ReadStorage<'a, HungerClock>,
         ReadStorage<'a, Pools>,
         WriteExpect<'a, rltk::RandomNumberGenerator>,
@@ -41,7 +38,6 @@ impl<'a> System<'a> for MeleeCombatSystem {
         ReadStorage<'a, MeleeWeapon>,
         ReadStorage<'a, Wearable>,
         ReadStorage<'a, NaturalAttackDefense>,
-        //ReadExpect<'a, Entity>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -52,9 +48,6 @@ impl<'a> System<'a> for MeleeCombatSystem {
             names,
             attributes,
             skills,
-            //mut inflict_damage,
-            //mut particle_builder,
-            //positions,
             hunger_clock,
             pools,
             mut rng,
@@ -62,7 +55,6 @@ impl<'a> System<'a> for MeleeCombatSystem {
             melee_weapons,
             wearables,
             natural,
-            //player_entity,
         ) = data;
 
         for (entity, wants_melee, name, attacker_attributes, attacker_skills, attacker_pools) in (
@@ -82,12 +74,15 @@ impl<'a> System<'a> for MeleeCombatSystem {
             if attacker_pools.hit_points.current > 0 && target_pools.hit_points.current > 0 {
                 let target_name = names.get(wants_melee.target).unwrap();
 
+                // Define the basic unarmed attack - overridden by wielding check below if a weapon is equipped
                 let mut weapon_info = MeleeWeapon {
                     attribute: WeaponAttribute::Might,
                     hit_bonus: 0,
                     damage_n_dice: 1,
                     damage_die_type: 4,
                     damage_bonus: 0,
+                    proc_chance: None,
+                    proc_target: None,
                 };
 
                 if let Some(nat) = natural.get(entity) {
@@ -104,9 +99,13 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     }
                 }
 
-                for (wielded, melee) in (&equipped_items, &melee_weapons).join() {
+                let mut weapon_entity: Option<Entity> = None;
+                for (weaponentity, wielded, melee) in
+                    (&entities, &equipped_items, &melee_weapons).join()
+                {
                     if wielded.owner == entity && wielded.slot == EquipmentSlot::Melee {
                         weapon_info = melee.clone();
+                        weapon_entity = Some(weaponentity);
                     }
                 }
 
@@ -166,12 +165,6 @@ impl<'a> System<'a> for MeleeCombatSystem {
                             + skill_damage_bonus
                             + weapon_damage_bonus,
                     );
-                    // SufferDamage::new_damage(
-                    //     &mut inflict_damage,
-                    //     wants_melee.target,
-                    //     damage,
-                    //     entity == *player_entity,
-                    // );
                     add_effect(
                         Some(entity),
                         EffectType::Damage { amount: damage },
@@ -184,17 +177,25 @@ impl<'a> System<'a> for MeleeCombatSystem {
                         "{} hits {}, for {} hp.",
                         &name.name, &target_name.name, damage
                     ));
-
-                    // if let Some(pos) = positions.get(wants_melee.target) {
-                    //     particle_builder.request(
-                    //         pos.x,
-                    //         pos.y,
-                    //         rltk::RGB::named(rltk::ORANGE),
-                    //         rltk::RGB::named(rltk::BLACK),
-                    //         rltk::to_cp437('‼'),
-                    //         200.0,
-                    //     );
-                    // }
+                    // Proc effects
+                    if let Some(chance) = &weapon_info.proc_chance {
+                        if rng.roll_dice(1, 100) <= (chance * 100.0) as i32 {
+                            let effect_target = if weapon_info.proc_target.unwrap() == "Self" {
+                                Targets::Single { target: entity }
+                            } else {
+                                Targets::Single {
+                                    target: wants_melee.target,
+                                }
+                            };
+                            add_effect(
+                                Some(entity),
+                                EffectType::ItemUse {
+                                    item: weapon_entity.unwrap(),
+                                },
+                                effect_target,
+                            )
+                        }
+                    }
                 } else if natural_roll == 1 {
                     // Natural 1 miss
                     log.entries.push(format!(

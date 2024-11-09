@@ -749,6 +749,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<TeachesSpell>();
     gs.ecs.register::<Slow>();
     gs.ecs.register::<DamageOverTime>();
+    gs.ecs.register::<SpecialAbilities>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

@@ -238,6 +238,12 @@
             "weight": 1,
             "min_depth": 0,
             "max_depth": 100
+        },
+        {
+            "name": "Dagger of Venom",
+            "weight": 1,
+            "min_depth": 0,
+            "max_depth": 100
         }
     ],
 
@@ -304,6 +310,30 @@
     ],
 
     "items": [
+        {
+            "name": "Dagger of Venom",
+            "renderable": {
+                "glyph": "/",
+                "fg": "#FFAAAA",
+                "bg": "#000000",
+                "order": 2
+            },
+            "weapon": {
+                "range": "melee",
+                "attribute": "Quickness",
+                "base_damage": "1d4+1",
+                "hit_bonus": 1,
+                "proc_chance": 0.5,
+                "proc_target": "Target",
+                "proc_effects": { "damage_over_time": "2" }
+            },
+            "weight_lbs": 1.0,
+            "base_value": 2.0,
+            "initiative_penalty": -1,
+            "vendor_category": "weapon",
+            "magic": { "class": "common", "naming": "Unidentified Dagger" }
+        },
+
         {
             "name": "Arachnophilia 101",
             "renderable": {
@@ -1854,6 +1884,15 @@
                     { "name": "bite", "hit_bonus": 1, "damage": "1d12" }
                 ]
             },
+            "abilities": [
+                {
+                    "spell": "Web",
+                    "chance": 0.2,
+                    "range": 6.0,
+                    "min_range": 3.0
+                }
+            ],
+
             "faction": "Carnivores"
         },
 

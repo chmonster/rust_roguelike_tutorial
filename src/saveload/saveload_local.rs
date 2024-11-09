@@ -183,7 +183,8 @@ pub fn save_game(ecs: &mut World) {
             ProvidesMana,
             TeachesSpell,
             Slow,
-            DamageOverTime
+            DamageOverTime,
+            SpecialAbilities
         );
     }
 
@@ -299,7 +300,8 @@ pub fn load_game(ecs: &mut World) {
             ProvidesMana,
             TeachesSpell,
             Slow,
-            DamageOverTime
+            DamageOverTime,
+            SpecialAbilities
         );
     }
 

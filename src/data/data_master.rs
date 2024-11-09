@@ -363,12 +363,17 @@ pub fn spawn_named_item(
                 damage_die_type: die_type,
                 damage_bonus: bonus,
                 hit_bonus: weapon.hit_bonus,
+                proc_chance: weapon.proc_chance,
+                proc_target: weapon.proc_target.clone(),
             };
             match weapon.attribute.as_str() {
                 "Quickness" => wpn.attribute = WeaponAttribute::Quickness,
                 _ => wpn.attribute = WeaponAttribute::Might,
             }
             eb = eb.with(wpn);
+            if let Some(proc_effects) = &weapon.proc_effects {
+                apply_effects!(proc_effects, eb);
+            }
         }
 
         if let Some(ab) = &item_template.attributes {
@@ -619,9 +624,24 @@ pub fn spawn_named_mob(
             });
         }
 
+        if let Some(ability_list) = &mob_template.abilities {
+            let mut a = SpecialAbilities {
+                abilities: Vec::new(),
+            };
+            for ability in ability_list.iter() {
+                a.abilities.push(SpecialAbility {
+                    chance: ability.chance,
+                    spell: ability.spell.clone(),
+                    range: ability.range,
+                    min_range: ability.min_range,
+                });
+            }
+            eb = eb.with(a);
+        }
+
         let new_mob = eb.build();
 
-        // Are they wielding anyting?
+        // Are they wielding anything?
         if let Some(wielding) = &mob_template.equipped {
             for tag in wielding.iter() {
                 spawn_named_entity(data, ecs, tag, SpawnType::Equipped { by: new_mob });
@@ -727,6 +747,20 @@ pub fn find_spell_entity(ecs: &World, name: &str) -> Option<Entity> {
     let entities = ecs.entities();
 
     for (entity, sname, _template) in (&entities, &names, &spell_templates).join() {
+        if name == sname.name {
+            return Some(entity);
+        }
+    }
+    None
+}
+
+pub fn find_spell_entity_by_name(
+    name: &str,
+    names: &ReadStorage<Name>,
+    spell_templates: &ReadStorage<SpellTemplate>,
+    entities: &Entities,
+) -> Option<Entity> {
+    for (entity, sname, _template) in (entities, names, spell_templates).join() {
         if name == sname.name {
             return Some(entity);
         }

@@ -95,22 +95,24 @@ impl<'a> System<'a> for InitiativeSystem {
         // Handle durations
         if *runstate == RunState::AwaitingInput {
             for (effect_entity, duration, status) in (&entities, &mut durations, &statuses).join() {
-                duration.turns -= 1;
-                if let Some(dot) = dots.get(effect_entity) {
-                    add_effect(
-                        None,
-                        EffectType::Damage { amount: dot.damage },
-                        Targets::Single {
-                            target: status.target,
-                        },
-                    );
-                }
+                if entities.is_alive(status.target) {
+                    duration.turns -= 1;
+                    if let Some(dot) = dots.get(effect_entity) {
+                        add_effect(
+                            None,
+                            EffectType::Damage { amount: dot.damage },
+                            Targets::Single {
+                                target: status.target,
+                            },
+                        );
+                    }
 
-                if duration.turns < 1 {
-                    dirty
-                        .insert(status.target, EquipmentChanged {})
-                        .expect("Unable to insert");
-                    entities.delete(effect_entity).expect("Unable to delete");
+                    if duration.turns < 1 {
+                        dirty
+                            .insert(status.target, EquipmentChanged {})
+                            .expect("Unable to insert");
+                        entities.delete(effect_entity).expect("Unable to delete");
+                    }
                 }
             }
         }

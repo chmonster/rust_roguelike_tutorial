@@ -207,6 +207,8 @@ pub struct MeleeWeapon {
     pub damage_die_type: i32,
     pub damage_bonus: i32,
     pub hit_bonus: i32,
+    pub proc_chance: Option<f32>,
+    pub proc_target: Option<String>,
 }
 
 #[derive(Component, ConvertSaveload, Clone)]
@@ -490,4 +492,16 @@ pub struct Slow {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct DamageOverTime {
     pub damage: i32,
+}
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct SpecialAbility {
+    pub spell: String,
+    pub chance: f32,
+    pub range: f32,
+    pub min_range: f32,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct SpecialAbilities {
+    pub abilities: Vec<SpecialAbility>,
 }
