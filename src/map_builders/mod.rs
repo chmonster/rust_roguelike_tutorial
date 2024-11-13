@@ -71,6 +71,8 @@ mod limestone_cavern;
 use limestone_cavern::{
     limestone_cavern_builder, limestone_deep_cavern_builder, limestone_transition_builder,
 };
+mod dwarf_fort;
+use dwarf_fort::*;
 
 //marked for special builder restrictions
 //must match positions in build_roll block
@@ -178,7 +180,7 @@ pub fn level_builder(
         3 => limestone_cavern_builder(new_depth, rng, width, height),
         4 => limestone_deep_cavern_builder(new_depth, rng, width, height),
         5 => limestone_transition_builder(new_depth, rng, width, height),
-
+        6 => dwarf_fort_builder(new_depth, rng, width, height),
         _ => random_builder(new_depth, rng, width, height),
     }
 }
