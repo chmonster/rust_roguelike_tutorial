@@ -2,7 +2,7 @@
 use super::{
     data::*, Attribute, AttributeBonus, Attributes, Duration, EntryTrigger, EquipmentChanged,
     Faction, HungerClock, HungerState, Initiative, KnownSpells, LightSource, Map, MasterDungeonMap,
-    Name, OtherLevelPosition, Player, Pool, Pools, Position, RandomTable, Rect, Renderable,
+    MasterTable, Name, OtherLevelPosition, Player, Pool, Pools, Position, Rect, Renderable,
     SerializeMe, SingleActivation, Skill, Skills, StatusEffect, TeleportTo, TileType, Viewshed,
 };
 
@@ -18,7 +18,7 @@ const BASE_SPAWN_NUMBER: i32 = 4;
 //const MAX_ITEMS: i32 = 4;
 const AVG_ROOM_SIZE: i32 = 8 * 8;
 
-fn room_table(map_depth: i32) -> RandomTable {
+fn room_table(map_depth: i32) -> MasterTable {
     get_spawn_table_for_depth(&DATA.lock().unwrap(), map_depth)
 }
 
@@ -103,10 +103,12 @@ pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String), _map_depth: i32)
         return;
     }
 
-    rltk::console::log(format!(
-        "WARNING: We don't know how to spawn [{}]!",
-        spawn.1
-    ));
+    if spawn.1 != "None" {
+        rltk::console::log(format!(
+            "WARNING: We don't know how to spawn [{}]!",
+            spawn.1
+        ));
+    }
 }
 
 /// Spawns the player and returns his/her entity object.

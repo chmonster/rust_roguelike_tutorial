@@ -19,7 +19,7 @@ pub use spell_structs::*;
 mod data_master;
 pub use data_master::*;
 
-use crate::random_table::RandomTable;
+use crate::random_table::{MasterTable, RandomTable};
 
 use serde::Deserialize;
 use std::sync::Mutex;

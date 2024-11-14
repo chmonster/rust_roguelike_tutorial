@@ -42,7 +42,7 @@ use inventory::{
 };
 //crate::inventory::SpellUseSystem;
 pub mod random_table;
-use random_table::RandomTable;
+use random_table::MasterTable;
 pub mod hunger_system;
 pub mod particle_system;
 pub mod rex_assets;

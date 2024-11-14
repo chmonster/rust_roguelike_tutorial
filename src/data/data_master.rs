@@ -1,4 +1,4 @@
-use super::{Data, RandomTable, Reaction};
+use super::{Data, MasterTable, RandomTable, Reaction};
 use crate::components::*;
 use crate::gamesystem::*;
 use regex::Regex;
@@ -164,7 +164,7 @@ fn get_renderable_component(
     }
 }
 
-pub fn get_spawn_table_for_depth(data: &DataMaster, depth: i32) -> RandomTable {
+pub fn get_spawn_table_for_depth(data: &DataMaster, depth: i32) -> MasterTable {
     use super::SpawnTableEntry;
 
     let available_options: Vec<&SpawnTableEntry> = data
@@ -174,16 +174,32 @@ pub fn get_spawn_table_for_depth(data: &DataMaster, depth: i32) -> RandomTable {
         .filter(|a| depth >= a.min_depth && depth <= a.max_depth)
         .collect();
 
-    let mut rt = RandomTable::new();
+    let mut rt = MasterTable::new();
     for e in available_options.iter() {
         let mut weight = e.weight;
         if e.add_map_depth_to_weight.is_some() {
             weight += depth;
         }
-        rt = rt.add(e.name.clone(), weight);
+        rt.add(e.name.clone(), weight, data);
     }
 
     rt
+}
+
+pub enum SpawnTableType {
+    Item,
+    Mob,
+    Prop,
+}
+
+pub fn spawn_type_by_name(data: &DataMaster, key: &str) -> SpawnTableType {
+    if data.item_index.contains_key(key) {
+        SpawnTableType::Item
+    } else if data.mob_index.contains_key(key) {
+        SpawnTableType::Mob
+    } else {
+        SpawnTableType::Prop
+    }
 }
 
 pub fn spawn_named_entity(
@@ -802,13 +818,15 @@ pub fn get_item_drop(
     rng: &mut rltk::RandomNumberGenerator,
     table: &str,
 ) -> Option<String> {
+    let mut rt;
     if data.loot_index.contains_key(table) {
-        let mut rt = RandomTable::new();
+        rt = RandomTable::new();
         let available_options = &data.data.loot_tables[data.loot_index[table]];
         for item in available_options.drops.iter() {
-            rt = rt.add(item.name.clone(), item.weight);
+            rt.add(item.name.clone(), item.weight);
         }
-        return Some(rt.roll(rng));
+        let result = rt.roll(rng);
+        return Some(result);
     }
 
     None
