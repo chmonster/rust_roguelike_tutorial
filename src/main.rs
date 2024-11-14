@@ -6,8 +6,8 @@ use rltk::{/*console,*/ GameState, Point, /*RandomNumberGenerator,*/ Rltk};
 use specs::prelude::*;
 use specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 
-//const SHOW_MAPGEN_VISUALIZER: bool = false;
-const SHOW_MAPGEN_VISUALIZER: bool = true;
+const SHOW_MAPGEN_VISUALIZER: bool = false;
+//const SHOW_MAPGEN_VISUALIZER: bool = true;
 const CLEAR_LOG_AFTER_DEATH: bool = false;
 const MAX_HISTORY_TIME: f32 = 10000.0;
 const SCREENWIDTH: u32 = 80;
@@ -750,6 +750,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Slow>();
     gs.ecs.register::<DamageOverTime>();
     gs.ecs.register::<SpecialAbilities>();
+    gs.ecs.register::<TileSize>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

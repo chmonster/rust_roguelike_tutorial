@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 
 #[derive(PartialEq, Copy, Clone, Serialize, Deserialize)]
 pub struct Rect {
@@ -29,5 +30,15 @@ impl Rect {
 
     pub fn size(&self) -> i32 {
         (self.x2 - self.x1) * (self.y2 - self.y1)
+    }
+
+    pub fn get_all_tiles(&self) -> HashSet<(i32, i32)> {
+        let mut result = HashSet::new();
+        for y in self.y1..self.y2 {
+            for x in self.x1..self.x2 {
+                result.insert((x, y));
+            }
+        }
+        result
     }
 }

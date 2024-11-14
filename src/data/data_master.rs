@@ -432,6 +432,12 @@ pub fn spawn_named_mob(
         // Renderable
         if let Some(renderable) = &mob_template.renderable {
             eb = eb.with(get_renderable_component(renderable));
+            if renderable.x_size.is_some() || renderable.y_size.is_some() {
+                eb = eb.with(TileSize {
+                    x: renderable.x_size.unwrap_or(1),
+                    y: renderable.y_size.unwrap_or(1),
+                });
+            }
         }
 
         if let Some(quips) = &mob_template.quips {

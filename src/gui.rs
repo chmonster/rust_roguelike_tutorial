@@ -3,8 +3,8 @@ use super::{
     camera, camera::VIEWHEIGHT, camera::VIEWWIDTH, Attribute, Attributes, Consumable, CursedItem,
     Duration, Equipped, GameLog, Hidden, HungerClock, HungerState, InBackpack, Item, KnownSpells,
     MagicItem, MagicItemClass, Map, MasterDungeonMap, Name, ObfuscatedName, /*Player,*/ Pools,
-    Position, RexAssets, RunState, State, StatusEffect, Vendor, VendorMode, Viewshed, SCREENHEIGHT,
-    SCREENWIDTH,
+    /*Position,*/ RexAssets, RunState, State, StatusEffect, Vendor, VendorMode, Viewshed,
+    SCREENHEIGHT, SCREENWIDTH,
 };
 use rltk::{/*console,*/ Point, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
@@ -338,7 +338,6 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let blue = RGB::named(rltk::CYAN);
     let known_spells_storage = ecs.read_storage::<KnownSpells>();
     let known_spells = &known_spells_storage.get(*player_entity).unwrap().spells;
-    //let mut index = 1;
     for spell in known_spells.iter() {
         ctx.print_color(
             VIEWWIDTH + 2,
@@ -482,14 +481,15 @@ impl Tooltip {
 
 fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
     use rltk::to_cp437;
+    use rltk::Algorithm2D;
 
     let (min_x, _max_x, min_y, _max_y) = camera::get_screen_bounds(ecs, ctx);
     let map = ecs.fetch::<Map>();
-    let positions = ecs.read_storage::<Position>();
+    //let positions = ecs.read_storage::<Position>();
     let hidden = ecs.read_storage::<Hidden>();
     let attributes = ecs.read_storage::<Attributes>();
     let pools = ecs.read_storage::<Pools>();
-    let entities = ecs.entities();
+    //let entities = ecs.entities();
 
     let mouse_pos = ctx.mouse_pos();
     let mut mouse_map_pos = mouse_pos;
@@ -503,75 +503,88 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
     {
         return;
     }
-    if !map.visible_tiles[map.xy_idx(mouse_map_pos.0, mouse_map_pos.1)] {
+
+    if !map.in_bounds(rltk::Point::new(mouse_map_pos.0, mouse_map_pos.1)) {
+        return;
+    }
+    let mouse_idx = map.xy_idx(mouse_map_pos.0, mouse_map_pos.1);
+    if !map.visible_tiles[mouse_idx] {
         return;
     }
 
     let mut tip_boxes: Vec<Tooltip> = Vec::new();
 
-    for (entity, position, _hidden) in (&entities, &positions, !&hidden).join() {
-        if position.x == mouse_map_pos.0 && position.y == mouse_map_pos.1 {
-            let mut tip = Tooltip::new();
-            tip.add(get_item_display_name(ecs, entity));
-
-            // Comment on attributes
-            let attr = attributes.get(entity);
-            if let Some(attr) = attr {
-                let mut s = "".to_string();
-                if attr.might.bonus < 0 {
-                    s += "Weak. "
-                };
-                if attr.might.bonus > 0 {
-                    s += "Strong. "
-                };
-                if attr.quickness.bonus < 0 {
-                    s += "Clumsy. "
-                };
-                if attr.quickness.bonus > 0 {
-                    s += "Agile. "
-                };
-                if attr.fitness.bonus < 0 {
-                    s += "Unheathy. "
-                };
-                if attr.fitness.bonus > 0 {
-                    s += "Healthy."
-                };
-                if attr.intelligence.bonus < 0 {
-                    s += "Unintelligent. "
-                };
-                if attr.intelligence.bonus > 0 {
-                    s += "Smart. "
-                };
-                if s.is_empty() {
-                    s = "Quite Average".to_string();
-                }
-                tip.add(s);
-            }
-
-            // Comment on pools
-            let stat = pools.get(entity);
-            if let Some(stat) = stat {
-                tip.add(format!("Level: {}", stat.level));
-            }
-
-            // Status effects
-            let statuses = ecs.read_storage::<StatusEffect>();
-            let durations = ecs.read_storage::<Duration>();
-            let names = ecs.read_storage::<Name>();
-            for (status, duration, name) in (&statuses, &durations, &names).join() {
-                if status.target == entity {
-                    tip.add(format!("{} ({})", name.name, duration.turns));
-                }
-            }
-
-            #[cfg(debug_assertions)]
-            {
-                tip.add(format!("{}, {}", position.x, position.y));
-            }
-
-            tip_boxes.push(tip);
+    crate::spatial::for_each_tile_content(mouse_idx, |entity| {
+        // for entity in map.tile_content[mouse_idx]
+        //     .iter()
+        //     .filter(|e| hidden.get(**e).is_none())
+        // {
+        //for (entity, position, _hidden) in (&entities, &positions, !&hidden).join() {
+        if hidden.get(entity).is_some() {
+            return;
         }
-    }
+
+        let mut tip = Tooltip::new();
+        tip.add(get_item_display_name(ecs, entity));
+
+        // Comment on attributes
+        let attr = attributes.get(entity);
+        if let Some(attr) = attr {
+            let mut s = "".to_string();
+            if attr.might.bonus < 0 {
+                s += "Weak. "
+            };
+            if attr.might.bonus > 0 {
+                s += "Strong. "
+            };
+            if attr.quickness.bonus < 0 {
+                s += "Clumsy. "
+            };
+            if attr.quickness.bonus > 0 {
+                s += "Agile. "
+            };
+            if attr.fitness.bonus < 0 {
+                s += "Unheathy. "
+            };
+            if attr.fitness.bonus > 0 {
+                s += "Healthy."
+            };
+            if attr.intelligence.bonus < 0 {
+                s += "Unintelligent. "
+            };
+            if attr.intelligence.bonus > 0 {
+                s += "Smart. "
+            };
+            if s.is_empty() {
+                s = "Quite Average".to_string();
+            }
+            tip.add(s);
+        }
+
+        // Comment on pools
+        let stat = pools.get(entity);
+        if let Some(stat) = stat {
+            tip.add(format!("Level: {}", stat.level));
+        }
+
+        // Status effects
+        let statuses = ecs.read_storage::<StatusEffect>();
+        let durations = ecs.read_storage::<Duration>();
+        let names = ecs.read_storage::<Name>();
+        for (status, duration, name) in (&statuses, &durations, &names).join() {
+            if status.target == entity {
+                tip.add(format!("{} ({})", name.name, duration.turns));
+            }
+        }
+
+        #[cfg(debug_assertions)]
+        {
+            tip.add(format!("{}, {}", mouse_map_pos.0, mouse_map_pos.1));
+        }
+
+        tip_boxes.push(tip);
+    });
+
     if tip_boxes.is_empty() {
         return;
     }
