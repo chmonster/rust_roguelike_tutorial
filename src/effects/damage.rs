@@ -1,7 +1,7 @@
 use super::*;
 use crate::components::{
     Attributes, Confusion, DamageOverTime, Duration, EquipmentChanged, Name, Player, Pools,
-    SerializeMe, Skills, Slow, StatusEffect,
+    Position, SerializeMe, Skills, Slow, StatusEffect, TileSize,
 };
 use crate::gamelog::GameLog;
 use crate::gamesystem::{mana_at_level, player_hp_at_level};
@@ -18,19 +18,50 @@ pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
                 }
             }
 
+            let sizes = ecs.read_storage::<TileSize>();
+            let map = ecs.fetch::<Map>();
+            let positions = ecs.read_storage::<Position>();
+
             if let EffectType::Damage { amount } = damage.effect_type {
                 pool.hit_points.current -= amount;
-                add_effect(None, EffectType::Bloodstain, Targets::Single { target });
-                add_effect(
-                    None,
-                    EffectType::Particle {
-                        glyph: rltk::to_cp437('‼'),
-                        fg: rltk::RGB::named(rltk::ORANGE),
-                        bg: rltk::RGB::named(rltk::BLACK),
-                        lifespan: 200.0,
-                    },
-                    Targets::Single { target },
-                );
+
+                if let Some(size) = sizes.get(target) {
+                    let head_pos = positions.get(target).expect("Error: head_pos not found");
+                    let tiles = rect_tiles(&map, rltk::Point::new(head_pos.x, head_pos.y), size);
+
+                    add_effect(
+                        None,
+                        EffectType::Bloodstain,
+                        Targets::Tiles {
+                            tiles: tiles.clone(),
+                        },
+                    );
+                    add_effect(
+                        None,
+                        EffectType::Particle {
+                            glyph: rltk::to_cp437('‼'),
+                            fg: rltk::RGB::named(rltk::ORANGE),
+                            bg: rltk::RGB::named(rltk::BLACK),
+                            lifespan: 200.0,
+                        },
+                        Targets::Tiles {
+                            tiles: tiles.clone(),
+                        },
+                    );
+                } else {
+                    add_effect(None, EffectType::Bloodstain, Targets::Single { target });
+                    add_effect(
+                        None,
+                        EffectType::Particle {
+                            glyph: rltk::to_cp437('‼'),
+                            fg: rltk::RGB::named(rltk::ORANGE),
+                            bg: rltk::RGB::named(rltk::BLACK),
+                            lifespan: 200.0,
+                        },
+                        Targets::Single { target },
+                    );
+                }
+
                 if pool.hit_points.current < 1 {
                     add_effect(
                         damage.creator,

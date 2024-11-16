@@ -1,5 +1,6 @@
-use crate::components::{Equipped, InBackpack, Position};
+use crate::components::{Equipped, InBackpack, Position, TileSize};
 use crate::map::Map;
+use crate::rect::Rect;
 use specs::prelude::*;
 
 pub fn entity_position(ecs: &World, target: Entity) -> Option<i32> {
@@ -16,6 +17,15 @@ pub fn aoe_tiles(map: &Map, target: rltk::Point, radius: i32) -> Vec<i32> {
     let mut result = Vec::new();
     for t in blast_tiles.iter() {
         result.push(map.xy_idx(t.x, t.y) as i32);
+    }
+    result
+}
+
+pub fn rect_tiles(map: &Map, target: rltk::Point, size: &TileSize) -> Vec<i32> {
+    let target_rect = Rect::new(target.x, target.y, size.x, size.y);
+    let mut result = Vec::new();
+    for t in target_rect.get_all_tiles() {
+        result.push(map.xy_idx(t.0, t.1) as i32);
     }
     result
 }

@@ -154,7 +154,6 @@ fn affect_tile(ecs: &mut World, effect: &mut EffectSpawner, tile_idx: i32) {
             _ => {}
         }
     }
-    // TODO: Run the effect
 }
 
 #[allow(unreachable_patterns)]

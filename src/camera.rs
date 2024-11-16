@@ -80,8 +80,8 @@ pub fn render_camera(ecs: &World, ctx: &mut Rltk) {
                             && entity_screen_y < map_height
                         {
                             ctx.set(
-                                entity_screen_x + 1,
-                                entity_screen_y + 1,
+                                entity_screen_x, // + 1,
+                                entity_screen_y, // + 1,
                                 render.fg,
                                 render.bg,
                                 render.glyph,
