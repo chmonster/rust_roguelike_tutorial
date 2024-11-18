@@ -15,7 +15,7 @@ pub struct RoomSorter {
 impl MetaMapBuilder for RoomSorter {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("RoomSorter");
+        //console::log("RoomSorter");
         self.sorter(rng, build_data);
     }
 }

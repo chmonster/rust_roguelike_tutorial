@@ -5,7 +5,7 @@ pub struct CorridorSpawner {}
 
 impl MetaMapBuilder for CorridorSpawner {
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("CorridorSpawner");
+        //console::log("CorridorSpawner");
         self.build(rng, build_data);
     }
 }

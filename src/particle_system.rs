@@ -1,6 +1,24 @@
 use super::{ParticleLifetime, Position, Renderable, Rltk};
-use rltk::RGB;
+use rltk::{console, RGB};
 use specs::prelude::*;
+
+pub fn cull_dead_particles(ecs: &mut World, ctx: &Rltk) {
+    let mut dead_particles: Vec<Entity> = Vec::new();
+    {
+        // Age out particles
+        let mut particles = ecs.write_storage::<ParticleLifetime>();
+        let entities = ecs.entities();
+        for (entity, particle) in (&entities, &mut particles).join() {
+            particle.lifetime_ms -= ctx.frame_time_ms;
+            if particle.lifetime_ms < 0.0 {
+                dead_particles.push(entity);
+            }
+        }
+    }
+    for dead in dead_particles.iter() {
+        ecs.delete_entity(*dead).expect("Particle will not die");
+    }
+}
 
 struct ParticleRequest {
     x: i32,
@@ -67,7 +85,7 @@ impl<'a> System<'a> for ParticleSpawnSystem {
                         y: new_particle.y,
                     },
                 )
-                .expect("Unable to inser position");
+                .expect("Unable to insert position");
             renderables
                 .insert(
                     p,
@@ -79,6 +97,11 @@ impl<'a> System<'a> for ParticleSpawnSystem {
                     },
                 )
                 .expect("Unable to insert renderable");
+            console::log(format!(
+                "render {}",
+                rltk::to_char(new_particle.glyph as u8)
+            ));
+
             particles
                 .insert(
                     p,
@@ -90,23 +113,5 @@ impl<'a> System<'a> for ParticleSpawnSystem {
         }
 
         particle_builder.requests.clear();
-    }
-}
-
-pub fn cull_dead_particles(ecs: &mut World, ctx: &Rltk) {
-    let mut dead_particles: Vec<Entity> = Vec::new();
-    {
-        // Age out particles
-        let mut particles = ecs.write_storage::<ParticleLifetime>();
-        let entities = ecs.entities();
-        for (entity, particle) in (&entities, &mut particles).join() {
-            particle.lifetime_ms -= ctx.frame_time_ms;
-            if particle.lifetime_ms < 0.0 {
-                dead_particles.push(entity);
-            }
-        }
-    }
-    for dead in dead_particles.iter() {
-        ecs.delete_entity(*dead).expect("Particle will not die");
     }
 }

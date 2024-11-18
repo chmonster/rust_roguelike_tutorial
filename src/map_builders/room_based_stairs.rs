@@ -5,7 +5,7 @@ pub struct RoomBasedStairs {}
 
 impl MetaMapBuilder for RoomBasedStairs {
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("RoomBasedStairs");
+        //console::log("RoomBasedStairs");
         self.build(rng, build_data);
     }
 }

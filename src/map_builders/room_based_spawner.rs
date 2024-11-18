@@ -5,7 +5,7 @@ pub struct RoomBasedSpawner {}
 
 impl MetaMapBuilder for RoomBasedSpawner {
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("RoomBasedSpawner");
+        //console::log("RoomBasedSpawner");
         self.build(rng, build_data);
     }
 }

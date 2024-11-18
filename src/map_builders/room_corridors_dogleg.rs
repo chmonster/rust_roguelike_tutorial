@@ -6,7 +6,7 @@ pub struct DoglegCorridors {}
 impl MetaMapBuilder for DoglegCorridors {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("DoglegCorridors");
+        //console::log("DoglegCorridors");
         self.corridors(rng, build_data);
     }
 }

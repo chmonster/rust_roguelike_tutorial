@@ -242,12 +242,12 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         "Old Boots",
         SpawnType::Equipped { by: player },
     );
-    /*spawn_named_entity(
+    spawn_named_entity(
         &DATA.lock().unwrap(),
         ecs,
-        "Town Portal Scroll",
+        "Potion of Gain XP",
         SpawnType::Carried { by: player },
-    );*/
+    );
 
     //starting conditions
     // hangover

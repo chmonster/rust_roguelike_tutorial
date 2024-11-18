@@ -8,7 +8,7 @@ impl MetaMapBuilder for NearestCorridors {
     #[allow(dead_code)]
 
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("NearestCorridors");
+        //console::log("NearestCorridors");
         self.corridors(rng, build_data);
     }
 }

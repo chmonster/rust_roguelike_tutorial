@@ -7,7 +7,7 @@ impl MetaMapBuilder for BspCorridors {
     #[allow(dead_code)]
 
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("BspCorridors");
+        //console::log("BspCorridors");
         self.corridors(rng, build_data);
     }
 }

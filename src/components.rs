@@ -479,6 +479,10 @@ pub struct WantsToCastSpell {
 pub struct ProvidesMana {
     pub mana_amount: i32,
 }
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct ProvidesXP {
+    pub xp_amount: i32,
+}
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct TeachesSpell {

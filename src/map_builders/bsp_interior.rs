@@ -10,7 +10,7 @@ pub struct BspInteriorBuilder {
 impl InitialMapBuilder for BspInteriorBuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("BspInterior");
+        //console::log("BspInterior");
         if build_data.map.name == "New Map" {
             build_data.map.name = "BspInterior".to_string();
         }

@@ -8,7 +8,7 @@ pub struct BspDungeonBuilder {
 impl InitialMapBuilder for BspDungeonBuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("BSPDungeon");
+        //console::log("BSPDungeon");
         if build_data.map.name == "New Map" {
             build_data.map.name = "BSPDungeon".to_string();
         }

@@ -19,7 +19,7 @@ pub struct DLABuilder {
 impl InitialMapBuilder for DLABuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("DLABuilder");
+        //console::log("DLABuilder");
         if build_data.map.name == "New Map" {
             build_data.map.name = "DLABuilder".to_string();
         }
@@ -30,7 +30,7 @@ impl InitialMapBuilder for DLABuilder {
 impl MetaMapBuilder for DLABuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("DLABuilder meta");
+        //console::log("DLABuilder meta");
         let old_name = build_data.map.name.clone();
         build_data.map.name = "DLA ".to_string();
         build_data.map.name.push_str(&old_name);

@@ -11,7 +11,7 @@ pub struct RubbleMapBuilder {}
 impl InitialMapBuilder for RubbleMapBuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("RubbleMapBuilder");
+        //console::log("RubbleMapBuilder");
         if build_data.map.name == "New Map" {
             build_data.map.name = "RubbleMap".to_string();
         }

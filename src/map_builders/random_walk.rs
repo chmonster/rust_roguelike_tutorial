@@ -23,7 +23,7 @@ pub struct DrunkardsWalkBuilder {
 impl InitialMapBuilder for DrunkardsWalkBuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("RandomWalk");
+        //console::log("RandomWalk");
         if build_data.map.name == "New Map" {
             build_data.map.name = "RandomWalk".to_string();
         }
@@ -35,7 +35,7 @@ impl InitialMapBuilder for DrunkardsWalkBuilder {
 impl MetaMapBuilder for DrunkardsWalkBuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("RandomWalk meta");
+        //console::log("RandomWalk meta");
         let old_name = build_data.map.name.clone();
         build_data.map.name = "drunk ".to_string();
         build_data.map.name.push_str(&old_name);

@@ -34,7 +34,7 @@ pub struct TownBuilder {}
 impl InitialMapBuilder for TownBuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("TownBuilder");
+        //console::log("TownBuilder");
         self.build_rooms(rng, build_data);
     }
 }

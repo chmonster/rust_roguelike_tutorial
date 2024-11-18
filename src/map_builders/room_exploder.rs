@@ -5,7 +5,7 @@ pub struct RoomExploder {}
 
 impl MetaMapBuilder for RoomExploder {
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("RoomExploder");
+        //console::log("RoomExploder");
         self.build(rng, build_data);
     }
 }

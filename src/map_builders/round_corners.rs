@@ -5,7 +5,7 @@ pub struct RoomCornerRounder {}
 
 impl MetaMapBuilder for RoomCornerRounder {
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("RoomCornerBuilder");
+        //console::log("RoomCornerBuilder");
         self.build(rng, build_data);
     }
 }

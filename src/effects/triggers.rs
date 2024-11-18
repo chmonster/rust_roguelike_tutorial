@@ -3,8 +3,9 @@ use crate::{
     components::{
         AttributeBonus, Confusion, Consumable, DamageOverTime, Duration, Hidden, InflictsDamage,
         KnownSpell, KnownSpells, MagicMapper, Name, Pools, ProvidesFood, ProvidesHealing,
-        ProvidesIdentification, ProvidesMana, ProvidesRemoveCurse, SingleActivation, Slow,
-        SpawnParticleBurst, SpawnParticleLine, SpellTemplate, TeachesSpell, TeleportTo, TownPortal,
+        ProvidesIdentification, ProvidesMana, ProvidesRemoveCurse, ProvidesXP, SingleActivation,
+        Slow, SpawnParticleBurst, SpawnParticleLine, SpellTemplate, TeachesSpell, TeleportTo,
+        TownPortal,
     },
     gamelog::GameLog,
     Map, RunState,
@@ -166,6 +167,18 @@ fn event_trigger(
             creator,
             EffectType::Mana {
                 amount: mana.mana_amount,
+            },
+            targets.clone(),
+        );
+        did_something = true;
+    }
+
+    // XP
+    if let Some(xp) = ecs.read_storage::<ProvidesXP>().get(entity) {
+        add_effect(
+            creator,
+            EffectType::XP {
+                amount: xp.xp_amount,
             },
             targets.clone(),
         );

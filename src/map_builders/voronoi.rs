@@ -17,7 +17,7 @@ pub struct VoronoiCellBuilder {
 impl InitialMapBuilder for VoronoiCellBuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("Voronoi");
+        //console::log("Voronoi");
         if build_data.map.name == "New Map" {
             build_data.map.name = "Voronoi".to_string();
         }

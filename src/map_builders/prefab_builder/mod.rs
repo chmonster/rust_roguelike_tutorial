@@ -28,7 +28,7 @@ pub struct PrefabBuilder {
 
 impl MetaMapBuilder for PrefabBuilder {
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log(format!("PrefabBuilder {}", build_data.map.depth));
+        //console::log(format!("PrefabBuilder {}", build_data.map.depth));
         self.build(rng, build_data);
     }
 }

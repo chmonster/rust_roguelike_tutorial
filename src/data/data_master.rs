@@ -234,6 +234,11 @@ macro_rules! apply_effects {
                         mana_amount: effect.1.parse::<i32>().unwrap(),
                     })
                 }
+                "provides_xp" => {
+                    $eb = $eb.with(ProvidesXP {
+                        xp_amount: effect.1.parse::<i32>().unwrap(),
+                    })
+                }
                 "teach_spell" => {
                     $eb = $eb.with(TeachesSpell {
                         spell: effect.1.to_string(),

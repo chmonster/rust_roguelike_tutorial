@@ -5,7 +5,7 @@ pub struct RoomBasedStartingPosition {}
 
 impl MetaMapBuilder for RoomBasedStartingPosition {
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("RoomBasedStartingPosition");
+        //console::log("RoomBasedStartingPosition");
         self.build(rng, build_data);
     }
 }

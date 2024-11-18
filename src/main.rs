@@ -150,18 +150,15 @@ impl State {
         triggers.run_now(&self.ecs);
         let mut melee = MeleeCombatSystem {};
         melee.run_now(&self.ecs);
-        // let mut damage = DamageSystem {};
-        // damage.run_now(&self.ecs);
         let mut pickup = ItemCollectionSystem {};
         pickup.run_now(&self.ecs);
-        let mut itemequip = ItemEquipOnUse {};
+        let mut itemequip = inventory_system::ItemEquipOnUse {};
         itemequip.run_now(&self.ecs);
-
         let mut itemuse = ItemUseSystem {};
         itemuse.run_now(&self.ecs);
         let mut spelluse = SpellUseSystem {};
         spelluse.run_now(&self.ecs);
-        let mut item_id = ItemIdentificationSystem {};
+        let mut item_id = inventory_system::ItemIdentificationSystem {};
         item_id.run_now(&self.ecs);
         let mut drop_items = ItemDropSystem {};
         drop_items.run_now(&self.ecs);
@@ -169,8 +166,9 @@ impl State {
         item_remove.run_now(&self.ecs);
         let mut hunger = hunger_system::HungerSystem {};
         hunger.run_now(&self.ecs);
+        //********************************************* */
         effects::run_effects_queue(&mut self.ecs);
-
+        //********************************************* */
         let mut particles = particle_system::ParticleSpawnSystem {};
         particles.run_now(&self.ecs);
         let mut lighting = lighting_system::LightingSystem {};
@@ -746,6 +744,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<SpellTemplate>();
     gs.ecs.register::<WantsToCastSpell>();
     gs.ecs.register::<ProvidesMana>();
+    gs.ecs.register::<ProvidesXP>();
     gs.ecs.register::<TeachesSpell>();
     gs.ecs.register::<Slow>();
     gs.ecs.register::<DamageOverTime>();

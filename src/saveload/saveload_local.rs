@@ -185,7 +185,8 @@ pub fn save_game(ecs: &mut World) {
             Slow,
             DamageOverTime,
             SpecialAbilities,
-            TileSize
+            TileSize,
+            ProvidesXP
         );
     }
 
@@ -303,7 +304,8 @@ pub fn load_game(ecs: &mut World) {
             Slow,
             DamageOverTime,
             SpecialAbilities,
-            TileSize
+            TileSize,
+            ProvidesXP
         );
     }
 

@@ -185,7 +185,8 @@ pub fn save_game(ecs: &mut World) {
             Slow,
             DamageOverTime,
             SpecialAbilities,
-            TileSize
+            TileSize,
+            ProvidesXP
         );
 
         let storage = web_sys::window().unwrap().local_storage().unwrap().unwrap();
@@ -317,7 +318,8 @@ pub fn load_game(ecs: &mut World) {
             Slow,
             DamageOverTime,
             SpecialAbilities,
-            TileSize
+            TileSize,
+            ProvidesXP
 
         );
     }

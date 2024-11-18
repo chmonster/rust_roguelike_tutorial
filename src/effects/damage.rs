@@ -5,6 +5,7 @@ use crate::components::{
 };
 use crate::gamelog::GameLog;
 use crate::gamesystem::{mana_at_level, player_hp_at_level};
+use crate::{SCREENHEIGHT, SCREENWIDTH};
 use specs::saveload::{MarkedBuilder, SimpleMarker};
 
 pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
@@ -25,6 +26,7 @@ pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
             if let EffectType::Damage { amount } = damage.effect_type {
                 pool.hit_points.current -= amount;
 
+                //for large targets
                 if let Some(size) = sizes.get(target) {
                     let head_pos = positions.get(target).expect("Error: head_pos not found");
                     let tiles = rect_tiles(&map, rltk::Point::new(head_pos.x, head_pos.y), size);
@@ -39,7 +41,7 @@ pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
                     add_effect(
                         None,
                         EffectType::Particle {
-                            glyph: rltk::to_cp437('‼'),
+                            glyph: rltk::to_cp437('*'),
                             fg: rltk::RGB::named(rltk::ORANGE),
                             bg: rltk::RGB::named(rltk::BLACK),
                             lifespan: 200.0,
@@ -53,7 +55,7 @@ pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
                     add_effect(
                         None,
                         EffectType::Particle {
-                            glyph: rltk::to_cp437('‼'),
+                            glyph: rltk::to_cp437('*'),
                             fg: rltk::RGB::named(rltk::ORANGE),
                             bg: rltk::RGB::named(rltk::BLACK),
                             lifespan: 200.0,
@@ -83,7 +85,7 @@ pub fn heal_damage(ecs: &mut World, heal: &EffectSpawner, target: Entity) {
             add_effect(
                 None,
                 EffectType::Particle {
-                    glyph: rltk::to_cp437('‼'),
+                    glyph: rltk::to_cp437('¡'),
                     fg: rltk::RGB::named(rltk::GREEN),
                     bg: rltk::RGB::named(rltk::BLACK),
                     lifespan: 200.0,
@@ -102,13 +104,35 @@ pub fn restore_mana(ecs: &mut World, mana: &EffectSpawner, target: Entity) {
             add_effect(
                 None,
                 EffectType::Particle {
-                    glyph: rltk::to_cp437('‼'),
+                    glyph: rltk::to_cp437('¡'),
                     fg: rltk::RGB::named(rltk::BLUE),
                     bg: rltk::RGB::named(rltk::BLACK),
                     lifespan: 200.0,
                 },
                 Targets::Single { target },
             );
+        }
+    }
+}
+
+pub fn give_xp(ecs: &mut World, xp: &EffectSpawner, target: Entity) {
+    let mut pools = ecs.write_storage::<Pools>();
+    if let Some(pool) = pools.get_mut(target) {
+        if let EffectType::XP { amount } = xp.effect_type {
+            pool.xp += amount;
+            add_effect(
+                None,
+                EffectType::Particle {
+                    glyph: rltk::to_cp437('↑'),
+                    fg: rltk::RGB::named(rltk::BLUE),
+                    bg: rltk::RGB::named(rltk::BLACK),
+                    lifespan: 200.0,
+                },
+                Targets::Single { target },
+            );
+            while pool.xp > pool.level * 1000 {
+                level_up(ecs, target, pool);
+            }
         }
     }
 }
@@ -123,7 +147,7 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
     let mut gold_gain = 0.0f32;
 
     let mut pools = ecs.write_storage::<Pools>();
-    let mut attributes = ecs.write_storage::<Attributes>();
+    //let mut attributes = ecs.write_storage::<Attributes>();
 
     if let Some(pos) = entity_position(ecs, target) {
         crate::spatial::remove_entity(target, pos as usize);
@@ -137,84 +161,136 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
             }
 
             if xp_gain != 0 || gold_gain != 0.0 {
-                let mut log = ecs.fetch_mut::<GameLog>();
                 let player_stats = pools.get_mut(source).unwrap();
-                let player_attributes = attributes.get_mut(source).unwrap();
+                //let player_attributes = attributes.get_mut(source).unwrap();
                 player_stats.xp += xp_gain;
                 player_stats.gold += gold_gain;
                 if player_stats.xp >= player_stats.level * 1000 {
-                    // We've gone up a level!
-                    player_stats.level += 1;
-                    // Improve a random attribute
-                    let mut rng = ecs.fetch_mut::<rltk::RandomNumberGenerator>();
-                    let attr_to_boost = rng.roll_dice(1, 4);
-                    match attr_to_boost {
-                        1 => {
-                            player_attributes.might.base += 1;
-                            log.entries.push("You feel stronger!".to_string());
-                        }
-                        2 => {
-                            player_attributes.fitness.base += 1;
-                            log.entries.push("You feel healthier!".to_string());
-                        }
-                        3 => {
-                            player_attributes.quickness.base += 1;
-                            log.entries.push("You feel quicker!".to_string());
-                        }
-                        _ => {
-                            player_attributes.intelligence.base += 1;
-                            log.entries.push("You feel smarter!".to_string());
-                        }
-                    }
-
-                    // Improve all skills
-                    let mut skills = ecs.write_storage::<Skills>();
-                    let player_skills = skills.get_mut(*ecs.fetch::<Entity>()).unwrap();
-                    for sk in player_skills.skills.iter_mut() {
-                        *sk.1 += 1;
-                    }
-
-                    log.entries.push(format!(
-                        "Congratulations, you are now level {}",
-                        player_stats.level
-                    ));
-
-                    ecs.write_storage::<EquipmentChanged>()
-                        .insert(*ecs.fetch::<Entity>(), EquipmentChanged {})
-                        .expect("Insert Failed");
-
-                    player_stats.hit_points.max = player_hp_at_level(
-                        player_attributes.fitness.base + player_attributes.fitness.modifiers,
-                        player_stats.level,
-                    );
-                    player_stats.hit_points.current = player_stats.hit_points.max;
-                    player_stats.mana.max = mana_at_level(
-                        player_attributes.intelligence.base
-                            + player_attributes.intelligence.modifiers,
-                        player_stats.level,
-                    );
-                    player_stats.mana.current = player_stats.mana.max;
-
-                    let player_pos = ecs.fetch::<rltk::Point>();
-                    let map = ecs.fetch::<Map>();
-                    for i in 0..10 {
-                        if player_pos.y - i > 1 {
-                            add_effect(
-                                None,
-                                EffectType::Particle {
-                                    glyph: rltk::to_cp437('░'),
-                                    fg: rltk::RGB::named(rltk::GOLD),
-                                    bg: rltk::RGB::named(rltk::BLACK),
-                                    lifespan: 400.0,
-                                },
-                                Targets::Tile {
-                                    tile_idx: map.xy_idx(player_pos.x, player_pos.y - i) as i32,
-                                },
-                            );
-                        }
-                    }
+                    level_up(ecs, source, player_stats);
                 }
             }
+        }
+    }
+}
+
+pub fn level_up(ecs: &World, source: Entity, player_stats: &mut Pools) {
+    let mut log = ecs.fetch_mut::<GameLog>();
+    //let mut pools = ecs.write_storage::<Pools>();
+    let mut attributes = ecs.write_storage::<Attributes>();
+    //let player_stats = pools.get_mut(source).unwrap();
+    let player_attributes = attributes.get_mut(source).unwrap();
+
+    // We've gone up a level!
+    player_stats.level += 1;
+    // Improve a random attribute
+    let mut rng = ecs.fetch_mut::<rltk::RandomNumberGenerator>();
+    let attr_to_boost = rng.roll_dice(1, 4);
+    match attr_to_boost {
+        1 => {
+            player_attributes.might.base += 1;
+            log.entries.push("You feel stronger!".to_string());
+        }
+        2 => {
+            player_attributes.fitness.base += 1;
+            log.entries.push("You feel healthier!".to_string());
+        }
+        3 => {
+            player_attributes.quickness.base += 1;
+            log.entries.push("You feel quicker!".to_string());
+        }
+        _ => {
+            player_attributes.intelligence.base += 1;
+            log.entries.push("You feel smarter!".to_string());
+        }
+    }
+
+    // Improve all skills
+    let mut skills = ecs.write_storage::<Skills>();
+    let player_skills = skills.get_mut(*ecs.fetch::<Entity>()).unwrap();
+    for sk in player_skills.skills.iter_mut() {
+        *sk.1 += 1;
+    }
+
+    log.entries.push(format!(
+        "Congratulations, you are now level {}",
+        player_stats.level
+    ));
+
+    ecs.write_storage::<EquipmentChanged>()
+        .insert(*ecs.fetch::<Entity>(), EquipmentChanged {})
+        .expect("Insert Failed");
+
+    player_stats.hit_points.max = player_hp_at_level(
+        player_attributes.fitness.base + player_attributes.fitness.modifiers,
+        player_stats.level,
+    );
+    player_stats.hit_points.current = player_stats.hit_points.max;
+    player_stats.mana.max = mana_at_level(
+        player_attributes.intelligence.base + player_attributes.intelligence.modifiers,
+        player_stats.level,
+    );
+    player_stats.mana.current = player_stats.mana.max;
+
+    let player_pos = ecs.fetch::<rltk::Point>();
+    let map = ecs.fetch::<Map>();
+
+    // 4 way particle burst
+    for i in 0..10 {
+        if player_pos.y - i > 1 {
+            add_effect(
+                None,
+                EffectType::Particle {
+                    glyph: rltk::to_cp437('↑'),
+                    fg: rltk::RGB::named(rltk::BLACK),
+                    bg: rltk::RGB::named(rltk::GOLD),
+                    lifespan: 1000.0,
+                },
+                Targets::Tile {
+                    tile_idx: map.xy_idx(player_pos.x, player_pos.y - i) as i32,
+                },
+            );
+        }
+        if player_pos.y + i < SCREENWIDTH as i32 - 1 {
+            add_effect(
+                None,
+                EffectType::Particle {
+                    glyph: rltk::to_cp437('↑'),
+                    fg: rltk::RGB::named(rltk::BLACK),
+                    bg: rltk::RGB::named(rltk::GOLD),
+                    lifespan: 1000.0,
+                },
+                Targets::Tile {
+                    tile_idx: map.xy_idx(player_pos.x, player_pos.y + i) as i32,
+                },
+            );
+        }
+        if player_pos.x - i > 1 {
+            add_effect(
+                None,
+                EffectType::Particle {
+                    glyph: rltk::to_cp437('↑'),
+                    fg: rltk::RGB::named(rltk::BLACK),
+                    bg: rltk::RGB::named(rltk::GOLD),
+                    lifespan: 1000.0,
+                },
+                Targets::Tile {
+                    tile_idx: map.xy_idx(player_pos.x - i, player_pos.y) as i32,
+                },
+            );
+        }
+        if player_pos.x + i < SCREENHEIGHT as i32 - 1 {
+            add_effect(
+                None,
+                EffectType::Particle {
+                    glyph: rltk::to_cp437('↑'),
+                    fg: rltk::RGB::named(rltk::BLACK),
+                    bg: rltk::RGB::named(rltk::GOLD),
+                    lifespan: 1000.0,
+                },
+                Targets::Tile {
+                    tile_idx: map.xy_idx(player_pos.x + i, player_pos.y) as i32,
+                },
+            );
         }
     }
 }

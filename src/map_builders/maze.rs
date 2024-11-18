@@ -6,7 +6,7 @@ pub struct MazeBuilder {}
 impl InitialMapBuilder for MazeBuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("MazeBuilder");
+        //console::log("MazeBuilder");
         if build_data.map.name == "New Map" {
             build_data.map.name = "MazeBuilder".to_string();
         }

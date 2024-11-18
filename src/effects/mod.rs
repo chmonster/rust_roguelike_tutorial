@@ -42,6 +42,9 @@ pub enum EffectType {
     Mana {
         amount: i32,
     },
+    XP {
+        amount: i32,
+    },
     Slow {
         initiative_penalty: f32,
     },
@@ -133,6 +136,7 @@ fn tile_effect_hits_entities(effect: &EffectType) -> bool {
             | EffectType::Confusion { .. }
             | EffectType::Healing { .. }
             | EffectType::Mana { .. }
+            | EffectType::XP { .. }
             | EffectType::TeleportTo { .. }
             | EffectType::AttributeEffect { .. }
             | EffectType::Slow { .. }
@@ -142,7 +146,6 @@ fn tile_effect_hits_entities(effect: &EffectType) -> bool {
 
 fn affect_tile(ecs: &mut World, effect: &mut EffectSpawner, tile_idx: i32) {
     if tile_effect_hits_entities(&effect.effect_type) {
-        //let content = ecs.fetch::<Map>().tiles[tile_idx as usize].clone();
         let content = crate::spatial::get_tile_content_clone(tile_idx as usize);
         content
             .iter()
@@ -178,6 +181,7 @@ fn affect_entity(ecs: &mut World, effect: &mut EffectSpawner, target: Entity) {
         EffectType::WellFed => hunger::well_fed(ecs, effect, target),
         EffectType::Healing { .. } => damage::heal_damage(ecs, effect, target),
         EffectType::Mana { .. } => damage::restore_mana(ecs, effect, target),
+        EffectType::XP { .. } => damage::give_xp(ecs, effect, target),
 
         EffectType::Confusion { .. } => damage::add_confusion(ecs, effect, target),
         EffectType::TeleportTo { .. } => movement::apply_teleport(ecs, effect, target),

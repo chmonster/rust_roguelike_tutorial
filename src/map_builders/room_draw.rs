@@ -5,7 +5,7 @@ pub struct RoomDrawer {}
 
 impl MetaMapBuilder for RoomDrawer {
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        console::log("RoomDrawer");
+        //console::log("RoomDrawer");
         self.build(rng, build_data);
     }
 }
