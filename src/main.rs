@@ -152,13 +152,13 @@ impl State {
         melee.run_now(&self.ecs);
         let mut pickup = ItemCollectionSystem {};
         pickup.run_now(&self.ecs);
-        let mut itemequip = inventory_system::ItemEquipOnUse {};
+        let mut itemequip = ItemEquipOnUse {};
         itemequip.run_now(&self.ecs);
         let mut itemuse = ItemUseSystem {};
         itemuse.run_now(&self.ecs);
         let mut spelluse = SpellUseSystem {};
         spelluse.run_now(&self.ecs);
-        let mut item_id = inventory_system::ItemIdentificationSystem {};
+        let mut item_id = ItemIdentificationSystem {};
         item_id.run_now(&self.ecs);
         let mut drop_items = ItemDropSystem {};
         drop_items.run_now(&self.ecs);

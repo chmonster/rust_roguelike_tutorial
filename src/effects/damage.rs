@@ -5,7 +5,7 @@ use crate::components::{
 };
 use crate::gamelog::GameLog;
 use crate::gamesystem::{mana_at_level, player_hp_at_level};
-use crate::{SCREENHEIGHT, SCREENWIDTH};
+//use crate::{SCREENHEIGHT, SCREENWIDTH};
 use specs::saveload::{MarkedBuilder, SimpleMarker};
 
 pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
@@ -131,6 +131,25 @@ pub fn give_xp(ecs: &mut World, xp: &EffectSpawner, target: Entity) {
                 Targets::Single { target },
             );
             while pool.xp > pool.level * 1000 {
+                let player_pos = ecs.fetch::<rltk::Point>();
+                let map = ecs.fetch::<Map>();
+                for i in 0..10 {
+                    if player_pos.y - i > 1 {
+                        add_effect(
+                            None,
+                            EffectType::Particle {
+                                glyph: rltk::to_cp437('↑'),
+                                fg: rltk::RGB::named(rltk::BLACK),
+                                bg: rltk::RGB::named(rltk::GOLD),
+                                lifespan: 1000.0,
+                            },
+                            Targets::Tile {
+                                tile_idx: map.xy_idx(player_pos.x, player_pos.y - i) as i32,
+                            },
+                        );
+                    }
+                }
+
                 level_up(ecs, target, pool);
             }
         }
@@ -250,7 +269,8 @@ pub fn level_up(ecs: &World, source: Entity, player_stats: &mut Pools) {
                 },
             );
         }
-        if player_pos.y + i < SCREENWIDTH as i32 - 1 {
+    }
+    /*if player_pos.y + i < SCREENWIDTH as i32 - 1 {
             add_effect(
                 None,
                 EffectType::Particle {
@@ -292,7 +312,8 @@ pub fn level_up(ecs: &World, source: Entity, player_stats: &mut Pools) {
                 },
             );
         }
-    }
+        }
+    }*/
 }
 
 pub fn add_confusion(ecs: &mut World, effect: &EffectSpawner, target: Entity) {

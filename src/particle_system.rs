@@ -75,6 +75,11 @@ impl<'a> System<'a> for ParticleSpawnSystem {
 
     fn run(&mut self, data: Self::SystemData) {
         let (entities, mut positions, mut renderables, mut particles, mut particle_builder) = data;
+
+        let i = particle_builder.requests.iter().len();
+        if i > 0 {
+            console::log(format!("requests {}", i));
+        }
         for new_particle in particle_builder.requests.iter() {
             let p = entities.create();
             positions
