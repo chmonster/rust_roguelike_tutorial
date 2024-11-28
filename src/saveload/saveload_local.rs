@@ -186,7 +186,9 @@ pub fn save_game(ecs: &mut World) {
             DamageOverTime,
             SpecialAbilities,
             TileSize,
-            ProvidesXP
+            ProvidesXP,
+            OnDeath,
+            AlwaysTargetsSelf
         );
     }
 
@@ -305,7 +307,9 @@ pub fn load_game(ecs: &mut World) {
             DamageOverTime,
             SpecialAbilities,
             TileSize,
-            ProvidesXP
+            ProvidesXP,
+            OnDeath,
+            AlwaysTargetsSelf
         );
     }
 

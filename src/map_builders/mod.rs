@@ -73,6 +73,8 @@ use limestone_cavern::{
 };
 mod dwarf_fort;
 use dwarf_fort::*;
+mod mushroom_forest;
+use mushroom_forest::*;
 
 //marked for special builder restrictions
 //must match positions in build_roll block
@@ -181,6 +183,7 @@ pub fn level_builder(
         4 => limestone_deep_cavern_builder(new_depth, rng, width, height),
         5 => limestone_transition_builder(new_depth, rng, width, height),
         6 => dwarf_fort_builder(new_depth, rng, width, height),
+        7 => mushroom_entrance(new_depth, rng, width, height),
         _ => random_builder(new_depth, rng, width, height),
     }
 }

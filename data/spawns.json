@@ -1,5 +1,11 @@
 {
     "spawn_table": [
+        {
+            "name": "Firecap Mushroom",
+            "weight": 10,
+            "min_depth": 7,
+            "max_depth": 9
+        },
         { "name": "Goblin", "weight": 10, "min_depth": 3, "max_depth": 4 },
         { "name": "Rat", "weight": 15, "min_depth": 1, "max_depth": 2 },
         { "name": "Deer", "weight": 8, "min_depth": 2, "max_depth": 2 },
@@ -255,6 +261,15 @@
 
     "faction_table": [
         { "name": "Player", "responses": {} },
+        {
+            "name": "Fungi",
+            "responses": {
+                "Default": "attack",
+                "Wyrm": "ignore",
+                "Fungi": "ignore"
+            }
+        },
+
         { "name": "Mindless", "responses": { "Default": "attack" } },
         {
             "name": "Townsfolk",
@@ -286,7 +301,11 @@
         },
         {
             "name": "Wyrm",
-            "responses": { "Default": "attack", "Wyrm": "ignore" }
+            "responses": {
+                "Default": "attack",
+                "Wyrm": "ignore",
+                "Fungi": "ignore"
+            }
         },
         {
             "name": "Dwarven Remnant",
@@ -1382,6 +1401,38 @@
 
     "mobs": [
         {
+            "name": "Firecap Mushroom",
+            "renderable": {
+                "glyph": "♠",
+                "fg": "#FFAA50",
+                "bg": "#000000",
+                "order": 1
+            },
+            "blocks_tile": true,
+            "vision_range": 3,
+            "movement": "static",
+            "attributes": {},
+            "faction": "Fungi",
+            "level": 1,
+            "abilities": [
+                {
+                    "spell": "Explode",
+                    "chance": 1.0,
+                    "range": 3.0,
+                    "min_range": 0.0
+                }
+            ],
+            "on_death": [
+                {
+                    "spell": "Explode",
+                    "chance": 1.0,
+                    "range": 0.0,
+                    "min_range": 0.0
+                }
+            ]
+        },
+
+        {
             "name": "Black Dragon",
             "renderable": {
                 "glyph": "D",
@@ -2370,6 +2421,19 @@
         }
     ],
     "spells": [
+        {
+            "name": "Explode",
+            "mana_cost": 1,
+            "effects": {
+                "ranged": "3",
+                "damage": "20",
+                "area_of_effect": "3",
+                "particle": "▒;#FFAA50;400.0",
+                "single_activation": "1",
+                "target_self": "1"
+            }
+        },
+
         {
             "name": "Zap",
             "mana_cost": 1,

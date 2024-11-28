@@ -284,6 +284,7 @@ macro_rules! apply_effects {
                         damage: effect.1.parse::<i32>().unwrap(),
                     })
                 }
+                "target_self" => $eb = $eb.with(AlwaysTargetsSelf {}),
 
                 _ => rltk::console::log(format!(
                     "Warning: consumable effect {} not implemented.",
@@ -653,6 +654,21 @@ pub fn spawn_named_mob(
 
         if let Some(ability_list) = &mob_template.abilities {
             let mut a = SpecialAbilities {
+                abilities: Vec::new(),
+            };
+            for ability in ability_list.iter() {
+                a.abilities.push(SpecialAbility {
+                    chance: ability.chance,
+                    spell: ability.spell.clone(),
+                    range: ability.range,
+                    min_range: ability.min_range,
+                });
+            }
+            eb = eb.with(a);
+        }
+
+        if let Some(ability_list) = &mob_template.on_death {
+            let mut a = OnDeath {
                 abilities: Vec::new(),
             };
             for ability in ability_list.iter() {
