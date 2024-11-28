@@ -17,7 +17,6 @@ pub enum TileType {
     Stalagmite,
 }
 
-//TOFIX: newly opened doors are not walkable unless the player moves elsewhere first
 pub fn tile_walkable(tt: TileType) -> bool {
     matches!(
         tt,

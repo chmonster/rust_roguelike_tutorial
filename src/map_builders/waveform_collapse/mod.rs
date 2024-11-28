@@ -1,4 +1,4 @@
-//TOFIX: gives degenerate results sometimes (minimal reachable rooms)
+//TODO: gives degenerate results sometimes (minimal reachable rooms)
 
 use super::{BuilderMap, Map, MetaMapBuilder, TileType};
 use rltk::{console, RandomNumberGenerator};

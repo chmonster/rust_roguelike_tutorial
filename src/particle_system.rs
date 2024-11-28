@@ -76,6 +76,7 @@ impl<'a> System<'a> for ParticleSpawnSystem {
     fn run(&mut self, data: Self::SystemData) {
         let (entities, mut positions, mut renderables, mut particles, mut particle_builder) = data;
 
+        //TODO: multiple particles don't seem to be queueing or rendering?
         let i = particle_builder.requests.iter().len();
         if i > 0 {
             console::log(format!("requests {}", i));

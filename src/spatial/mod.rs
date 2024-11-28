@@ -20,6 +20,8 @@ lazy_static! {
     static ref SPATIAL_MAP: Mutex<SpatialMap> = Mutex::new(SpatialMap::new());
 }
 
+//TODO: large mobs don't seem to be blocking properly
+
 pub fn set_size(map_tile_count: usize) {
     let mut lock = SPATIAL_MAP.lock().unwrap();
     lock.blocked = vec![(false, false); map_tile_count];
