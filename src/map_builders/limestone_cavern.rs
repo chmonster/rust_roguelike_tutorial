@@ -2,8 +2,8 @@ use super::{
     AreaEndingPosition, AreaStartingPosition, BspDungeonBuilder, BuilderChain, BuilderMap,
     CellularAutomataBuilder, CullUnreachable, DLABuilder, DistantExit, DrunkardsWalkBuilder,
     MetaMapBuilder, NearestCorridors, PrefabBuilder, RoomBasedSpawner, RoomDrawer, RoomExploder,
-    RoomSort, RoomSorter, TileType, VoronoiSpawning, WaveformCollapseBuilder, XEnd, XStart, YEnd,
-    YStart,
+    RoomSort, RoomSorter, TileType, VoronoiSpawning, /*WaveformCollapseBuilder,*/ XEnd,
+    XStart, YEnd, YStart,
 };
 use crate::map;
 use rltk::RandomNumberGenerator;
@@ -73,7 +73,7 @@ impl MetaMapBuilder for CaveDecorator {
 }
 
 impl CaveDecorator {
-    #[allow(dead_code)]
+    //#[allow(dead_code)]
     pub fn new() -> Box<CaveDecorator> {
         Box::new(CaveDecorator {})
     }
@@ -132,7 +132,7 @@ impl MetaMapBuilder for CaveTransition {
 }
 
 impl CaveTransition {
-    #[allow(dead_code)]
+    //#[allow(dead_code)]
     pub fn new() -> Box<CaveTransition> {
         Box::new(CaveTransition {})
     }

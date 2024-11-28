@@ -164,7 +164,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         to_cp437('┤'),
     );
 
-    // Draw level name
+    // Draw level ID
     let map = ecs.fetch::<Map>();
     let name_length = map.name.len() + 2;
     let x_pos = (VIEWHEIGHT as i32 - 4 - name_length as i32) / 2;
@@ -176,7 +176,8 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         black,
         to_cp437('├'),
     );
-    ctx.print_color(x_pos + 1, 0, white, black, &map.name);
+    let map_label = format!("{}: {}", map.depth, map.name);
+    ctx.print_color(x_pos + 1, 0, white, black, &map_label);
     std::mem::drop(map);
 
     // Draw stats

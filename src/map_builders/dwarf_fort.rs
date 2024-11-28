@@ -44,7 +44,7 @@ impl DragonsLair {
     }
 
     fn build(&mut self, rng: &mut RandomNumberGenerator, build_data: &mut BuilderMap) {
-        build_data.map.depth = 7;
+        //build_data.map.depth = 7;
         build_data.take_snapshot();
 
         let mut builder = BuilderChain::new(6, build_data.width, build_data.height, "New Map");
@@ -76,7 +76,7 @@ impl MetaMapBuilder for DragonSpawner {
 }
 
 impl DragonSpawner {
-    #[allow(dead_code)]
+    //#[allow(dead_code)]
     pub fn new() -> Box<DragonSpawner> {
         Box::new(DragonSpawner {})
     }
