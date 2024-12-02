@@ -15,6 +15,8 @@ mod faction_structs;
 pub use faction_structs::*;
 mod spell_structs;
 pub use spell_structs::*;
+mod weapon_traits;
+pub use weapon_traits::*;
 
 mod data_master;
 pub use data_master::*;
@@ -30,6 +32,11 @@ lazy_static! {
 
 rltk::embedded_resource!(DATA_FILE, "../../data/spawns.json");
 
+struct NewMagicItem {
+    name: String,
+    bonus: i32,
+}
+
 #[derive(Deserialize, Debug)]
 pub struct Data {
     pub items: Vec<Item>,
@@ -39,6 +46,7 @@ pub struct Data {
     pub loot_tables: Vec<LootTable>,
     pub faction_table: Vec<FactionInfo>,
     pub spells: Vec<Spell>,
+    pub weapon_traits: Vec<WeaponTrait>,
 }
 
 pub fn load_data() {

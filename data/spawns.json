@@ -257,18 +257,7 @@
             "min_depth": 0,
             "max_depth": 100
         },
-        {
-            "name": "Gauntlets of Ogre Power",
-            "weight": 1,
-            "min_depth": 0,
-            "max_depth": 100
-        },
-        {
-            "name": "Gauntlets of Flea Power",
-            "weight": 1,
-            "min_depth": 0,
-            "max_depth": 100
-        },
+
         {
             "name": "Wand of Confusion",
             "weight": 4,
@@ -322,12 +311,17 @@
             "weight": 1,
             "min_depth": 0,
             "max_depth": 100
+        }
+    ],
+
+    "weapon_traits": [
+        {
+            "name": "Venomous",
+            "effects": { "damage_over_time": "2" }
         },
         {
-            "name": "Dagger of Venom",
-            "weight": 1,
-            "min_depth": 0,
-            "max_depth": 100
+            "name": "Dazzling",
+            "effects": { "confusion": "2" }
         }
     ],
 
@@ -509,29 +503,6 @@
             }
         },
 
-        {
-            "name": "Dagger of Venom",
-            "renderable": {
-                "glyph": "/",
-                "fg": "#FFAAAA",
-                "bg": "#000000",
-                "order": 2
-            },
-            "weapon": {
-                "range": "melee",
-                "attribute": "Quickness",
-                "base_damage": "1d4+1",
-                "hit_bonus": 1,
-                "proc_chance": 0.5,
-                "proc_target": "Target",
-                "proc_effects": { "damage_over_time": "2" }
-            },
-            "weight_lbs": 1.0,
-            "base_value": 2.0,
-            "initiative_penalty": -1,
-            "vendor_category": "weapon",
-            "magic": { "class": "common", "naming": "Unidentified Dagger" }
-        },
         {
             "name": "Cloth Cap",
             "renderable": {
@@ -898,50 +869,6 @@
             "magic": { "class": "common", "naming": "Unidentified Wand" }
         },
 
-        {
-            "name": "Gauntlets of Ogre Power",
-            "renderable": {
-                "glyph": "[",
-                "fg": "#00FF00",
-                "bg": "#000000",
-                "order": 2
-            },
-            "wearable": {
-                "slot": "Hands",
-                "armor_class": 0.1,
-                "might": 5
-            },
-            "weight_lbs": 1.0,
-            "base_value": 300.0,
-            "initiative_penalty": 0.0,
-            "vendor_category": "armor",
-            "magic": { "class": "common", "naming": "Unidentified Gauntlets" },
-            "attributes": { "might": 3 }
-        },
-        {
-            "name": "Gauntlets of Flea Power",
-            "renderable": {
-                "glyph": "[",
-                "fg": "#00FF00",
-                "bg": "#000000",
-                "order": 2
-            },
-            "wearable": {
-                "slot": "Hands",
-                "armor_class": 0.1,
-                "might": 5
-            },
-            "weight_lbs": 1.0,
-            "base_value": 300.0,
-            "initiative_penalty": 0.0,
-            "vendor_category": "armor",
-            "magic": {
-                "class": "common",
-                "naming": "Unidentified Gauntlets",
-                "cursed": true
-            },
-            "attributes": { "might": -2 }
-        },
         {
             "name": "Identify Scroll",
             "renderable": {
@@ -1321,26 +1248,25 @@
                 "include_cursed": true
             }
         },
+
         {
-            "name": "War Axe",
+            "name": "Shield",
             "renderable": {
-                "glyph": "¶",
-                "fg": "#FF55FF",
+                "glyph": "[",
+                "fg": "#00AAFF",
                 "bg": "#000000",
                 "order": 2
             },
-            "weapon": {
-                "range": "melee",
-                "attribute": "might",
-                "base_damage": "1d12",
-                "hit_bonus": 0
+            "wearable": {
+                "slot": "Shield",
+                "armor_class": 1.0
             },
-            "weight_lbs": 4.0,
-            "base_value": 100.0,
-            "initiative_penalty": 2,
-            "vendor_category": "weapon",
+            "weight_lbs": 5.0,
+            "base_value": 3.0,
+            "initiative_penalty": 0.5,
+            "vendor_category": "armor",
             "template_magic": {
-                "unidentified_name": "Unidentified War Axe",
+                "unidentified_name": "Unidentified Shield",
                 "bonus_min": 1,
                 "bonus_max": 5,
                 "include_cursed": true
@@ -1424,7 +1350,7 @@
             "initiative_penalty": 0.25,
             "vendor_category": "armor",
             "template_magic": {
-                "unidentified_name": "Unidentified Leather Cap",
+                "unidentified_name": "Unidentified Chain Boots",
                 "bonus_min": 1,
                 "bonus_max": 5,
                 "include_cursed": true
@@ -1446,7 +1372,13 @@
             "weight_lbs": 5.0,
             "base_value": 10.0,
             "initiative_penalty": 0.4,
-            "vendor_category": "armor"
+            "vendor_category": "armor",
+            "template_magic": {
+                "unidentified_name": "Unidentified Steel Boots",
+                "bonus_min": 1,
+                "bonus_max": 5,
+                "include_cursed": true
+            }
         },
         {
             "name": "Cloth Gloves",
@@ -1481,7 +1413,13 @@
             "weight_lbs": 1.0,
             "base_value": 1.0,
             "initiative_penalty": 0.1,
-            "vendor_category": "clothes"
+            "vendor_category": "clothes",
+            "template_magic": {
+                "unidentified_name": "Unidentified Leather Gloves",
+                "bonus_min": 1,
+                "bonus_max": 5,
+                "include_cursed": true
+            }
         },
 
         {
@@ -1499,7 +1437,13 @@
             "weight_lbs": 2.0,
             "base_value": 10.0,
             "initiative_penalty": 0.2,
-            "vendor_category": "clothes"
+            "vendor_category": "clothes",
+            "template_magic": {
+                "unidentified_name": "Unidentified Chain Gloves",
+                "bonus_min": 1,
+                "bonus_max": 5,
+                "include_cursed": true
+            }
         },
 
         {
@@ -1517,7 +1461,13 @@
             "weight_lbs": 5.0,
             "base_value": 10.0,
             "initiative_penalty": 0.3,
-            "vendor_category": "clothes"
+            "vendor_category": "clothes",
+            "template_magic": {
+                "unidentified_name": "Unidentified Steel Gloves",
+                "bonus_min": 1,
+                "bonus_max": 5,
+                "include_cursed": true
+            }
         },
 
         {
@@ -1633,7 +1583,13 @@
             "weight_lbs": 15.0,
             "base_value": 10.0,
             "initiative_penalty": 0.5,
-            "vendor_category": "clothes"
+            "vendor_category": "clothes",
+            "template_magic": {
+                "unidentified_name": "Unidentified Leather Armor",
+                "bonus_min": 1,
+                "bonus_max": 5,
+                "include_cursed": true
+            }
         },
 
         {
@@ -1651,7 +1607,13 @@
             "weight_lbs": 2.0,
             "base_value": 5.0,
             "initiative_penalty": 0.25,
-            "vendor_category": "clothes"
+            "vendor_category": "clothes",
+            "template_magic": {
+                "unidentified_name": "Unidentified Leather Boots",
+                "bonus_min": 1,
+                "bonus_max": 5,
+                "include_cursed": true
+            }
         },
         {
             "name": "Chainmail Armor",
@@ -1668,7 +1630,13 @@
             "weight_lbs": 20.0,
             "base_value": 50.0,
             "initiative_penalty": 1.0,
-            "vendor_category": "armor"
+            "vendor_category": "armor",
+            "template_magic": {
+                "unidentified_name": "Unidentified Chainmail Armor",
+                "bonus_min": 1,
+                "bonus_max": 5,
+                "include_cursed": true
+            }
         },
 
         {
@@ -1697,7 +1665,13 @@
             "weight_lbs": 25.0,
             "base_value": 100.0,
             "initiative_penalty": 2.0,
-            "vendor_category": "armor"
+            "vendor_category": "armor",
+            "template_magic": {
+                "unidentified_name": "Unidentified Breastplate",
+                "bonus_min": 1,
+                "bonus_max": 5,
+                "include_cursed": true
+            }
         },
 
         {
