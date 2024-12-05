@@ -4,7 +4,7 @@ use super::{
     Duration, Equipped, GameLog, Hidden, HungerClock, HungerState, InBackpack, Item, KnownSpells,
     MagicItem, MagicItemClass, Map, MasterDungeonMap, Name, ObfuscatedName, /*Player,*/ Pools,
     /*Position,*/ RexAssets, RunState, State, StatusEffect, Vendor, VendorMode, Viewshed,
-    SCREENHEIGHT, SCREENWIDTH,
+    Weapon, SCREENHEIGHT, SCREENWIDTH,
 };
 use rltk::{/*console,*/ Point, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
@@ -285,28 +285,64 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     );
 
     // Equipped
+    let yellow = RGB::named(rltk::YELLOW);
     let mut equipment_y = STATHEIGHT + 6;
     let equipped = ecs.read_storage::<Equipped>();
     let entities = ecs.entities();
-    //let name = ecs.read_storage::<Name>();
+    let weapon = ecs.read_storage::<Weapon>();
     for (entity, equipped_by) in (&entities, &equipped).join() {
         if equipped_by.owner == *player_entity {
+            let name = get_item_display_name(ecs, entity);
             ctx.print_color(
                 VIEWWIDTH + 2,
                 equipment_y,
                 get_item_color(ecs, entity),
                 black,
-                //&item_name.name,
-                get_item_display_name(ecs, entity),
+                &name,
             );
             equipment_y += 1;
+
+            if let Some(weapon) = weapon.get(entity) {
+                let mut weapon_info = match weapon.damage_bonus {
+                    n if n < 0 => {
+                        format!(
+                            "┤ {} ({}d{}{})",
+                            &name,
+                            weapon.damage_n_dice,
+                            weapon.damage_die_type,
+                            weapon.damage_bonus
+                        )
+                    }
+                    0 => {
+                        format!(
+                            "┤ {} ({}d{})",
+                            &name, weapon.damage_n_dice, weapon.damage_die_type
+                        )
+                    }
+                    _ => {
+                        format!(
+                            "┤ {} ({}d{}+{})",
+                            &name,
+                            weapon.damage_n_dice,
+                            weapon.damage_die_type,
+                            weapon.damage_bonus
+                        )
+                    }
+                };
+
+                if let Some(range) = weapon.range {
+                    weapon_info += &format!(" (range: {}, F to fire)", range);
+                }
+                weapon_info += " ├";
+                ctx.print_color(3, VIEWHEIGHT + 1, yellow, black, &weapon_info);
+            }
         }
     }
 
     // Consumables
     let mut consumable_y = equipment_y + 2;
     //let green = RGB::from_f32(0.0, 1.0, 0.0);
-    let yellow = RGB::named(rltk::YELLOW);
+
     let consumables = ecs.read_storage::<Consumable>();
     let backpack = ecs.read_storage::<InBackpack>();
     let mut index = 1;
