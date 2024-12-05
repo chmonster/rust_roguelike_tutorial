@@ -245,7 +245,13 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
     spawn_named_entity(
         &DATA.lock().unwrap(),
         ecs,
-        "Potion of Gain XP",
+        "Town Portal Scroll",
+        SpawnType::Carried { by: player },
+    );
+    spawn_named_entity(
+        &DATA.lock().unwrap(),
+        ecs,
+        "Shortbow",
         SpawnType::Carried { by: player },
     );
 

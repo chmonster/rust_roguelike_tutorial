@@ -8,13 +8,13 @@ use super::{
     Equipped,
     HungerClock,
     HungerState,
-    MeleeWeapon,
     Name,
     NaturalAttackDefense,
     Pools,
     /*Position,*/ Skill,
     Skills,
     /*SufferDamage,*/ WantsToMelee,
+    Weapon,
     WeaponAttribute,
     Wearable,
 };
@@ -35,7 +35,7 @@ impl<'a> System<'a> for MeleeCombatSystem {
         ReadStorage<'a, Pools>,
         WriteExpect<'a, rltk::RandomNumberGenerator>,
         ReadStorage<'a, Equipped>,
-        ReadStorage<'a, MeleeWeapon>,
+        ReadStorage<'a, Weapon>,
         ReadStorage<'a, Wearable>,
         ReadStorage<'a, NaturalAttackDefense>,
     );
@@ -75,7 +75,8 @@ impl<'a> System<'a> for MeleeCombatSystem {
                 let target_name = names.get(wants_melee.target).unwrap();
 
                 // Define the basic unarmed attack - overridden by wielding check below if a weapon is equipped
-                let mut weapon_info = MeleeWeapon {
+                let mut weapon_info = Weapon {
+                    range: None,
                     attribute: WeaponAttribute::Might,
                     hit_bonus: 0,
                     damage_n_dice: 1,
@@ -180,6 +181,7 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     // Proc effects
                     if let Some(chance) = &weapon_info.proc_chance {
                         if rng.roll_dice(1, 100) <= (chance * 100.0) as i32 {
+                            //TODO: bug: called `Option::unwrap()` on a `None` value
                             let effect_target = if weapon_info.proc_target.unwrap() == "Self" {
                                 Targets::Single { target: entity }
                             } else {

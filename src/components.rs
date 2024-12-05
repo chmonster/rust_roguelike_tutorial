@@ -201,7 +201,8 @@ pub enum WeaponAttribute {
 }
 
 #[derive(Component, Serialize, Deserialize, Clone)]
-pub struct MeleeWeapon {
+pub struct Weapon {
+    pub range: Option<i32>,
     pub attribute: WeaponAttribute,
     pub damage_n_dice: i32,
     pub damage_die_type: i32,
