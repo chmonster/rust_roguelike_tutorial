@@ -1,3 +1,5 @@
+#![allow(unused_imports)]
+
 use super::{/*Map,*/ ParticleLifetime, Position, Renderable, Rltk};
 use rltk::{console, RGB};
 use specs::prelude::*;
@@ -92,10 +94,10 @@ impl<'a> System<'a> for ParticleSpawnSystem {
         let (entities, mut positions, mut renderables, mut particles, mut particle_builder) = data;
 
         //TODO: multiple particles don't seem to be queueing or rendering?
-        let i = particle_builder.requests.iter().len();
-        if i > 0 {
-            console::log(format!("requests {}", i));
-        }
+        //let i = particle_builder.requests.iter().len();
+        // if i > 0 {
+        //     console::log(format!("requests {}", i));
+        // }
         for new_particle in particle_builder.requests.iter() {
             let p = entities.create();
             positions
@@ -118,10 +120,10 @@ impl<'a> System<'a> for ParticleSpawnSystem {
                     },
                 )
                 .expect("Unable to insert renderable");
-            console::log(format!(
-                "render {}",
-                rltk::to_char(new_particle.glyph as u8)
-            ));
+            // console::log(format!(
+            //     "render {}",
+            //     rltk::to_char(new_particle.glyph as u8)
+            // ));
 
             particles
                 .insert(
