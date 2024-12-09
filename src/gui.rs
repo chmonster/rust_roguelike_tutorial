@@ -331,7 +331,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
                 };
 
                 if let Some(range) = weapon.range {
-                    weapon_info += &format!(" (range: {}, F to fire)", range);
+                    weapon_info += &format!(" (range: {}, F to fire, V cycles targets)", range);
                 }
                 weapon_info += " ├";
                 ctx.print_color(3, VIEWHEIGHT + 1, yellow, black, &weapon_info);

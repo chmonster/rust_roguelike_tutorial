@@ -318,11 +318,16 @@ impl GameState for State {
             }
 
             RunState::Ticking => {
+                let mut should_change_target = false;
+
                 while newrunstate == RunState::Ticking {
                     self.run_systems();
                     self.ecs.maintain();
                     match *self.ecs.fetch::<RunState>() {
-                        RunState::AwaitingInput => newrunstate = RunState::AwaitingInput,
+                        RunState::AwaitingInput => {
+                            newrunstate = RunState::AwaitingInput;
+                            should_change_target = true;
+                        }
                         RunState::MagicMapReveal { .. } => {
                             newrunstate = RunState::MagicMapReveal { row: 0 }
                         }
@@ -335,6 +340,9 @@ impl GameState for State {
 
                         _ => newrunstate = RunState::Ticking,
                     }
+                }
+                if should_change_target {
+                    player::end_turn_targeting(&mut self.ecs);
                 }
             }
             RunState::MagicMapReveal { row } => {
@@ -752,6 +760,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<TileSize>();
     gs.ecs.register::<OnDeath>();
     gs.ecs.register::<AlwaysTargetsSelf>();
+    gs.ecs.register::<Target>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

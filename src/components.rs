@@ -524,3 +524,6 @@ pub struct OnDeath {
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct AlwaysTargetsSelf {}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Target {}

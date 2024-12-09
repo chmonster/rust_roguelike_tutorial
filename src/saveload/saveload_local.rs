@@ -188,7 +188,8 @@ pub fn save_game(ecs: &mut World) {
             TileSize,
             ProvidesXP,
             OnDeath,
-            AlwaysTargetsSelf
+            AlwaysTargetsSelf,
+            Target
         );
     }
 
@@ -309,7 +310,8 @@ pub fn load_game(ecs: &mut World) {
             TileSize,
             ProvidesXP,
             OnDeath,
-            AlwaysTargetsSelf
+            AlwaysTargetsSelf,
+            Target
         );
     }
 
