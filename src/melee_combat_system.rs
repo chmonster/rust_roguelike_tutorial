@@ -182,13 +182,14 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     if let Some(chance) = &weapon_info.proc_chance {
                         if rng.roll_dice(1, 100) <= (chance * 100.0) as i32 {
                             //TODO: bug: called `Option::unwrap()` on a `None` value
-                            let effect_target = if weapon_info.proc_target.unwrap() == "Self" {
-                                Targets::Single { target: entity }
-                            } else {
-                                Targets::Single {
-                                    target: wants_melee.target,
-                                }
-                            };
+                            let effect_target =
+                                if weapon_info.proc_target.unwrap_or_default() == "Self" {
+                                    Targets::Single { target: entity }
+                                } else {
+                                    Targets::Single {
+                                        target: wants_melee.target,
+                                    }
+                                };
                             add_effect(
                                 Some(entity),
                                 EffectType::ItemUse {

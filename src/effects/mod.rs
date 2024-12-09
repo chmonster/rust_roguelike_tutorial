@@ -1,6 +1,6 @@
 use super::{ParticleAnimation, ParticleLifetime, Position, Renderable};
 use crate::{map::Map, AttributeBonus};
-use rltk::Point;
+use rltk::{console, Point};
 use specs::prelude::*;
 use std::collections::{HashSet, VecDeque};
 use std::sync::Mutex;
@@ -108,9 +108,12 @@ pub fn add_effect(creator: Option<Entity>, effect_type: EffectType, targets: Tar
 }
 
 pub fn run_effects_queue(ecs: &mut World) {
+    let mut i = 0;
     loop {
         let effect: Option<EffectSpawner> = EFFECT_QUEUE.lock().unwrap().pop_front();
         if let Some(mut effect) = effect {
+            i += 1;
+            console::log(format!("effect fires {}", i));
             target_applicator(ecs, &mut effect);
         } else {
             break;
