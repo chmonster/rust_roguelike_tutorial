@@ -31,6 +31,8 @@ mod map_indexing_system;
 use map_indexing_system::MapIndexingSystem;
 mod melee_combat_system;
 use melee_combat_system::MeleeCombatSystem;
+mod ranged_combat_system;
+use ranged_combat_system::RangedCombatSystem;
 mod damage_system;
 mod gamelog;
 mod gui;
@@ -150,6 +152,8 @@ impl State {
         triggers.run_now(&self.ecs);
         let mut melee = MeleeCombatSystem {};
         melee.run_now(&self.ecs);
+        let mut ranged = RangedCombatSystem {};
+        ranged.run_now(&self.ecs);
         let mut pickup = ItemCollectionSystem {};
         pickup.run_now(&self.ecs);
         let mut itemequip = ItemEquipOnUse {};
@@ -246,7 +250,7 @@ impl GameState for State {
         }
 
         ctx.cls();
-        particle_system::cull_dead_particles(&mut self.ecs, ctx);
+        particle_system::update_particles(&mut self.ecs, ctx);
 
         match newrunstate {
             RunState::MainMenu { .. } => {}
@@ -761,6 +765,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<OnDeath>();
     gs.ecs.register::<AlwaysTargetsSelf>();
     gs.ecs.register::<Target>();
+    gs.ecs.register::<WantsToShoot>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

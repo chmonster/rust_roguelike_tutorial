@@ -1,5 +1,5 @@
 #![allow(deprecated)]
-use rltk::RGB;
+use rltk::{Point, RGB};
 use serde::{Deserialize, Serialize};
 use specs::error::NoError; //deprecated
 use specs::prelude::*;
@@ -218,9 +218,18 @@ pub struct Wearable {
     pub slot: EquipmentSlot,
 }
 
+#[derive(Serialize, Deserialize, Clone)]
+pub struct ParticleAnimation {
+    pub step_time: f32,
+    pub path: Vec<Point>,
+    pub current_step: usize,
+    pub timer: f32,
+}
+
 #[derive(Component, Serialize, Deserialize, Clone)]
 pub struct ParticleLifetime {
     pub lifetime_ms: f32,
+    pub animation: Option<ParticleAnimation>,
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
@@ -527,3 +536,8 @@ pub struct AlwaysTargetsSelf {}
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Target {}
+
+#[derive(Component, Debug, ConvertSaveload, Clone)]
+pub struct WantsToShoot {
+    pub target: Entity,
+}

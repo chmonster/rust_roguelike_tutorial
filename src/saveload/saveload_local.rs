@@ -189,7 +189,8 @@ pub fn save_game(ecs: &mut World) {
             ProvidesXP,
             OnDeath,
             AlwaysTargetsSelf,
-            Target
+            Target,
+            WantsToShoot
         );
     }
 
@@ -311,7 +312,8 @@ pub fn load_game(ecs: &mut World) {
             ProvidesXP,
             OnDeath,
             AlwaysTargetsSelf,
-            Target
+            Target,
+            WantsToShoot
         );
     }
 

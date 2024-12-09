@@ -1,4 +1,6 @@
+use super::{ParticleAnimation, ParticleLifetime, Position, Renderable};
 use crate::{map::Map, AttributeBonus};
+use rltk::Point;
 use specs::prelude::*;
 use std::collections::{HashSet, VecDeque};
 use std::sync::Mutex;
@@ -27,6 +29,15 @@ pub enum EffectType {
         bg: rltk::RGB,
         lifespan: f32,
     },
+    ParticleProjectile {
+        glyph: rltk::FontCharType,
+        fg: rltk::RGB,
+        bg: rltk::RGB,
+        lifespan: f32,
+        speed: f32,
+        path: Vec<Point>,
+    },
+
     EntityDeath,
     ItemUse {
         item: Entity,
@@ -154,6 +165,8 @@ fn affect_tile(ecs: &mut World, effect: &mut EffectSpawner, tile_idx: i32) {
         match &effect.effect_type {
             EffectType::Bloodstain => damage::bloodstain(ecs, tile_idx),
             EffectType::Particle { .. } => particles::particle_to_tile(ecs, tile_idx, effect),
+            EffectType::ParticleProjectile { .. } => particles::projectile(ecs, tile_idx, effect),
+
             _ => {}
         }
     }

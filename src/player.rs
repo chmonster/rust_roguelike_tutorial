@@ -2,7 +2,7 @@
 
 use super::{
     BlocksTile, BlocksVisibility,  Door, EntityMoved, GameLog, HungerClock, HungerState,
-    Item, Map,  Player, Pools, Position, Renderable, RunState, State, TileType, 
+    Item, Map,  Player, Pools, Position, Renderable, RunState, State, TileType, WantsToShoot,
     Viewshed, WantsToMelee, WantsToPickupItem, Name, Faction, data::Reaction, Vendor, VendorMode, WantsToCastSpell, Equipped, Weapon, Target
 };
 use rltk::{console, Point, Rltk, VirtualKeyCode, BEvent};
@@ -346,7 +346,9 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
                 cycle_target(&mut gs.ecs);
                 return RunState::AwaitingInput;
             },
-
+            VirtualKeyCode::F => {
+                return fire_on_target(&mut gs.ecs);
+            }
 
             _ => return RunState::AwaitingInput,
         },
@@ -549,4 +551,32 @@ fn cycle_target(ecs: &mut World) {
             }
         }
     }
+}
+
+fn fire_on_target(ecs: &mut World) -> RunState {
+    let targets = ecs.write_storage::<Target>();
+    let entities = ecs.entities();
+    let mut current_target : Option<Entity> = None;
+    let mut log = ecs.fetch_mut::<GameLog>();
+
+
+    for (e,_t) in (&entities, &targets).join() {
+        current_target = Some(e);
+    }
+
+    if let Some(target) = current_target {
+        let player_entity = ecs.fetch::<Entity>();
+        let mut shoot_store = ecs.write_storage::<WantsToShoot>();
+        let names = ecs.read_storage::<Name>();
+        if let Some(name) = names.get(target) {
+            log.entries.push(format!("You fire at {}", name.name));
+        }
+        shoot_store.insert(*player_entity, WantsToShoot{ target }).expect("Insert Fail");
+
+        RunState::Ticking
+    } else {
+        log.entries.push("You don't have a target selected!".to_string());
+        RunState::AwaitingInput
+    }
+
 }
