@@ -1,8 +1,8 @@
 use specs::prelude::*;
 
 use super::{
-    obfuscate_name, EquipmentChanged, GameLog, InBackpack, MagicItem, MasterDungeonMap, Name,
-    ObfuscatedName, Position, WantsToPickupItem,
+    obfuscate_name, EquipmentChanged, /*GameLog,*/ InBackpack, MagicItem, MasterDungeonMap,
+    Name, ObfuscatedName, Position, WantsToPickupItem,
 };
 
 pub struct ItemCollectionSystem {}
@@ -11,7 +11,7 @@ impl<'a> System<'a> for ItemCollectionSystem {
     #[allow(clippy::type_complexity)]
     type SystemData = (
         ReadExpect<'a, Entity>,
-        WriteExpect<'a, GameLog>,
+        //WriteExpect<'a, GameLog>,
         WriteStorage<'a, WantsToPickupItem>,
         WriteStorage<'a, Position>,
         ReadStorage<'a, Name>,
@@ -25,7 +25,7 @@ impl<'a> System<'a> for ItemCollectionSystem {
     fn run(&mut self, data: Self::SystemData) {
         let (
             player_entity,
-            mut gamelog,
+            //mut gamelog,
             mut wants_pickup,
             mut positions,
             names,
@@ -51,10 +51,21 @@ impl<'a> System<'a> for ItemCollectionSystem {
                 .expect("Unable to insert");
 
             if pickup.collected_by == *player_entity {
-                gamelog.entries.push(format!(
-                    "You pick up the {}.",
-                    obfuscate_name(pickup.item, &names, &magic_items, &obfuscated_names, &dm)
-                ));
+                // gamelog.entries.push(format!(
+                //     "You pick up the {}.",
+                //     obfuscate_name(pickup.item, &names, &magic_items, &obfuscated_names, &dm)
+                // ));
+                crate::gamelog::Logger::new()
+                    .append("You pick up the")
+                    .color(rltk::CYAN)
+                    .append(obfuscate_name(
+                        pickup.item,
+                        &names,
+                        &magic_items,
+                        &obfuscated_names,
+                        &dm,
+                    ))
+                    .log();
             }
         }
 

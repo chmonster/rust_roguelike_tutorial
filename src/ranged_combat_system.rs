@@ -1,7 +1,7 @@
 use super::{
-    effects::*, gamelog::GameLog, skill_bonus, Attributes, EquipmentSlot, Equipped, HungerClock,
-    HungerState, Map, Name, NaturalAttackDefense, Pools, Position, Skill, Skills, WantsToShoot,
-    Weapon, WeaponAttribute, Wearable,
+    effects::*, skill_bonus, Attributes, EquipmentSlot, Equipped, HungerClock, HungerState, Map,
+    Name, NaturalAttackDefense, Pools, Position, Skill, Skills, WantsToShoot, Weapon,
+    WeaponAttribute, Wearable,
 };
 use rltk::{to_cp437, Point, RGB};
 use specs::prelude::*;
@@ -12,7 +12,6 @@ impl<'a> System<'a> for RangedCombatSystem {
     #[allow(clippy::type_complexity)]
     type SystemData = (
         Entities<'a>,
-        WriteExpect<'a, GameLog>,
         WriteStorage<'a, WantsToShoot>,
         ReadStorage<'a, Name>,
         ReadStorage<'a, Attributes>,
@@ -31,7 +30,6 @@ impl<'a> System<'a> for RangedCombatSystem {
     fn run(&mut self, data: Self::SystemData) {
         let (
             entities,
-            mut log,
             mut wants_shoot,
             names,
             attributes,
@@ -140,8 +138,6 @@ impl<'a> System<'a> for RangedCombatSystem {
                     + skill_hit_bonus
                     + weapon_hit_bonus
                     + status_hit_bonus;
-                //println!("Natural roll: {}", natural_roll);
-                //println!("Modified hit roll: {}", modified_hit_roll);
 
                 let mut armor_item_bonus_f = 0.0;
                 for (wielded, armor) in (&equipped_items, &wearables).join() {
@@ -173,10 +169,6 @@ impl<'a> System<'a> for RangedCombatSystem {
                         base_damage + attr_damage_bonus + skill_damage_bonus + weapon_damage_bonus,
                     );
 
-                    /*println!("Damage: {} + {}attr + {}skill + {}weapon = {}",
-                        base_damage, attr_damage_bonus, skill_damage_bonus,
-                        weapon_damage_bonus, damage
-                    );*/
                     add_effect(
                         Some(entity),
                         EffectType::Damage { amount: damage },
@@ -184,11 +176,21 @@ impl<'a> System<'a> for RangedCombatSystem {
                             target: wants_shoot.target,
                         },
                     );
-                    log.entries.push(format!(
-                        "{} hits {}, for {} hp.",
-                        &name.name, &target_name.name, damage
-                    ));
 
+                    crate::gamelog::Logger::new()
+                        .color(rltk::CYAN)
+                        .append("&name.name")
+                        .color(rltk::WHITE)
+                        .append("hits")
+                        .color(rltk::CYAN)
+                        .append(&target_name.name)
+                        .color(rltk::WHITE)
+                        .append("for ")
+                        .color(rltk::CYAN)
+                        .append(damage)
+                        .color(rltk::WHITE)
+                        .append(" hp.")
+                        .log();
                     // Proc effects
 
                     if let Some(chance) = &weapon_info.proc_chance {
@@ -216,10 +218,17 @@ impl<'a> System<'a> for RangedCombatSystem {
                     }
                 } else if natural_roll == 1 {
                     // Natural 1 miss
-                    log.entries.push(format!(
-                        "{} considers attacking {}, but misjudges the timing.",
-                        name.name, target_name.name
-                    ));
+
+                    crate::gamelog::Logger::new()
+                        .color(rltk::CYAN)
+                        .append(&name.name)
+                        .color(rltk::WHITE)
+                        .append("tries shooting at ")
+                        .color(rltk::CYAN)
+                        .append(&target_name.name)
+                        .color(rltk::WHITE)
+                        .append("and fumbles, completely missing.")
+                        .log();
                     add_effect(
                         None,
                         EffectType::Particle {
@@ -234,10 +243,16 @@ impl<'a> System<'a> for RangedCombatSystem {
                     );
                 } else {
                     // Miss
-                    log.entries.push(format!(
-                        "{} attacks {}, but can't connect.",
-                        name.name, target_name.name
-                    ));
+                    crate::gamelog::Logger::new()
+                        .color(rltk::CYAN)
+                        .append(&name.name)
+                        .color(rltk::WHITE)
+                        .append("shoots at")
+                        .color(rltk::CYAN)
+                        .append(&target_name.name)
+                        .color(rltk::WHITE)
+                        .append("and misses. Swish.")
+                        .log();
                     add_effect(
                         None,
                         EffectType::Particle {

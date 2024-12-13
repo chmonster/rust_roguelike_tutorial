@@ -1,12 +1,12 @@
 //#![allow(unused)]
 use super::{
-    camera, camera::VIEWHEIGHT, camera::VIEWWIDTH, Attribute, Attributes, Consumable, CursedItem,
-    Duration, Equipped, GameLog, Hidden, HungerClock, HungerState, InBackpack, Item, KnownSpells,
-    MagicItem, MagicItemClass, Map, MasterDungeonMap, Name, ObfuscatedName, /*Player,*/ Pools,
-    /*Position,*/ RexAssets, RunState, State, StatusEffect, Vendor, VendorMode, Viewshed,
+    camera, camera::VIEWHEIGHT, camera::VIEWWIDTH, gamelog, gamelog::LOGHEIGHT, Attribute,
+    Attributes, Consumable, CursedItem, Duration, Equipped, Hidden, HungerClock, HungerState,
+    InBackpack, Item, KnownSpells, MagicItem, MagicItemClass, Map, MasterDungeonMap, Name,
+    ObfuscatedName, Pools, RexAssets, RunState, State, StatusEffect, Vendor, VendorMode, Viewshed,
     Weapon, SCREENHEIGHT, SCREENWIDTH,
 };
-use rltk::{/*console,*/ Point, Rltk, VirtualKeyCode, RGB};
+use rltk::{Point, Rltk, TextBlock, VirtualKeyCode, RGB};
 use specs::prelude::*;
 use std::cmp::max;
 
@@ -93,8 +93,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let black = RGB::named(rltk::BLACK);
     let white = RGB::named(rltk::WHITE);
 
-    let log_height = SCREENHEIGHT - VIEWHEIGHT;
-
+    // Overall box
     draw_hollow_box(
         ctx,
         0,
@@ -103,25 +102,30 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         SCREENHEIGHT as i32 - 1,
         box_gray,
         black,
-    ); // Overall box
+    );
+    // Map box
     draw_hollow_box(
         ctx,
         0,
         0,
         VIEWWIDTH as i32 + 1,
-        VIEWHEIGHT as i32 + 1,
+        VIEWHEIGHT as i32 + 2,
         box_gray,
         black,
-    ); // Map box
+        //RGB::named(rltk::GREEN),
+    );
+    // Log box
     draw_hollow_box(
         ctx,
         0,
-        VIEWHEIGHT as i32 + 1,
+        VIEWHEIGHT as i32 + 2,
         SCREENWIDTH as i32 - 1,
-        (log_height - 2) as i32,
+        LOGHEIGHT as i32 + 1,
         box_gray,
         black,
-    ); // Log box
+        //RGB::named(rltk::BLUE),
+    );
+    // Stat box
     draw_hollow_box(
         ctx,
         VIEWWIDTH as i32 + 1,
@@ -130,10 +134,11 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         STATHEIGHT as i32 + 1,
         box_gray,
         black,
-    ); // Top-right panel
+        //RGB::named(rltk::YELLOW),
+    );
 
     //box connectors
-    ctx.set(0, VIEWHEIGHT + 1, box_gray, black, to_cp437('├'));
+    ctx.set(0, VIEWHEIGHT + 2, box_gray, black, to_cp437('├'));
     ctx.set(
         VIEWWIDTH + 1,
         STATHEIGHT + 1,
@@ -144,21 +149,21 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     ctx.set(VIEWWIDTH + 1, 0, box_gray, black, to_cp437('┬'));
     ctx.set(
         VIEWWIDTH + 1,
-        VIEWHEIGHT + 1,
+        VIEWHEIGHT + 2,
         box_gray,
         black,
         to_cp437('┴'),
     );
     ctx.set(
         SCREENWIDTH - 1,
-        STATHEIGHT + 1,
+        STATHEIGHT + 2,
         box_gray,
         black,
         to_cp437('┤'),
     );
     ctx.set(
         SCREENWIDTH - 1,
-        VIEWHEIGHT + 1,
+        VIEWHEIGHT + 2,
         box_gray,
         black,
         to_cp437('┤'),
@@ -334,7 +339,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
                     weapon_info += &format!(" (range: {}, F to fire, V cycles targets)", range);
                 }
                 weapon_info += " ├";
-                ctx.print_color(3, VIEWHEIGHT + 1, yellow, black, &weapon_info);
+                ctx.print_color(3, VIEWHEIGHT + 2, yellow, black, &weapon_info);
             }
         }
     }
@@ -460,18 +465,30 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     }
 
     // Draw the log
-    let log = ecs.fetch::<GameLog>();
-    let mut log_y = SCREENHEIGHT as i32 - 2;
-    for s in log.entries.iter().rev() {
-        if log_y > (SCREENHEIGHT as i32 - log_height as i32 + 1) {
-            ctx.print(2, log_y, s);
-        }
-        log_y -= 1;
-    }
+    let mut block = TextBlock::new(
+        1,
+        SCREENHEIGHT as i32 - LOGHEIGHT as i32 - 1,
+        SCREENWIDTH as i32 - 2,
+        LOGHEIGHT as i32,
+    );
+    block
+        .print(&gamelog::log_display())
+        .expect("log display out of space");
+    block.render(&mut rltk::BACKEND_INTERNAL.lock().consoles[0].console);
+
+    // let log = ecs.fetch::<GameLog>();
+    // let mut log_y = SCREENHEIGHT as i32 - 2;
+    // for s in log.entries.iter().rev() {
+    //     if log_y > (SCREENHEIGHT as i32 - log_height as i32 + 1) {
+    //         ctx.print(2, log_y, s);
+    //     }
+    //     log_y -= 1;
+    // }
 
     // Draw mouse cursor
-    let mouse_pos = ctx.mouse_pos();
-    ctx.set_bg(mouse_pos.0, mouse_pos.1, RGB::named(rltk::MAGENTA));
+    //TODO : why was this removed?
+    //let mouse_pos = ctx.mouse_pos();
+    //ctx.set_bg(mouse_pos.0, mouse_pos.1, RGB::named(rltk::MAGENTA));
 
     draw_tooltips(ecs, ctx);
 }
@@ -738,7 +755,6 @@ pub fn show_inventory(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option
             rltk::to_cp437(')'),
         );
         //name
-        //ctx.print(21, y, name.name.to_string());
         ctx.print_color(
             21,
             y,

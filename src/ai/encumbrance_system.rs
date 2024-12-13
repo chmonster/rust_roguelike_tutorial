@@ -1,6 +1,6 @@
 use crate::{
-    gamelog::GameLog, gamesystem::attr_bonus, AttributeBonus, Attributes, EquipmentChanged,
-    Equipped, InBackpack, Item, Pools, Slow, StatusEffect,
+    gamesystem::attr_bonus, AttributeBonus, Attributes, EquipmentChanged, Equipped, InBackpack,
+    Item, Pools, Slow, StatusEffect,
 };
 use specs::prelude::*;
 use std::collections::HashMap;
@@ -18,7 +18,7 @@ impl<'a> System<'a> for EncumbranceSystem {
         WriteStorage<'a, Pools>,
         WriteStorage<'a, Attributes>,
         ReadExpect<'a, Entity>,
-        WriteExpect<'a, GameLog>,
+        //WriteExpect<'a, GameLog>,
         ReadStorage<'a, AttributeBonus>,
         ReadStorage<'a, StatusEffect>,
         ReadStorage<'a, Slow>,
@@ -34,7 +34,7 @@ impl<'a> System<'a> for EncumbranceSystem {
             mut pools,
             mut attributes,
             player,
-            mut gamelog,
+            //mut gamelog,
             attrbonus,
             statuses,
             slowed,
@@ -137,10 +137,12 @@ impl<'a> System<'a> for EncumbranceSystem {
                         // Overburdened
                         pool.total_initiative_penalty += 4.0;
                         if *entity == *player {
-                            gamelog.entries.push(
-                                "You are overburdened, and suffering an initiative penalty."
-                                    .to_string(),
-                            );
+                            crate::gamelog::Logger::new()
+                                .color(rltk::ORANGE)
+                                .append(
+                                    "You are overburdened, and suffering an initiative penalty.",
+                                )
+                                .log();
                         }
                     }
                 }

@@ -1,11 +1,11 @@
-#![allow(unused)]
+//#![allow(unused)]
 
 use super::{
-    BlocksTile, BlocksVisibility,  Door, EntityMoved, GameLog, HungerClock, HungerState,
+    BlocksTile, BlocksVisibility,  Door, EntityMoved,  HungerClock, HungerState,
     Item, Map,  Player, Pools, Position, Renderable, RunState, State, TileType, WantsToShoot,
     Viewshed, WantsToMelee, WantsToPickupItem, Name, Faction, data::Reaction, Vendor, VendorMode, WantsToCastSpell, Equipped, Weapon, Target
 };
-use rltk::{console, Point, Rltk, VirtualKeyCode, BEvent};
+use rltk::{/*console,*/ Point, Rltk, VirtualKeyCode, BEvent};
 use rltk::prelude::INPUT;
 use specs::prelude::*;
 
@@ -140,10 +140,10 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
     
     //list item contents of new space
     {
-        let names= ecs.read_storage::<Name>();
-        let mut gamelog = ecs.fetch_mut::<GameLog>();
+        //let names= ecs.read_storage::<Name>();
+        //let mut gamelog = ecs.fetch_mut::<GameLog>();
         let mut target_item: Vec<Option<Entity>> = Vec::new();
-        let mut ppos = ecs.write_resource::<Point>();
+        let /*mut*/ ppos = ecs.write_resource::<Point>();
 
         for (item_entity, _item, position) in (&entities, &items, &positions).join() {
             if position.x == ppos.x && position.y == ppos.y {
@@ -163,7 +163,13 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
         }
         if !item_string.is_empty(){
             item_string.truncate(item_string.len()-2);
-            gamelog.entries.push(format!("You see here: {}", item_string));
+            //gamelog.entries.push(format!("You see here: {}", item_string));
+            crate::gamelog::Logger::new()
+            .color(rltk::WHITE)
+            .append("You see here: ")
+            .color(rltk::CYAN)
+            .append(&item_string)
+            .log();
         }
 
     }
@@ -190,7 +196,6 @@ fn get_item(ecs: &mut World) {
     let entities = ecs.entities();
     let items = ecs.read_storage::<Item>();
     let positions = ecs.read_storage::<Position>();
-    let mut gamelog = ecs.fetch_mut::<GameLog>();
 
     let mut target_item: Option<Entity> = None;
     for (item_entity, _item, position) in (&entities, &items, &positions).join() {
@@ -200,9 +205,12 @@ fn get_item(ecs: &mut World) {
     }
 
     match target_item {
-        None => gamelog
-            .entries
-            .push("There is nothing here to pick up.".to_string()),
+        None => 
+            crate::gamelog::Logger::new()
+            .color(rltk::RED)
+            .append("There is nothing here to pick up.")
+            .log(),
+
         Some(item) => {
             let mut pickup = ecs.write_storage::<WantsToPickupItem>();
             pickup
@@ -213,7 +221,7 @@ fn get_item(ecs: &mut World) {
                         item,
                     },
                 )
-                .expect("Unable to insert want to pickup");
+                .expect("Unable to insert - want to pickup");
         }
     }
 }
@@ -225,10 +233,14 @@ pub fn try_next_level(ecs: &mut World) -> bool {
     if map.tiles[player_idx] == TileType::DownStairs {
         true
     } else {
-        let mut gamelog = ecs.fetch_mut::<GameLog>();
-        gamelog
-            .entries
-            .push("There is no way down from here.".to_string());
+        //let mut gamelog = ecs.fetch_mut::<GameLog>();
+        // gamelog
+        //     .entries
+        //     .push("There is no way down from here.".to_string());
+        crate::gamelog::Logger::new()
+            .color(rltk::WHITE)
+            .append("There is no way down here.")
+            .log();
         false
     }
 }
@@ -240,8 +252,10 @@ pub fn try_previous_level(ecs: &mut World) -> bool {
     if map.tiles[player_idx] == TileType::UpStairs {
         true
     } else {
-        let mut gamelog = ecs.fetch_mut::<GameLog>();
-        gamelog.entries.push("There is no way up from here.".to_string());
+        crate::gamelog::Logger::new()
+            .color(rltk::RED)
+            .append("There is no way up here.")
+            .log();
         false
     }
 }
@@ -417,8 +431,10 @@ fn use_hotkey(gs: &mut State, key: i32) -> RunState {
                 return RunState::Ticking;
             }
         } else {
-            let mut gamelog = gs.ecs.fetch_mut::<GameLog>();
-            gamelog.entries.push("You don't have enough mana to cast that.".to_string());
+            crate::gamelog::Logger::new()
+            .color(rltk::RED)
+            .append("You have insufficient mana to cast that.")
+            .log();
         }
 
     }
@@ -545,9 +561,9 @@ fn cycle_target(ecs: &mut World) {
             }
 
             if index > possible_targets.len()-2 {
-                targets.insert(possible_targets[0].1, Target{});
+                targets.insert(possible_targets[0].1, Target{}).expect("target insert failed");
             } else {
-                targets.insert(possible_targets[index+1].1, Target{});
+                targets.insert(possible_targets[index+1].1, Target{}).expect("target insert errors");
             }
         }
     }
@@ -557,7 +573,7 @@ fn fire_on_target(ecs: &mut World) -> RunState {
     let targets = ecs.write_storage::<Target>();
     let entities = ecs.entities();
     let mut current_target : Option<Entity> = None;
-    let mut log = ecs.fetch_mut::<GameLog>();
+    
 
 
     for (e,_t) in (&entities, &targets).join() {
@@ -569,13 +585,24 @@ fn fire_on_target(ecs: &mut World) -> RunState {
         let mut shoot_store = ecs.write_storage::<WantsToShoot>();
         let names = ecs.read_storage::<Name>();
         if let Some(name) = names.get(target) {
-            log.entries.push(format!("You fire at {}", name.name));
+            crate::gamelog::Logger::new()
+            .color(rltk::WHITE)
+            .append("You fire at ")
+            .color(rltk::CYAN)
+            .append(&name.name)
+            .color(rltk::WHITE)
+            .append(".")
+            .log();
         }
         shoot_store.insert(*player_entity, WantsToShoot{ target }).expect("Insert Fail");
 
         RunState::Ticking
     } else {
-        log.entries.push("You don't have a target selected!".to_string());
+        crate::gamelog::Logger::new()
+        .color(rltk::WHITE)
+        .append("You don't have a target selected.")
+        .log();
+        
         RunState::AwaitingInput
     }
 

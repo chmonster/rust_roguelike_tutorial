@@ -8,8 +8,9 @@ use crate::{
         SpawnParticleLine, SpellTemplate, TeachesSpell, TeleportTo, TownPortal,
     },
     effects::aoe_tiles,
-    gamelog::GameLog,
-    Map, RunState,
+    //gamelog::GameLog,
+    Map,
+    RunState,
 };
 use specs::prelude::*;
 
@@ -18,11 +19,19 @@ pub fn item_trigger(creator: Option<Entity>, item: Entity, targets: &Targets, ec
     if let Some(c) = ecs.write_storage::<Consumable>().get_mut(item) {
         if c.charges < 1 {
             // Cancel
-            let mut gamelog = ecs.fetch_mut::<GameLog>();
-            gamelog.entries.push(format!(
-                "{} is out of charges!",
-                ecs.read_storage::<Name>().get(item).unwrap().name
-            ));
+            // let mut gamelog = ecs.fetch_mut::<GameLog>();
+            // gamelog.entries.push(format!(
+            //     "{} is out of charges!",
+            //     ecs.read_storage::<Name>().get(item).unwrap().name
+            // ));
+            let item = &ecs.read_storage::<Name>().get(item).unwrap().name.clone();
+            crate::gamelog::Logger::new()
+                .color(rltk::WHITE)
+                .append(item)
+                .color(rltk::ORANGE)
+                .append("is out of charges!")
+                .log();
+
             return;
         } else {
             c.charges -= 1;
@@ -51,7 +60,7 @@ fn event_trigger(
     ecs: &mut World,
 ) -> bool {
     let mut did_something = false;
-    let mut gamelog = ecs.fetch_mut::<GameLog>();
+    //let mut gamelog = ecs.fetch_mut::<GameLog>();
 
     // Simple particle spawn
     if let Some(part) = ecs.read_storage::<SpawnParticleBurst>().get(entity) {
@@ -95,18 +104,31 @@ fn event_trigger(
     if ecs.read_storage::<ProvidesFood>().get(entity).is_some() {
         add_effect(creator, EffectType::WellFed, targets.clone());
         let names = ecs.read_storage::<Name>();
-        gamelog
-            .entries
-            .push(format!("You eat the {}.", names.get(entity).unwrap().name));
+        // gamelog
+        //     .entries
+        //     .push(format!("You eat the {}.", names.get(entity).unwrap().name));
+        crate::gamelog::Logger::new()
+            .color(rltk::WHITE)
+            .append("You eat the")
+            .color(rltk::CYAN)
+            .append(names.get(entity).unwrap().name.clone())
+            .color(rltk::WHITE)
+            .append(". Yummeh.")
+            .log();
         did_something = true;
     }
 
     // Magic mapper
     if ecs.read_storage::<MagicMapper>().get(entity).is_some() {
         let mut runstate = ecs.fetch_mut::<RunState>();
-        gamelog
-            .entries
-            .push("The map is revealed to you!".to_string());
+        // gamelog
+        //     .entries
+        //     .push("The map is revealed to you!".to_string());
+        crate::gamelog::Logger::new()
+            .color(rltk::WHITE)
+            .append("The map is revealed to you!")
+            .log();
+
         *runstate = RunState::MagicMapReveal { row: 0 };
         did_something = true;
     }
@@ -118,6 +140,10 @@ fn event_trigger(
         .is_some()
     {
         let mut runstate = ecs.fetch_mut::<RunState>();
+        crate::gamelog::Logger::new()
+            .color(rltk::CYAN)
+            .append("You remove a curse.")
+            .log();
         *runstate = RunState::ShowRemoveCurse;
         did_something = true;
     }
@@ -128,6 +154,10 @@ fn event_trigger(
         .get(entity)
         .is_some()
     {
+        crate::gamelog::Logger::new()
+            .color(rltk::CYAN)
+            .append("You identify an item.")
+            .log();
         let mut runstate = ecs.fetch_mut::<RunState>();
         *runstate = RunState::ShowIdentify;
         did_something = true;
@@ -137,13 +167,15 @@ fn event_trigger(
     if ecs.read_storage::<TownPortal>().get(entity).is_some() {
         let map = ecs.fetch::<Map>();
         if map.depth == 1 {
-            gamelog
-                .entries
-                .push("You are already in town, so the scroll does nothing.".to_string());
+            crate::gamelog::Logger::new()
+                .color(rltk::WHITE)
+                .append("You are already in town, so the scroll does nothing.")
+                .log();
         } else {
-            gamelog
-                .entries
-                .push("You are telported back to town!".to_string());
+            crate::gamelog::Logger::new()
+                .color(rltk::CYAN)
+                .append("Welcome back to Fishguts. Only your mom missed you.")
+                .log();
             let mut runstate = ecs.fetch_mut::<RunState>();
             *runstate = RunState::TownPortal;
             did_something = true;
@@ -267,6 +299,10 @@ fn event_trigger(
                             display_name: spell.spell.clone(),
                             mana_cost: spell_info.mana_cost,
                         });
+                        crate::gamelog::Logger::new()
+                            .color(rltk::CYAN)
+                            .append("You learn a spell.")
+                            .log();
                     }
                 }
             }

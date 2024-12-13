@@ -1,4 +1,4 @@
-use super::{/*gui::LOGHEIGHT,*/ Hidden, Map, Position, Renderable, Target, TileSize};
+use super::{Hidden, Map, Position, Renderable, Target, TileSize};
 use crate::map::tile_glyph;
 use rltk::{Point, Rltk, RGB};
 use specs::prelude::*;

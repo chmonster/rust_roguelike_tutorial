@@ -36,7 +36,7 @@ use ranged_combat_system::RangedCombatSystem;
 mod damage_system;
 mod gamelog;
 mod gui;
-use gamelog::GameLog;
+//use gamelog::*;
 mod inventory;
 use inventory::{
     ItemCollectionSystem, ItemDropSystem, ItemEquipOnUse, ItemIdentificationSystem,
@@ -192,6 +192,13 @@ impl State {
         } else {
             map::thaw_level_entities(&mut self.ecs);
         }
+
+        //gamelog::clear_log();
+        // gamelog::Logger::new()
+        //     .append("Welcome to")
+        //     .color(rltk::CYAN)
+        //     .append("Rusty Roguelike")
+        //     .log();
     }
 
     fn goto_level(&mut self, offset: i32) {
@@ -202,8 +209,8 @@ impl State {
         self.generate_world_map(current_depth + offset, offset);
 
         // Notify the player
-        let mut gamelog = self.ecs.fetch_mut::<gamelog::GameLog>();
-        gamelog.entries.push("You change level.".to_string());
+        //let mut gamelog = self.ecs.fetch_mut::<gamelog::GameLog>();
+        //gamelog.entries.push("You change level.".to_string());
     }
 
     fn game_over_cleanup(&mut self) {
@@ -223,13 +230,19 @@ impl State {
             *player_entity_writer = player_entity;
 
             //reset log
-            let mut gamelog = self.ecs.fetch_mut::<gamelog::GameLog>();
+            //let /*mut*/ _gamelog = self.ecs.fetch_mut::<gamelog::GameLog>();
             if CLEAR_LOG_AFTER_DEATH {
-                gamelog.entries.clear();
+                //gamelog.entries.clear();
+                gamelog::clear_log();
             }
             gamelog
-                .entries
-                .push("Welcome back to Rusty Roguelike".to_string());
+                //     .entries
+                //     .push("Welcome back to Rust Rogue".to_string());
+                ::Logger::new()
+            .append("Welcome back to")
+            .color(rltk::CYAN)
+            .append("Rusty Roguelike")
+            .log();
         }
 
         // Replace the world maps
@@ -778,11 +791,18 @@ fn main() -> rltk::BError {
 
     let player_entity = spawner::player(&mut gs.ecs, 0, 0);
     gs.ecs.insert(player_entity);
-
     gs.ecs.insert(RunState::MapGeneration {});
-    gs.ecs.insert(gamelog::GameLog {
-        entries: vec!["Welcome to Rusty Roguelike".to_string()],
-    });
+
+    // gs.ecs.insert(gamelog::GameLog {
+    //     entries: vec!["Welcome to Rusty Roguelike".to_string()],
+    // });
+    gamelog::clear_log();
+    gamelog::Logger::new()
+        .append("Welcome to")
+        .color(rltk::CYAN)
+        .append("Rusty Roguelike")
+        .log();
+
     gs.ecs.insert(particle_system::ParticleBuilder::new());
     gs.ecs.insert(rex_assets::RexAssets::new());
 

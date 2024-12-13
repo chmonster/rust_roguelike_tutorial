@@ -1,6 +1,6 @@
 use super::{
     effects::{add_effect, EffectType, Targets},
-    gamelog::GameLog,
+    //gamelog::GameLog,
     //particle_system::ParticleBuilder,
     skill_bonus,
     Attributes,
@@ -26,7 +26,6 @@ impl<'a> System<'a> for MeleeCombatSystem {
     #[allow(clippy::type_complexity)]
     type SystemData = (
         Entities<'a>,
-        WriteExpect<'a, GameLog>,
         WriteStorage<'a, WantsToMelee>,
         ReadStorage<'a, Name>,
         ReadStorage<'a, Attributes>,
@@ -43,7 +42,6 @@ impl<'a> System<'a> for MeleeCombatSystem {
     fn run(&mut self, data: Self::SystemData) {
         let (
             entities,
-            mut log,
             mut wants_melee,
             names,
             attributes,
@@ -174,10 +172,20 @@ impl<'a> System<'a> for MeleeCombatSystem {
                         },
                     );
 
-                    log.entries.push(format!(
-                        "{} hits {}, for {} hp.",
-                        &name.name, &target_name.name, damage
-                    ));
+                    crate::gamelog::Logger::new()
+                        .color(rltk::YELLOW)
+                        .append(&name.name)
+                        .color(rltk::WHITE)
+                        .append("hits")
+                        .color(rltk::YELLOW)
+                        .append(&target_name.name)
+                        .color(rltk::WHITE)
+                        .append("for")
+                        .color(rltk::RED)
+                        .append(format!("{}", damage))
+                        .color(rltk::WHITE)
+                        .append("hp.")
+                        .log();
                     // Proc effects
                     if let Some(chance) = &weapon_info.proc_chance {
                         if rng.roll_dice(1, 100) <= (chance * 100.0) as i32 {
@@ -190,6 +198,10 @@ impl<'a> System<'a> for MeleeCombatSystem {
                                         target: wants_melee.target,
                                     }
                                 };
+                            crate::gamelog::Logger::new()
+                                .color(rltk::RED)
+                                .append("The weapon activates!")
+                                .log();
                             add_effect(
                                 Some(entity),
                                 EffectType::ItemUse {
@@ -201,10 +213,16 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     }
                 } else if natural_roll == 1 {
                     // Natural 1 miss
-                    log.entries.push(format!(
-                        "{} considers attacking {}, but misjudges the timing.",
-                        name.name, target_name.name
-                    ));
+                    crate::gamelog::Logger::new()
+                        .color(rltk::CYAN)
+                        .append(&name.name)
+                        .color(rltk::WHITE)
+                        .append("tries attacking")
+                        .color(rltk::CYAN)
+                        .append(&target_name.name)
+                        .color(rltk::WHITE)
+                        .append("but fumbles.")
+                        .log();
                     add_effect(
                         None,
                         EffectType::Particle {
@@ -219,10 +237,16 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     );
                 } else {
                     // Miss
-                    log.entries.push(format!(
-                        "{} attacks {}, but can't connect.",
-                        name.name, target_name.name
-                    ));
+                    crate::gamelog::Logger::new()
+                        .color(rltk::CYAN)
+                        .append(&name.name)
+                        .color(rltk::WHITE)
+                        .append("attacks")
+                        .color(rltk::CYAN)
+                        .append(&target_name.name)
+                        .color(rltk::WHITE)
+                        .append("and misses. Swoosh.")
+                        .log();
                     add_effect(
                         None,
                         EffectType::Particle {

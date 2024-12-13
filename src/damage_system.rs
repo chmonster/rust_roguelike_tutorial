@@ -2,8 +2,7 @@
 
 use super::{
     mana_at_level, particle_system::ParticleBuilder, player_hp_at_level, AreaOfEffect, Attributes,
-    Equipped, GameLog, InBackpack, LootTable, Map, Name, OnDeath, Player, Pools, Position,
-    RunState,
+    Equipped, InBackpack, LootTable, Map, Name, OnDeath, Player, Pools, Position, RunState,
 };
 use crate::effects::*;
 use rltk::console;
@@ -17,7 +16,6 @@ pub fn delete_the_dead(ecs: &mut World) {
         let players = ecs.read_storage::<Player>();
         let entities = ecs.entities();
         let names = ecs.read_storage::<Name>();
-        let mut log = ecs.write_resource::<GameLog>();
 
         for (entity, stats) in (&entities, &combat_stats).join() {
             if stats.hit_points.current < 1 {
@@ -26,14 +24,22 @@ pub fn delete_the_dead(ecs: &mut World) {
                     None => {
                         let victim_name = names.get(entity);
                         if let Some(victim_name) = victim_name {
-                            log.entries.push(format!("{} is dead", &victim_name.name));
+                            crate::gamelog::Logger::new()
+                                .color(rltk::CYAN)
+                                .append(&victim_name.name)
+                                .color(rltk::WHITE)
+                                .append("is dead.")
+                                .log();
                         }
                         dead.push(entity)
                     }
                     Some(_) => {
                         let mut runstate = ecs.write_resource::<RunState>();
                         if *runstate != RunState::GameOver {
-                            log.entries.push("You are dead, alas.".to_string());
+                            crate::gamelog::Logger::new()
+                                .color(rltk::RED)
+                                .append("You are dead, alas.")
+                                .log();
                         }
                         *runstate = RunState::GameOver;
                     }

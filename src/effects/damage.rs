@@ -3,7 +3,7 @@ use crate::components::{
     Attributes, Confusion, DamageOverTime, Duration, EquipmentChanged, Name, Player, Pools,
     Position, SerializeMe, Skills, Slow, StatusEffect, TileSize,
 };
-use crate::gamelog::GameLog;
+//use crate::gamelog::GameLog;
 use crate::gamesystem::{mana_at_level, player_hp_at_level};
 //use crate::{SCREENHEIGHT, SCREENWIDTH};
 use specs::saveload::{MarkedBuilder, SimpleMarker};
@@ -193,7 +193,7 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
 }
 
 pub fn level_up(ecs: &World, source: Entity, player_stats: &mut Pools) {
-    let mut log = ecs.fetch_mut::<GameLog>();
+    //let mut log = ecs.fetch_mut::<GameLog>();
     //let mut pools = ecs.write_storage::<Pools>();
     let mut attributes = ecs.write_storage::<Attributes>();
     //let player_stats = pools.get_mut(source).unwrap();
@@ -201,25 +201,43 @@ pub fn level_up(ecs: &World, source: Entity, player_stats: &mut Pools) {
 
     // We've gone up a level!
     player_stats.level += 1;
+
+    crate::gamelog::Logger::new()
+        .color(rltk::MAGENTA)
+        .append("Congratulations, you are now level")
+        .append(format!("{}", player_stats.level))
+        .log();
     // Improve a random attribute
     let mut rng = ecs.fetch_mut::<rltk::RandomNumberGenerator>();
     let attr_to_boost = rng.roll_dice(1, 4);
     match attr_to_boost {
         1 => {
             player_attributes.might.base += 1;
-            log.entries.push("You feel stronger!".to_string());
+            crate::gamelog::Logger::new()
+                .color(rltk::GREEN)
+                .append("You feel stronger!")
+                .log();
         }
         2 => {
             player_attributes.fitness.base += 1;
-            log.entries.push("You feel healthier!".to_string());
+            crate::gamelog::Logger::new()
+                .color(rltk::GREEN)
+                .append("You feel healthier!")
+                .log();
         }
         3 => {
             player_attributes.quickness.base += 1;
-            log.entries.push("You feel quicker!".to_string());
+            crate::gamelog::Logger::new()
+                .color(rltk::GREEN)
+                .append("You feel quicker!")
+                .log();
         }
         _ => {
             player_attributes.intelligence.base += 1;
-            log.entries.push("You feel smarter!".to_string());
+            crate::gamelog::Logger::new()
+                .color(rltk::GREEN)
+                .append("You feel smarter!")
+                .log();
         }
     }
 
@@ -229,11 +247,6 @@ pub fn level_up(ecs: &World, source: Entity, player_stats: &mut Pools) {
     for sk in player_skills.skills.iter_mut() {
         *sk.1 += 1;
     }
-
-    log.entries.push(format!(
-        "Congratulations, you are now level {}",
-        player_stats.level
-    ));
 
     ecs.write_storage::<EquipmentChanged>()
         .insert(*ecs.fetch::<Entity>(), EquipmentChanged {})
@@ -270,50 +283,6 @@ pub fn level_up(ecs: &World, source: Entity, player_stats: &mut Pools) {
             );
         }
     }
-    /*if player_pos.y + i < SCREENWIDTH as i32 - 1 {
-            add_effect(
-                None,
-                EffectType::Particle {
-                    glyph: rltk::to_cp437('↑'),
-                    fg: rltk::RGB::named(rltk::BLACK),
-                    bg: rltk::RGB::named(rltk::GOLD),
-                    lifespan: 1000.0,
-                },
-                Targets::Tile {
-                    tile_idx: map.xy_idx(player_pos.x, player_pos.y + i) as i32,
-                },
-            );
-        }
-        if player_pos.x - i > 1 {
-            add_effect(
-                None,
-                EffectType::Particle {
-                    glyph: rltk::to_cp437('↑'),
-                    fg: rltk::RGB::named(rltk::BLACK),
-                    bg: rltk::RGB::named(rltk::GOLD),
-                    lifespan: 1000.0,
-                },
-                Targets::Tile {
-                    tile_idx: map.xy_idx(player_pos.x - i, player_pos.y) as i32,
-                },
-            );
-        }
-        if player_pos.x + i < SCREENHEIGHT as i32 - 1 {
-            add_effect(
-                None,
-                EffectType::Particle {
-                    glyph: rltk::to_cp437('↑'),
-                    fg: rltk::RGB::named(rltk::BLACK),
-                    bg: rltk::RGB::named(rltk::GOLD),
-                    lifespan: 1000.0,
-                },
-                Targets::Tile {
-                    tile_idx: map.xy_idx(player_pos.x + i, player_pos.y) as i32,
-                },
-            );
-        }
-        }
-    }*/
 }
 
 pub fn add_confusion(ecs: &mut World, effect: &EffectSpawner, target: Entity) {

@@ -1,5 +1,6 @@
 use super::{
-    effects::*, gamelog::GameLog, AreaOfEffect, EntityMoved, EntryTrigger, Map, Name, Position,
+    effects::*, /*gamelog::GameLog,*/ AreaOfEffect, EntityMoved, EntryTrigger, Map, Name,
+    Position,
 };
 use specs::prelude::*;
 
@@ -14,7 +15,7 @@ impl<'a> System<'a> for TriggerSystem {
         ReadStorage<'a, EntryTrigger>,
         ReadStorage<'a, Name>,
         Entities<'a>,
-        WriteExpect<'a, GameLog>,
+        //WriteExpect<'a, GameLog>,
         ReadStorage<'a, AreaOfEffect>,
     );
 
@@ -26,7 +27,7 @@ impl<'a> System<'a> for TriggerSystem {
             entry_trigger,
             names,
             entities,
-            mut log,
+            //mut log,
             area_of_effect,
         ) = data;
 
@@ -43,7 +44,13 @@ impl<'a> System<'a> for TriggerSystem {
                             // We triggered it
                             let name = names.get(entity_id);
                             if let Some(name) = name {
-                                log.entries.push(format!("{} triggers!", &name.name));
+                                //log.entries.push(format!("{} triggers!", &name.name));
+                                crate::gamelog::Logger::new()
+                                    .color(rltk::RED)
+                                    .append(&name.name)
+                                    .color(rltk::WHITE)
+                                    .append("triggers.")
+                                    .log();
                             }
 
                             // Call the effects system
