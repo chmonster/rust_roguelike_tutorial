@@ -173,19 +173,14 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     );
 
                     crate::gamelog::Logger::new()
-                        .color(rltk::YELLOW)
-                        .append(&name.name)
-                        .color(rltk::WHITE)
+                        .npc_name(&name.name)
                         .append("hits")
-                        .color(rltk::YELLOW)
-                        .append(&target_name.name)
-                        .color(rltk::WHITE)
+                        .npc_name(&target_name.name)
                         .append("for")
-                        .color(rltk::RED)
-                        .append(format!("{}", damage))
-                        .color(rltk::WHITE)
+                        .damage(damage)
                         .append("hp.")
                         .log();
+
                     // Proc effects
                     if let Some(chance) = &weapon_info.proc_chance {
                         if rng.roll_dice(1, 100) <= (chance * 100.0) as i32 {
@@ -199,7 +194,7 @@ impl<'a> System<'a> for MeleeCombatSystem {
                                     }
                                 };
                             crate::gamelog::Logger::new()
-                                .color(rltk::RED)
+                                .color(rltk::GREEN)
                                 .append("The weapon activates!")
                                 .log();
                             add_effect(
@@ -214,13 +209,9 @@ impl<'a> System<'a> for MeleeCombatSystem {
                 } else if natural_roll == 1 {
                     // Natural 1 miss
                     crate::gamelog::Logger::new()
-                        .color(rltk::CYAN)
-                        .append(&name.name)
-                        .color(rltk::WHITE)
+                        .npc_name(&name.name)
                         .append("tries attacking")
-                        .color(rltk::CYAN)
-                        .append(&target_name.name)
-                        .color(rltk::WHITE)
+                        .npc_name(&target_name.name)
                         .append("but fumbles.")
                         .log();
                     add_effect(
@@ -238,13 +229,9 @@ impl<'a> System<'a> for MeleeCombatSystem {
                 } else {
                     // Miss
                     crate::gamelog::Logger::new()
-                        .color(rltk::CYAN)
-                        .append(&name.name)
-                        .color(rltk::WHITE)
+                        .npc_name(&name.name)
                         .append("attacks")
-                        .color(rltk::CYAN)
-                        .append(&target_name.name)
-                        .color(rltk::WHITE)
+                        .npc_name(&target_name.name)
                         .append("and misses. Swoosh.")
                         .log();
                     add_effect(

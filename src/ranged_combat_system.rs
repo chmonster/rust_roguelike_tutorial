@@ -178,15 +178,11 @@ impl<'a> System<'a> for RangedCombatSystem {
                     );
 
                     crate::gamelog::Logger::new()
-                        .color(rltk::CYAN)
-                        .append("&name.name")
-                        .color(rltk::WHITE)
+                        .npc_name("&name.name")
                         .append("hits")
-                        .color(rltk::CYAN)
-                        .append(&target_name.name)
-                        .color(rltk::WHITE)
+                        .npc_name(&target_name.name)
                         .append("for ")
-                        .color(rltk::CYAN)
+                        .color(rltk::GREEN)
                         .append(damage)
                         .color(rltk::WHITE)
                         .append(" hp.")
@@ -220,13 +216,9 @@ impl<'a> System<'a> for RangedCombatSystem {
                     // Natural 1 miss
 
                     crate::gamelog::Logger::new()
-                        .color(rltk::CYAN)
-                        .append(&name.name)
-                        .color(rltk::WHITE)
+                        .npc_name(&name.name)
                         .append("tries shooting at ")
-                        .color(rltk::CYAN)
-                        .append(&target_name.name)
-                        .color(rltk::WHITE)
+                        .npc_name(&target_name.name)
                         .append("and fumbles, completely missing.")
                         .log();
                     add_effect(
@@ -244,13 +236,9 @@ impl<'a> System<'a> for RangedCombatSystem {
                 } else {
                     // Miss
                     crate::gamelog::Logger::new()
-                        .color(rltk::CYAN)
-                        .append(&name.name)
-                        .color(rltk::WHITE)
+                        .npc_name(&name.name)
                         .append("shoots at")
-                        .color(rltk::CYAN)
-                        .append(&target_name.name)
-                        .color(rltk::WHITE)
+                        .npc_name(&target_name.name)
                         .append("and misses. Swish.")
                         .log();
                     add_effect(

@@ -57,8 +57,7 @@ impl<'a> System<'a> for ItemCollectionSystem {
                 // ));
                 crate::gamelog::Logger::new()
                     .append("You pick up the")
-                    .color(rltk::CYAN)
-                    .append(obfuscate_name(
+                    .item_name(obfuscate_name(
                         pickup.item,
                         &names,
                         &magic_items,

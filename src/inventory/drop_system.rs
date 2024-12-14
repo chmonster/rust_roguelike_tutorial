@@ -66,14 +66,14 @@ impl<'a> System<'a> for ItemDropSystem {
                 // ));
                 crate::gamelog::Logger::new()
                     .append("You drop the")
-                    .color(rltk::CYAN)
-                    .append(obfuscate_name(
+                    .item_name(obfuscate_name(
                         to_drop.item,
                         &names,
                         &magic_items,
                         &obfuscated_names,
                         &dm,
                     ))
+                    .append(".")
                     .log();
             }
         }

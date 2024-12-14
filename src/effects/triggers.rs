@@ -26,8 +26,7 @@ pub fn item_trigger(creator: Option<Entity>, item: Entity, targets: &Targets, ec
             // ));
             let item = &ecs.read_storage::<Name>().get(item).unwrap().name.clone();
             crate::gamelog::Logger::new()
-                .color(rltk::WHITE)
-                .append(item)
+                .item_name(item)
                 .color(rltk::ORANGE)
                 .append("is out of charges!")
                 .log();
@@ -104,15 +103,9 @@ fn event_trigger(
     if ecs.read_storage::<ProvidesFood>().get(entity).is_some() {
         add_effect(creator, EffectType::WellFed, targets.clone());
         let names = ecs.read_storage::<Name>();
-        // gamelog
-        //     .entries
-        //     .push(format!("You eat the {}.", names.get(entity).unwrap().name));
         crate::gamelog::Logger::new()
-            .color(rltk::WHITE)
             .append("You eat the")
-            .color(rltk::CYAN)
-            .append(names.get(entity).unwrap().name.clone())
-            .color(rltk::WHITE)
+            .item_name(names.get(entity).unwrap().name.clone())
             .append(". Yummeh.")
             .log();
         did_something = true;
@@ -125,7 +118,7 @@ fn event_trigger(
         //     .entries
         //     .push("The map is revealed to you!".to_string());
         crate::gamelog::Logger::new()
-            .color(rltk::WHITE)
+            .color(rltk::GREEN)
             .append("The map is revealed to you!")
             .log();
 
@@ -141,7 +134,7 @@ fn event_trigger(
     {
         let mut runstate = ecs.fetch_mut::<RunState>();
         crate::gamelog::Logger::new()
-            .color(rltk::CYAN)
+            .color(rltk::GREEN)
             .append("You remove a curse.")
             .log();
         *runstate = RunState::ShowRemoveCurse;
@@ -155,7 +148,7 @@ fn event_trigger(
         .is_some()
     {
         crate::gamelog::Logger::new()
-            .color(rltk::CYAN)
+            .color(rltk::GREEN)
             .append("You identify an item.")
             .log();
         let mut runstate = ecs.fetch_mut::<RunState>();
@@ -173,8 +166,8 @@ fn event_trigger(
                 .log();
         } else {
             crate::gamelog::Logger::new()
-                .color(rltk::CYAN)
-                .append("Welcome back to Fishguts. Only your mom missed you.")
+                .color(rltk::GREEN)
+                .append("Welcome back to Fishguts. Your mom missed you.")
                 .log();
             let mut runstate = ecs.fetch_mut::<RunState>();
             *runstate = RunState::TownPortal;
@@ -300,7 +293,7 @@ fn event_trigger(
                             mana_cost: spell_info.mana_cost,
                         });
                         crate::gamelog::Logger::new()
-                            .color(rltk::CYAN)
+                            .color(rltk::GREEN)
                             .append("You learn a spell.")
                             .log();
                     }

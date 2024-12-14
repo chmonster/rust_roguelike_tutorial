@@ -25,9 +25,7 @@ pub fn delete_the_dead(ecs: &mut World) {
                         let victim_name = names.get(entity);
                         if let Some(victim_name) = victim_name {
                             crate::gamelog::Logger::new()
-                                .color(rltk::CYAN)
-                                .append(&victim_name.name)
-                                .color(rltk::WHITE)
+                                .npc_name(&victim_name.name)
                                 .append("is dead.")
                                 .log();
                         }

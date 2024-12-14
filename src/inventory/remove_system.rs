@@ -20,15 +20,10 @@ impl<'a> System<'a> for ItemRemoveSystem {
 
         for (entity, to_remove) in (&entities, &wants_remove).join() {
             if cursed.get(to_remove.item).is_some() {
-                // gamelog.entries.push(format!(
-                //     "You cannot remove {}, it is cursed",
-                //     names.get(to_remove.item).unwrap().name
-                // ));
                 crate::gamelog::Logger::new()
-                    .color(rltk::WHITE)
+                    .color(rltk::RED)
                     .append("You cannot remove")
-                    .color(rltk::CYAN)
-                    .append(names.get(to_remove.item).unwrap().name.clone())
+                    .item_name(names.get(to_remove.item).unwrap().name.clone())
                     .color(rltk::RED)
                     .append(", it is cursed.")
                     .log();
@@ -37,6 +32,13 @@ impl<'a> System<'a> for ItemRemoveSystem {
                 backpack
                     .insert(to_remove.item, InBackpack { owner: entity })
                     .expect("Unable to insert backpack");
+                crate::gamelog::Logger::new()
+                    .color(rltk::GREEN)
+                    .append("You removed the ")
+                    .item_name(names.get(to_remove.item).unwrap().name.clone())
+                    .color(rltk::GREEN)
+                    .append(".")
+                    .log()
             }
         }
 

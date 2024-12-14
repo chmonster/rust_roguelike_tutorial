@@ -29,18 +29,12 @@ impl<'a> System<'a> for QuipSystem {
                     (rng.roll_dice(1, quip.available.len() as i32) - 1) as usize
                 };
 
-                // gamelog.entries.push(format!(
-                //     "{} says \"{}\"",
-                //     name.name, quip.available[quip_index]
-                // ));
                 crate::gamelog::Logger::new()
-                    .color(rltk::YELLOW)
-                    .append(&name.name)
-                    .color(rltk::WHITE)
+                    .npc_name(&name.name)
                     .append("says")
-                    .color(rltk::CYAN)
-                    .append(&quip.available[quip_index])
+                    .npc_name(&quip.available[quip_index])
                     .log();
+
                 quip.available.remove(quip_index);
             }
         }

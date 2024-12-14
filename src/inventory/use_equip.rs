@@ -50,12 +50,11 @@ impl<'a> System<'a> for ItemEquipOnUse {
                 for (item_entity, already_equipped, name) in (&entities, &equipped, &names).join() {
                     if already_equipped.owner == target && already_equipped.slot == target_slot {
                         if cursed.get(item_entity).is_some() {
-                            //can_equip = false;
                             crate::gamelog::Logger::new()
+                                .color(rltk::RED)
                                 .append("You cannot unequip")
-                                .color(rltk::CYAN)
-                                .append(&name.name)
-                                .color(rltk::WHITE)
+                                .item_name(&name.name)
+                                .color(rltk::RED)
                                 .append("- it is cursed!")
                                 .log();
                             can_equip = false;
@@ -64,8 +63,7 @@ impl<'a> System<'a> for ItemEquipOnUse {
                             if target == *player_entity {
                                 crate::gamelog::Logger::new()
                                     .append("You unequip")
-                                    .color(rltk::CYAN)
-                                    .append(&name.name)
+                                    .item_name(&name.name)
                                     .log();
                             }
                         }
@@ -83,6 +81,10 @@ impl<'a> System<'a> for ItemEquipOnUse {
                                 },
                             )
                             .expect("Unable to insert");
+                        crate::gamelog::Logger::new()
+                            .append("You unequip")
+                            .item_name(names.get(useitem.item).unwrap().name.clone())
+                            .log();
                     }
 
                     for item in to_unequip.iter() {
@@ -93,8 +95,10 @@ impl<'a> System<'a> for ItemEquipOnUse {
                     }
 
                     for le in log_entries.iter() {
-                        //gamelog.entries.push(le.to_string());
-                        crate::gamelog::Logger::new().append(le.to_string()).log();
+                        crate::gamelog::Logger::new()
+                            .color(rltk::BLUE)
+                            .append(le.to_string())
+                            .log();
                     }
 
                     // Wield the item
@@ -110,9 +114,8 @@ impl<'a> System<'a> for ItemEquipOnUse {
                     backpack.remove(useitem.item);
                     if target == *player_entity {
                         crate::gamelog::Logger::new()
-                            .append("You equip")
-                            .color(rltk::CYAN)
-                            .append(&names.get(useitem.item).unwrap().name)
+                            .append("You equip ")
+                            .item_name(&names.get(useitem.item).unwrap().name)
                             .log();
                     }
                 }

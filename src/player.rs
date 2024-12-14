@@ -165,10 +165,8 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
             item_string.truncate(item_string.len()-2);
             //gamelog.entries.push(format!("You see here: {}", item_string));
             crate::gamelog::Logger::new()
-            .color(rltk::WHITE)
             .append("You see here: ")
-            .color(rltk::CYAN)
-            .append(&item_string)
+            .item_name(&item_string)
             .log();
         }
 
@@ -207,7 +205,7 @@ fn get_item(ecs: &mut World) {
     match target_item {
         None => 
             crate::gamelog::Logger::new()
-            .color(rltk::RED)
+            .color(rltk::WHITE)
             .append("There is nothing here to pick up.")
             .log(),
 
@@ -253,7 +251,7 @@ pub fn try_previous_level(ecs: &mut World) -> bool {
         true
     } else {
         crate::gamelog::Logger::new()
-            .color(rltk::RED)
+            .color(rltk::WHITE)
             .append("There is no way up here.")
             .log();
         false
@@ -432,7 +430,7 @@ fn use_hotkey(gs: &mut State, key: i32) -> RunState {
             }
         } else {
             crate::gamelog::Logger::new()
-            .color(rltk::RED)
+            .color(rltk::ORANGE)
             .append("You have insufficient mana to cast that.")
             .log();
         }
@@ -586,11 +584,8 @@ fn fire_on_target(ecs: &mut World) -> RunState {
         let names = ecs.read_storage::<Name>();
         if let Some(name) = names.get(target) {
             crate::gamelog::Logger::new()
-            .color(rltk::WHITE)
             .append("You fire at ")
-            .color(rltk::CYAN)
-            .append(&name.name)
-            .color(rltk::WHITE)
+            .npc_name(&name.name)
             .append(".")
             .log();
         }
