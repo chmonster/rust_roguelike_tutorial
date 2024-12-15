@@ -178,14 +178,14 @@ impl<'a> System<'a> for RangedCombatSystem {
                     );
 
                     crate::gamelog::Logger::new()
-                        .npc_name("&name.name")
-                        .append("hits")
+                        .npc_name(&name.name)
+                        .append("shoots at")
                         .npc_name(&target_name.name)
-                        .append("for ")
+                        .append("and hits for")
                         .color(rltk::GREEN)
                         .append(damage)
                         .color(rltk::WHITE)
-                        .append(" hp.")
+                        .append("hp.")
                         .log();
                     // Proc effects
 

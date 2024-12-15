@@ -35,6 +35,14 @@ impl Logger {
         self
     }
 
+    pub fn talking<T: ToString>(mut self, text: T) -> Self {
+        self.fragments.push(LogFragment {
+            color: RGB::named(rltk::AQUA),
+            text: format!("\"{}\"", text.to_string()),
+        });
+        self
+    }
+
     pub fn item_name<T: ToString>(mut self, text: T) -> Self {
         self.fragments.push(LogFragment {
             color: RGB::named(rltk::CYAN),

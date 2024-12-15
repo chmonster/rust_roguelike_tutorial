@@ -114,7 +114,7 @@ impl<'a> System<'a> for ItemEquipOnUse {
                     backpack.remove(useitem.item);
                     if target == *player_entity {
                         crate::gamelog::Logger::new()
-                            .append("You equip ")
+                            .append("You equip")
                             .item_name(&names.get(useitem.item).unwrap().name)
                             .log();
                     }

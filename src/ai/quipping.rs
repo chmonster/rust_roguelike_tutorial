@@ -32,7 +32,7 @@ impl<'a> System<'a> for QuipSystem {
                 crate::gamelog::Logger::new()
                     .npc_name(&name.name)
                     .append("says")
-                    .npc_name(&quip.available[quip_index])
+                    .talking(&quip.available[quip_index])
                     .log();
 
                 quip.available.remove(quip_index);

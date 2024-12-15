@@ -163,9 +163,8 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
         }
         if !item_string.is_empty(){
             item_string.truncate(item_string.len()-2);
-            //gamelog.entries.push(format!("You see here: {}", item_string));
             crate::gamelog::Logger::new()
-            .append("You see here: ")
+            .append("You see here:")
             .item_name(&item_string)
             .log();
         }

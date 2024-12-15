@@ -174,9 +174,9 @@ impl<'a> System<'a> for MeleeCombatSystem {
 
                     crate::gamelog::Logger::new()
                         .npc_name(&name.name)
-                        .append("hits")
+                        .append("swings at")
                         .npc_name(&target_name.name)
-                        .append("for")
+                        .append("and hits for")
                         .damage(damage)
                         .append("hp.")
                         .log();
