@@ -1063,10 +1063,19 @@ pub enum GameOverResult {
 pub fn game_over(ctx: &mut Rltk) -> GameOverResult {
     let (screen_width, screen_height) = ctx.get_char_size();
 
+    //TODO: vectorize and iterate the lines
     let line1 = "Your journey has ended!";
     let line2 = "One day, we'll tell you all about how you did.";
     let line3 = "That day, sadly, is not in this chapter...";
-    let line4 = "Press any key to return to the menu.";
+
+    let line4 = &format!(
+        "You lived for {} turns, took {} damage and inficted {} damage.",
+        crate::gamelog::get_event_count("Turn"),
+        crate::gamelog::get_event_count("Damage Taken"),
+        crate::gamelog::get_event_count("Damage Inflicted")
+    );
+
+    let line5 = "Press any key to return to the menu.";
 
     let text_width = max(line1.len(), max(line2.len(), max(line3.len(), line4.len())));
     let menu_width = 4 + text_width + text_width % 2;
@@ -1100,12 +1109,18 @@ pub fn game_over(ctx: &mut Rltk) -> GameOverResult {
         RGB::named(rltk::BLACK),
         line3,
     );
-
     ctx.print_color_centered(
         y_offset + 7,
-        RGB::named(rltk::MAGENTA),
+        RGB::named(rltk::WHITE),
         RGB::named(rltk::BLACK),
         line4,
+    );
+
+    ctx.print_color_centered(
+        y_offset + 9,
+        RGB::named(rltk::MAGENTA),
+        RGB::named(rltk::BLACK),
+        line5,
     );
 
     match ctx.key {

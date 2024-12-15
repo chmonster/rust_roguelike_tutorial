@@ -10,9 +10,10 @@ use specs::saveload::{MarkedBuilder, SimpleMarker};
 
 pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
     let mut pools = ecs.write_storage::<Pools>();
+    let player_entity = ecs.fetch::<Entity>();
     if let Some(pool) = pools.get_mut(target) {
         if !pool.god_mode {
-            //don't count damage from self
+            //don't process damage from self
             if let Some(creator) = damage.creator {
                 if creator == target {
                     return;
@@ -27,6 +28,7 @@ pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
                 pool.hit_points.current -= amount;
 
                 //for large targets
+                //TODO: hitbox still not working
                 if let Some(size) = sizes.get(target) {
                     let head_pos = positions.get(target).expect("Error: head_pos not found");
                     let tiles = rect_tiles(&map, rltk::Point::new(head_pos.x, head_pos.y), size);
@@ -62,6 +64,15 @@ pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
                         },
                         Targets::Single { target },
                     );
+                }
+
+                if target == *player_entity {
+                    crate::gamelog::record_event("Damage Taken", amount);
+                }
+                if let Some(creator) = damage.creator {
+                    if creator == *player_entity {
+                        crate::gamelog::record_event("Damage Inflicted", amount);
+                    }
                 }
 
                 if pool.hit_points.current < 1 {

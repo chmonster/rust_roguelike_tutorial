@@ -330,8 +330,11 @@ impl GameState for State {
             }
 
             RunState::AwaitingInput => {
-                self.new_game = false;
+                self.new_game = false; //this like missing from current code?
                 newrunstate = player_input(self, ctx);
+                if newrunstate != RunState::AwaitingInput {
+                    crate::gamelog::record_event("Turn", 1);
+                }
             }
 
             RunState::Ticking => {
@@ -802,6 +805,7 @@ fn main() -> rltk::BError {
         .color(rltk::CYAN)
         .append("Rusty Roguelike")
         .log();
+    gamelog::clear_events();
 
     gs.ecs.insert(particle_system::ParticleBuilder::new());
     gs.ecs.insert(rex_assets::RexAssets::new());

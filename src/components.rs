@@ -347,6 +347,7 @@ pub struct OtherLevelPosition {
 pub struct DMSerializationHelper {
     pub map: super::map::MasterDungeonMap,
     pub log: Vec<Vec<crate::gamelog::LogFragment>>,
+    pub events: HashMap<String, i32>,
 }
 
 #[derive(Component, Serialize, Deserialize, Clone)]

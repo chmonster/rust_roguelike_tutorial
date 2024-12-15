@@ -41,6 +41,7 @@ pub fn log_display() -> TextBuilder {
     buf
 }
 
+#[allow(dead_code)]
 pub fn clone_log() -> Vec<Vec<crate::gamelog::LogFragment>> {
     LOG.lock().unwrap().clone()
 }
